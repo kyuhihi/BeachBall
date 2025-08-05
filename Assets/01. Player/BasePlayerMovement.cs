@@ -39,6 +39,9 @@ public class BasePlayerMovement : MonoBehaviour
     [SerializeField]
     private bool m_IsBackGo = false;
 
+    // 첫 입력 추적용 변수 추가
+    private bool hasReceivedInput = false;
+
     void Awake()
     {
         m_Animator = GetComponent<Animator>();
@@ -100,6 +103,12 @@ public class BasePlayerMovement : MonoBehaviour
     public void OnMoveInput(Vector2 moveInput)
     {
         m_InputVector = moveInput;
+
+        // 첫 입력이 들어왔을 때 플래그 설정
+        if (moveInput.magnitude > 0.01f && !hasReceivedInput)
+        {
+            hasReceivedInput = true;
+        }
     }
 
     public void OnSprintInput(bool sprinting)
@@ -125,17 +134,48 @@ public class BasePlayerMovement : MonoBehaviour
         // Debug.Log("발소리 재생");
     }
 
+    // void FixedUpdate()
+    // {
+    //     float horizontal = m_InputVector.x;
+    //     float vertical = m_InputVector.y;
+
+    //     // 이동 입력 벡터 계산
+    //     Vector3 rawMovement = new Vector3(horizontal, 0f, vertical);
+    //     float inputMagnitude = rawMovement.magnitude;
+
+    //     // 방향만 필요한 m_Movement는 정규화
+    //     m_Movement = rawMovement.normalized;
+
+    //     float currentSpeed = m_IsRunning ? runSpeed : walkSpeed;
+
+    //     // 애니메이터에 전달할 속도 (입력 강도에 따라)
+    //     float appliedSpeed = inputMagnitude * currentSpeed;
+
+    //     SetCurrentLocomotionState(appliedSpeed);
+
+    //     if (inputMagnitude > 0.01f)
+    //     {
+    //         Vector3 desiredForward = Vector3.RotateTowards(transform.forward, m_Movement, turnSpeed * Time.deltaTime, 0f);
+    //         m_Rotation = Quaternion.LookRotation(desiredForward);
+    //     }
+        
+    //     OnPlayerMove();
+    //     SetAnimatorParameters(inputMagnitude);
+    // }
+
     void FixedUpdate()
     {
         float horizontal = m_InputVector.x;
         float vertical = m_InputVector.y;
 
+        // 카메라 기준으로 이동 방향 계산
+        Vector3 cameraForward = GetCameraRelativeMovement(horizontal, vertical);
+        
         // 이동 입력 벡터 계산
-        Vector3 rawMovement = new Vector3(horizontal, 0f, vertical);
-        float inputMagnitude = rawMovement.magnitude;
+        float inputMagnitude = new Vector2(horizontal, vertical).magnitude;
 
         // 방향만 필요한 m_Movement는 정규화
-        m_Movement = rawMovement.normalized;
+        m_Movement = cameraForward.normalized;
 
         float currentSpeed = m_IsRunning ? runSpeed : walkSpeed;
 
@@ -144,14 +184,52 @@ public class BasePlayerMovement : MonoBehaviour
 
         SetCurrentLocomotionState(appliedSpeed);
 
-        if (inputMagnitude > 0.01f)
+        // 첫 입력이 있었고, 입력 크기가 충분할 때만 회전
+        if (hasReceivedInput && inputMagnitude > 0.01f)
         {
-            Vector3 desiredForward = Vector3.RotateTowards(transform.forward, m_Movement, turnSpeed * Time.deltaTime, 0f);
+            Vector3 desiredForward = Vector3.RotateTowards(transform.forward, m_Movement, turnSpeed * Time.fixedDeltaTime, 0f);
             m_Rotation = Quaternion.LookRotation(desiredForward);
         }
-        
+        else
+        {
+            // 첫 입력 전이거나 입력이 없으면 현재 회전 유지
+            m_Rotation = transform.rotation;
+        }
+
         OnPlayerMove();
         SetAnimatorParameters(inputMagnitude);
+    }   
+
+    // 카메라 기준 이동 방향 계산 메서드 추가
+    private Vector3 GetCameraRelativeMovement(float horizontal, float vertical)
+    {
+        // 메인 카메라 참조
+        Camera mainCamera = Camera.main;
+        // 이렇게 하지말고 3인칭으로 하는 것이 좋을듯(등 뒤에 카메라)
+
+
+        if (mainCamera == null)
+        {
+            // 카메라가 없으면 월드 좌표계 사용
+            return new Vector3(horizontal, 0f, vertical);
+        }
+
+        // 카메라의 forward와 right 벡터 가져오기
+        Vector3 cameraForward = mainCamera.transform.forward;
+        Vector3 cameraRight = mainCamera.transform.right;
+
+        // Y축 제거 (수평 이동만)
+        cameraForward.y = 0f;
+        cameraRight.y = 0f;
+
+        // 정규화
+        cameraForward.Normalize();
+        cameraRight.Normalize();
+
+        // 카메라 기준으로 이동 방향 계산
+        Vector3 moveDirection = cameraForward * vertical + cameraRight * horizontal;
+
+        return moveDirection;
     }
 
     private void SetAnimatorParameters(float inputMagnitude)
@@ -245,13 +323,27 @@ public class BasePlayerMovement : MonoBehaviour
 
     }
 
+    // void OnPlayerMove()
+    // {
+    //     float currentSpeed = m_IsRunning ? runSpeed : walkSpeed;
+
+    //     m_Rigidbody.MovePosition(m_Rigidbody.position + m_Movement * currentSpeed * Time.deltaTime);
+        
+    //     if (!m_IsBackGo)
+    //     {
+    //         m_Rigidbody.MoveRotation(m_Rotation);
+    //     }
+    // }
+
     void OnPlayerMove()
     {
         float currentSpeed = m_IsRunning ? runSpeed : walkSpeed;
 
-        m_Rigidbody.MovePosition(m_Rigidbody.position + m_Movement * currentSpeed * Time.deltaTime);
-        
-        if (!m_IsBackGo)
+        // Time.deltaTime을 Time.fixedDeltaTime으로 변경 (FixedUpdate에서 호출되므로)
+        m_Rigidbody.MovePosition(m_Rigidbody.position + m_Movement * currentSpeed * Time.fixedDeltaTime);
+
+        // 첫 입력이 있었고 뒤로가기 모드가 아닐 때만 회전 적용
+        if (hasReceivedInput && !m_IsBackGo)
         {
             m_Rigidbody.MoveRotation(m_Rotation);
         }
