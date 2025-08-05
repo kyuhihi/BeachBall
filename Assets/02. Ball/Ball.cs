@@ -1,14 +1,17 @@
+using System;
 using UnityEngine;
 
 public class Ball : MonoBehaviour
 {
     public float speed = 5f;
-    private Vector3 direction;
+    public float PlusdirectionY = 1.0f;
+    private Vector3 direction = Vector3.down;
     private Rigidbody m_Rigidbody;
 
     void Start()
     {
         m_Rigidbody = GetComponent<Rigidbody>();
+
     }
 
     void LateUpdate()
@@ -18,6 +21,7 @@ public class Ball : MonoBehaviour
         {
             direction = m_Rigidbody.linearVelocity.normalized;
         }
+        
     }
 
     void OnCollisionEnter(Collision other)
@@ -25,10 +29,10 @@ public class Ball : MonoBehaviour
         Vector3 contactPoint = other.contacts[0].point;
         Vector3 hitDir = (transform.position - contactPoint).normalized;
         direction = Vector3.Reflect(direction, hitDir).normalized;
-        m_Rigidbody.linearVelocity = Vector3.zero; // Reset linear velocity
-        direction.y += 1.3f;
+        direction.y += PlusdirectionY; // Y축 방향 조정 
+                                       //Debug.Log("Ball hit: " + other.gameObject.name + " at " + contactPoint + " with direction: " + direction);
+        m_Rigidbody.linearVelocity = Vector3.zero;
         m_Rigidbody.AddForce(direction * speed);
-        return;
 
     }
 
