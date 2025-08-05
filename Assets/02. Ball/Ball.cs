@@ -22,13 +22,11 @@ public class Ball : MonoBehaviour
 
     void OnCollisionEnter(Collision other)
     {
-        Debug.Log("Collision detected with: " + other.gameObject.name);
         Vector3 contactPoint = other.contacts[0].point;
         Vector3 hitDir = (transform.position - contactPoint).normalized;
         direction = Vector3.Reflect(direction, hitDir).normalized;
         m_Rigidbody.linearVelocity = Vector3.zero; // Reset linear velocity
-        direction.y += 0.5f;
-        Debug.Log("New direction after collision: " + direction);
+        direction.y += 1.3f;
         m_Rigidbody.AddForce(direction * speed);
         return;
 
