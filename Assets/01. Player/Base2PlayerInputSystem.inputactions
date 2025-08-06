@@ -1,5 +1,5 @@
 {
-    "name": "BasePlayerInputSystem",
+    "name": "Base2PlayerInputSystem",
     "maps": [
         {
             "name": "Player",
@@ -37,7 +37,7 @@
                 {
                     "name": "",
                     "id": "4fd4d0cd-f53f-41ce-91c6-b32f9386b0da",
-                    "path": "<Keyboard>/p",
+                    "path": "<Keyboard>/y",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -59,7 +59,7 @@
                 {
                     "name": "Up",
                     "id": "a95febd4-738b-412e-a5be-2d50339a413a",
-                    "path": "<Keyboard>/upArrow",
+                    "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -70,7 +70,7 @@
                 {
                     "name": "Down",
                     "id": "f015f24a-8bd2-4866-9fbe-e63e62b8ab73",
-                    "path": "<Keyboard>/downArrow",
+                    "path": "<Keyboard>/x",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -81,7 +81,7 @@
                 {
                     "name": "Left",
                     "id": "57d6d866-73ba-4224-8c8e-fffbc7e6a94a",
-                    "path": "<Keyboard>/leftArrow",
+                    "path": "<Keyboard>/z",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -92,7 +92,7 @@
                 {
                     "name": "Right",
                     "id": "33f3d096-366e-43c0-b73d-e0abfc9bb46d",
-                    "path": "<Keyboard>/rightArrow",
+                    "path": "<Keyboard>/c",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -103,7 +103,7 @@
                 {
                     "name": "",
                     "id": "f852ab0e-a98d-47c3-89f5-537ffbc316aa",
-                    "path": "<Keyboard>/o",
+                    "path": "<Keyboard>/t",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
