@@ -86,6 +86,12 @@ public class BasePlayerMovement : MonoBehaviour
     {
         OnSprintInput(value.isPressed);
     }
+    public void OnSmash(InputValue value)
+    {
+
+        m_Animator.SetTrigger("Smash");
+        
+    }
 
     public void OnJump(InputValue value)
     {
