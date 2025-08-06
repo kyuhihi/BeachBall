@@ -2,6 +2,7 @@ using Unity.Mathematics;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Animations.Rigging;
+using UnityEngine.InputSystem;
 
 public class IkController : MonoBehaviour
 {
@@ -24,6 +25,23 @@ public class IkController : MonoBehaviour
     [Header("IK 각도 설정")]
     [SerializeField] private float BothHandAngle = 45f;
     [SerializeField] private float OneHandAngle = 135f;
+    
+    [Header("Smash 애니메이션 설정")]
+    [SerializeField] private Vector3 LeftSmashStartPos;
+    [SerializeField] private Vector3 RightSmashStartPos;
+
+    public enum PlayerAnimState
+    {
+        NORMAL,
+        L_SMASH_Up2Down,
+        R_SMASH_Up2Down,
+        Both_SMASH_Up2Down,
+        L_SMASH_Down2Up,
+        R_SMASH_Down2Up,
+        Both_SMASH_Down2Up,
+
+    }
+    PlayerAnimState currentAnimState = PlayerAnimState.NORMAL;
 
     void Awake()
     {
@@ -38,40 +56,107 @@ public class IkController : MonoBehaviour
         yield return new WaitForSeconds(delay);
         rigBuilder.enabled = true;
     }
-    void Update()
+
+    void OnSmash(InputValue value)
     {
+        BlendWeight = 1.0f;
         Vector3 toTarget = Target.position - transform.position;
         toTarget.y = 0f;
-        float angle = Vector3.SignedAngle(transform.forward, toTarget, Vector3.up);
-Debug.Log($"Angle to Target: {angle}");
-        float leftHandWeight = 0f;
-        float rightHandWeight = 0f;
+        float angle = Vector3.SignedAngle(transform.forward, toTarget, Vector3.up);//y축
+        bool isUp2Down = Target.position.y > transform.position.y;
 
         if (Mathf.Abs(angle) <= BothHandAngle)
         {
-            leftHandWeight = BlendWeight;
-            rightHandWeight = BlendWeight;
+            if(isUp2Down)
+            {
+                currentAnimState = PlayerAnimState.Both_SMASH_Up2Down;
+            }
+            else
+            {
+                currentAnimState = PlayerAnimState.Both_SMASH_Down2Up;
+            }
         }
         else if (angle < -BothHandAngle && angle > -OneHandAngle)
         {
-            leftHandWeight = BlendWeight;
-            rightHandWeight = 0f;
+            if (isUp2Down)
+            {
+                currentAnimState = PlayerAnimState.L_SMASH_Up2Down;
+            }
+            else
+            {
+                currentAnimState = PlayerAnimState.L_SMASH_Down2Up;
+            }
         }
         else if (angle > BothHandAngle && angle < OneHandAngle)
         {
-            leftHandWeight = 0f;
-            rightHandWeight = BlendWeight;
+            if (isUp2Down)
+            {
+                currentAnimState = PlayerAnimState.R_SMASH_Up2Down;
+            }
+            else
+            {
+                currentAnimState = PlayerAnimState.R_SMASH_Down2Up;
+            }
         }
         else
         {
-            leftHandWeight = 0f;
-            rightHandWeight = 0f;
+            currentAnimState = PlayerAnimState.NORMAL;
         }
 
-        Vector3 LeftHandAnimPosition = animator.GetBoneTransform(HumanBodyBones.LeftHand).position;
-        Vector3 RightHandAnimPosition = animator.GetBoneTransform(HumanBodyBones.RightHand).position;
+        SetSmashStartPos();
+    }
 
-        LeftHandController.position = Vector3.Lerp(LeftHandAnimPosition, Target.position, leftHandWeight);
-        RightHandController.position = Vector3.Lerp(RightHandAnimPosition, Target.position, rightHandWeight);
+    private void SetSmashStartPos()
+    {
+        switch (currentAnimState)
+        {
+            case PlayerAnimState.NORMAL:
+                BlendWeight = 0.0f;
+                break;
+            case PlayerAnimState.L_SMASH_Up2Down:
+            case PlayerAnimState.L_SMASH_Down2Up:
+                LeftHandController.position = LeftSmashStartPos;
+                RightHandController.position = RightSmashStartPos;
+                break;
+            case PlayerAnimState.R_SMASH_Down2Up:
+            case PlayerAnimState.R_SMASH_Up2Down:
+                LeftHandController.position = LeftSmashStartPos;
+                RightHandController.position = RightSmashStartPos;
+                break;
+            case PlayerAnimState.Both_SMASH_Down2Up:
+            case PlayerAnimState.Both_SMASH_Up2Down:
+                LeftHandController.position = LeftSmashStartPos;
+                RightHandController.position = RightSmashStartPos;
+                break;
+        }
+    }
+
+    void Update()
+    {
+        switch (currentAnimState)
+        {
+            case PlayerAnimState.NORMAL:
+                return;
+            case PlayerAnimState.L_SMASH_Up2Down:
+            case PlayerAnimState.L_SMASH_Down2Up:
+                BlendWeight = 1.0f;
+                break;
+            case PlayerAnimState.R_SMASH_Down2Up:
+            case PlayerAnimState.R_SMASH_Up2Down:
+                BlendWeight = 1.0f;
+                break;
+            case PlayerAnimState.Both_SMASH_Down2Up:
+            case PlayerAnimState.Both_SMASH_Up2Down:
+                BlendWeight = 1.0f;
+                break;
+        }
+
+
+        //     Vector3 LeftHandAnimPosition = animator.GetBoneTransform(HumanBodyBones.LeftHand).position;
+        //     Vector3 RightHandAnimPosition = animator.GetBoneTransform(HumanBodyBones.RightHand).position;
+
+        //     LeftHandController.position = Vector3.Lerp(LeftHandAnimPosition, Target.position, leftHandWeight);
+        //     RightHandController.position = Vector3.Lerp(RightHandAnimPosition, Target.position, rightHandWeight);
+        // }
     }
 }
