@@ -10,11 +10,11 @@ public class BasePlayerMovement : MonoBehaviour
     public float runSpeed = 5f;
     [SerializeField] private float jumpForce = 2f;
     [SerializeField] private float groundCheckDistance = 0.1f;
-    
+
     [Header("Ground Check")]
     [SerializeField] private LayerMask groundLayer = 1;
     [SerializeField] private Transform groundCheck;
-    
+
 
     [SerializeField]
     private Animator m_Animator;
@@ -35,23 +35,36 @@ public class BasePlayerMovement : MonoBehaviour
         Run = 2
     }
     private IdleWalkRunEnum m_eLocomotionState = IdleWalkRunEnum.Idle;
-    
+
     [SerializeField]
     private bool m_IsBackGo = false;
 
     // 첫 입력 추적용 변수 추가
     private bool hasReceivedInput = false;
 
+    
+    [Header("Individual Key Tracking")]
+    private bool isLeftPressed = false;
+    private bool isRightPressed = false;
+    private bool isUpPressed = false;
+    private bool isDownPressed = false;
+    
+    private float leftPressedTime = -1f;
+    private float rightPressedTime = -1f;
+    private float upPressedTime = -1f;
+    private float downPressedTime = -1f;
+
+
     void Awake()
     {
-        if(m_Animator==null)
+        if (m_Animator == null)
             m_Animator = GetComponent<Animator>();
         m_Rigidbody = GetComponent<Rigidbody>();
-        
+
         // Rigidbody 설정
         // m_Rigidbody.freezeRotation = true;
         // m_Rigidbody.drag = 5f;
-        
+
         // Ground Check가 없으면 자동으로 생성
         if (groundCheck == null)
         {
@@ -71,7 +84,10 @@ public class BasePlayerMovement : MonoBehaviour
     {
         CheckGrounded();
         HandleJump();
-        
+
+        // 우선순위 기반 입력 계산 및 적용
+        UpdatePriorityInput();
+
         // F1 키로 뒤로가기 토글 (임시)
         if (Keyboard.current.f1Key.wasPressedThisFrame)
         {
@@ -79,11 +95,127 @@ public class BasePlayerMovement : MonoBehaviour
         }
     }
 
-    // Input System callbacks
-    public void OnMove(InputValue value)
+    public void OnMoveInput(Vector2 moveInput)
     {
-        OnMoveInput(value.Get<Vector2>());
+        m_InputVector = moveInput;
+
+        // 첫 입력이 들어왔을 때 플래그 설정
+        if (moveInput.magnitude > 0.01f && !hasReceivedInput)
+        {
+            hasReceivedInput = true;
+        }
     }
+
+
+    private void UpdatePriorityInput()
+    {
+        Vector2 priorityInput = new Vector2(GetHorizontalInput(), GetVerticalInput());
+        
+        OnMoveInput(priorityInput);
+        
+        // 디버그 로그
+        if (priorityInput.magnitude > 0.01f)
+        {
+            Debug.Log($"Priority Input: {priorityInput}, L:{isLeftPressed}, R:{isRightPressed}, U:{isUpPressed}, D:{isDownPressed}");
+        }
+    }
+    public void OnMoveLeft(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            isLeftPressed = true;
+            leftPressedTime = Time.time;
+            Debug.Log($"Left pressed at {leftPressedTime}");
+        }
+        else
+        {
+            isLeftPressed = false;
+            Debug.Log("Left released");
+        }
+    }
+
+    public void OnMoveRight(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            isRightPressed = true;
+            rightPressedTime = Time.time;
+            Debug.Log($"Right pressed at {rightPressedTime}");
+        }
+        else
+        {
+            isRightPressed = false;
+            Debug.Log("Right released");
+        }
+    }
+
+    public void OnMoveUp(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            isUpPressed = true;
+            upPressedTime = Time.time;
+        }
+        else
+        {
+            isUpPressed = false;
+        }
+    }
+
+    public void OnMoveDown(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            isDownPressed = true;
+            downPressedTime = Time.time;
+        }
+        else
+        {
+            isDownPressed = false;
+        }
+    }
+
+    
+    // 우선순위 기반 입력 계산
+    private float GetHorizontalInput()
+    {
+        if (isLeftPressed && isRightPressed)
+        {
+            // 최근에 누른 방향 우선
+            return (rightPressedTime > leftPressedTime) ? 1f : -1f;
+        }
+        else if (isLeftPressed)
+        {
+            return -1f;
+        }
+        else if (isRightPressed)
+        {
+            return 1f;
+        }
+
+        return 0f;
+    }
+
+    private float GetVerticalInput()
+    {
+        if (isUpPressed && isDownPressed)
+        {
+            // 최근에 누른 방향 우선
+            return (upPressedTime > downPressedTime) ? 1f : -1f;
+        }
+        else if (isUpPressed)
+        {
+            return 1f;
+        }
+        else if (isDownPressed)
+        {
+            return -1f;
+        }
+
+        return 0f;
+    }
+
+
 
     public void OnSprint(InputValue value)
     {
@@ -98,17 +230,6 @@ public class BasePlayerMovement : MonoBehaviour
         {
             OnJumpInput(value.isPressed);
             m_Rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-        }
-    }
-    // 직접 입력 메서드들
-    public void OnMoveInput(Vector2 moveInput)
-    {
-        m_InputVector = moveInput;
-
-        // 첫 입력이 들어왔을 때 플래그 설정
-        if (moveInput.magnitude > 0.01f && !hasReceivedInput)
-        {
-            hasReceivedInput = true;
         }
     }
 
@@ -143,7 +264,6 @@ public class BasePlayerMovement : MonoBehaviour
     //     // 이동 입력 벡터 계산
     //     Vector3 rawMovement = new Vector3(horizontal, 0f, vertical);
     //     float inputMagnitude = rawMovement.magnitude;
-
     //     // 방향만 필요한 m_Movement는 정규화
     //     m_Movement = rawMovement.normalized;
 
@@ -309,19 +429,32 @@ public class BasePlayerMovement : MonoBehaviour
     private void SetCurrentLocomotionState(float appliedSpeed)
     {
 
-        if (Mathf.Abs(appliedSpeed - runSpeed) < 0.01f)
-        {
-            m_eLocomotionState = IdleWalkRunEnum.Run;
-        }
-        else if (Mathf.Abs(appliedSpeed - walkSpeed) < 0.01f)
-        {
-            m_eLocomotionState = IdleWalkRunEnum.Walk;
-        }
-        else
+        // if (Mathf.Abs(appliedSpeed - runSpeed) < 0.01f)
+        // {
+        //     m_eLocomotionState = IdleWalkRunEnum.Run;
+        // }
+        // else if (Mathf.Abs(appliedSpeed - walkSpeed) < 0.01f)
+        // {
+        //     m_eLocomotionState = IdleWalkRunEnum.Walk;
+        // }
+        // else
+        // {
+        //     m_eLocomotionState = IdleWalkRunEnum.Idle;
+        // }
+
+        // 입력과 달리기 상태를 직접 확인하는 방식으로 변경
+        if (m_InputVector.magnitude < 0.01f)
         {
             m_eLocomotionState = IdleWalkRunEnum.Idle;
         }
-
+        else if (m_IsRunning)
+        {
+            m_eLocomotionState = IdleWalkRunEnum.Run;
+        }
+        else
+        {
+            m_eLocomotionState = IdleWalkRunEnum.Walk;
+        }
     }
 
     // void OnPlayerMove()
