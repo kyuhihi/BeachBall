@@ -16,7 +16,7 @@ public class BasePlayerMovement : MonoBehaviour
     [SerializeField] private Transform groundCheck;
     
 
-    
+    [SerializeField]
     private Animator m_Animator;
     private Rigidbody m_Rigidbody;
 
@@ -44,7 +44,8 @@ public class BasePlayerMovement : MonoBehaviour
 
     void Awake()
     {
-        m_Animator = GetComponent<Animator>();
+        if(m_Animator==null)
+            m_Animator = GetComponent<Animator>();
         m_Rigidbody = GetComponent<Rigidbody>();
         
         // Rigidbody 설정
