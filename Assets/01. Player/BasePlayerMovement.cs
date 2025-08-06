@@ -113,11 +113,11 @@ public class BasePlayerMovement : MonoBehaviour
         
         OnMoveInput(priorityInput);
         
-        // 디버그 로그
-        if (priorityInput.magnitude > 0.01f)
-        {
-            Debug.Log($"Priority Input: {priorityInput}, L:{isLeftPressed}, R:{isRightPressed}, U:{isUpPressed}, D:{isDownPressed}");
-        }
+        // // 디버그 로그
+        // if (priorityInput.magnitude > 0.01f)
+        // {
+        //     Debug.Log($"Priority Input: {priorityInput}, L:{isLeftPressed}, R:{isRightPressed}, U:{isUpPressed}, D:{isDownPressed}");
+        // }
     }
     public void OnMoveLeft(InputValue value)
     {
@@ -125,12 +125,12 @@ public class BasePlayerMovement : MonoBehaviour
         {
             isLeftPressed = true;
             leftPressedTime = Time.time;
-            Debug.Log($"Left pressed at {leftPressedTime}");
+            //Debug.Log($"Left pressed at {leftPressedTime}");
         }
         else
         {
             isLeftPressed = false;
-            Debug.Log("Left released");
+            //Debug.Log("Left released");
         }
     }
 
@@ -140,12 +140,12 @@ public class BasePlayerMovement : MonoBehaviour
         {
             isRightPressed = true;
             rightPressedTime = Time.time;
-            Debug.Log($"Right pressed at {rightPressedTime}");
+            //Debug.Log($"Right pressed at {rightPressedTime}");
         }
         else
         {
             isRightPressed = false;
-            Debug.Log("Right released");
+            //Debug.Log("Right released");
         }
     }
 
