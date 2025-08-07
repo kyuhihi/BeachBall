@@ -37,7 +37,7 @@ public class BasePlayerMovement : MonoBehaviour
     private IdleWalkRunEnum m_eLocomotionState = IdleWalkRunEnum.Idle;
 
     [SerializeField]
-    private bool m_IsBackGo = false;
+    // private bool m_IsBackGo = false;
 
     // 첫 입력 추적용 변수 추가
     private bool hasReceivedInput = false;
@@ -88,11 +88,11 @@ public class BasePlayerMovement : MonoBehaviour
         // 우선순위 기반 입력 계산 및 적용
         UpdatePriorityInput();
 
-        // F1 키로 뒤로가기 토글 (임시)
-        if (Keyboard.current.f1Key.wasPressedThisFrame)
-        {
-            m_IsBackGo = !m_IsBackGo;
-        }
+        // // F1 키로 뒤로가기 토글 (임시)
+        // if (Keyboard.current.f1Key.wasPressedThisFrame)
+        // {
+        //     m_IsBackGo = !m_IsBackGo;
+        // }
     }
 
     public void OnMoveInput(Vector2 moveInput)
@@ -373,7 +373,7 @@ public class BasePlayerMovement : MonoBehaviour
         float fAnimatorSpeedX = directionVector.x * (int)m_eLocomotionState;
         float fAnimatorSpeedY = directionVector.y * (int)m_eLocomotionState;
 
-        m_Animator.SetBool("GoBack", m_IsBackGo);
+        // m_Animator.SetBool("GoBack", m_IsBackGo);
 
         if (inputMagnitude > 0f)
         {
@@ -481,7 +481,7 @@ public class BasePlayerMovement : MonoBehaviour
         m_Rigidbody.MovePosition(m_Rigidbody.position + m_Movement * currentSpeed * Time.fixedDeltaTime);
 
         // 첫 입력이 있었고 뒤로가기 모드가 아닐 때만 회전 적용
-        if (hasReceivedInput && !m_IsBackGo)
+        if (hasReceivedInput)
         {
             m_Rigidbody.MoveRotation(m_Rotation);
         }
