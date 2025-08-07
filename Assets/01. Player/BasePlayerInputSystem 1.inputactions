@@ -1,5 +1,5 @@
 {
-    "name": "Base2PlayerInputSystem",
+    "name": "BasePlayerInputSystem 1",
     "maps": [
         {
             "name": "Player",
@@ -62,7 +62,7 @@
                 {
                     "name": "Smash",
                     "type": "Button",
-                    "id": "42480817-b6f8-473c-a345-8db337387fc9",
+                    "id": "e32443cc-4b99-4723-8f8d-8f26d9444930",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -73,7 +73,7 @@
                 {
                     "name": "",
                     "id": "4fd4d0cd-f53f-41ce-91c6-b32f9386b0da",
-                    "path": "<Keyboard>/y",
+                    "path": "<Keyboard>/p",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -84,7 +84,7 @@
                 {
                     "name": "",
                     "id": "f852ab0e-a98d-47c3-89f5-537ffbc316aa",
-                    "path": "<Keyboard>/t",
+                    "path": "<Keyboard>/o",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -95,7 +95,7 @@
                 {
                     "name": "",
                     "id": "9cf9d665-aa9f-491c-a900-6c6b773060b3",
-                    "path": "<Keyboard>/s",
+                    "path": "<Keyboard>/upArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -106,7 +106,7 @@
                 {
                     "name": "",
                     "id": "2efa890f-ca85-4dcb-8752-c00f244e6982",
-                    "path": "<Keyboard>/x",
+                    "path": "<Keyboard>/downArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -117,7 +117,7 @@
                 {
                     "name": "",
                     "id": "9031bbbf-a2b6-44b5-bc75-ab26c13f616d",
-                    "path": "<Keyboard>/z",
+                    "path": "<Keyboard>/leftArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -128,7 +128,7 @@
                 {
                     "name": "",
                     "id": "12a8d849-6759-4a45-99d5-862dce985e35",
-                    "path": "<Keyboard>/c",
+                    "path": "<Keyboard>/rightArrow",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -138,8 +138,8 @@
                 },
                 {
                     "name": "",
-                    "id": "ca67aa22-ee8b-4571-8690-5adfb768f2c0",
-                    "path": "<Keyboard>/r",
+                    "id": "84e783c0-ea68-4917-a420-85bcad55b832",
+                    "path": "<Keyboard>/i",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
