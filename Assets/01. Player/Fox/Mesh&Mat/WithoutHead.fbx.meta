@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: bd62f3a509251044a94b5b58c9c8c734
+guid: 3bb3f0ebacf928c4d8be33f47d39c1ca
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
@@ -233,13 +233,13 @@ ModelImporter:
         length: 0
         modified: 0
     skeleton:
-    - name: Player(Clone)
+    - name: WithoutHead(Clone)
       parentName: 
       position: {x: 0, y: 0, z: 0}
       rotation: {x: 0, y: 0, z: 0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: Armature
-      parentName: Player(Clone)
+      parentName: WithoutHead(Clone)
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0.00000014106499, y: 0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
@@ -404,7 +404,7 @@ ModelImporter:
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: Fur
-      parentName: Player(Clone)
+      parentName: WithoutHead(Clone)
       position: {x: 0.000000024835677, y: -0.00000018134273, z: -0.000000002289192}
       rotation: {x: 0.00000014106497, y: 3.782432e-15, z: 1.8385225e-14, w: 1}
       scale: {x: 0.9999999, y: 0.9999999, z: 0.9999999}
@@ -416,7 +416,7 @@ ModelImporter:
     legStretch: 0.05
     feetSpacing: 0
     globalScale: 1
-    rootMotionBoneName: Armature
+    rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 1
     skeletonHasParents: 1

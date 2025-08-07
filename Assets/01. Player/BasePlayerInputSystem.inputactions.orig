@@ -24,6 +24,7 @@
                     "initialStateCheck": false
                 },
                 {
+<<<<<<< HEAD
                     "name": "MoveUp",
                     "type": "Button",
                     "id": "b9988846-68d6-4809-9506-91d65a9e4a09",
@@ -57,12 +58,14 @@
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "Press(behavior=2)",
+=======
                     "name": "Smash",
                     "type": "Button",
                     "id": "41bbb61c-816e-42c5-b548-d7bc974f4840",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
+>>>>>>> origin/Kyu_Ball_Logic
                     "initialStateCheck": false
                 }
             ],
