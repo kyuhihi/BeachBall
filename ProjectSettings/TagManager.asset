@@ -6,6 +6,8 @@ TagManager:
   tags:
   - CinemachineTarget
   - PixelationEffect
+  - UICamera
+  - Ball
   layers:
   - Default
   - TransparentFX
