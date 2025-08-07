@@ -3161,6 +3161,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: volleyball
       objectReference: {fileID: 0}
+    - target: {fileID: 8617419807013372452, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
+      propertyPath: m_TagString
+      value: Ball
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

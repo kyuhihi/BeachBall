@@ -6,7 +6,7 @@ public class BasePlayerMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
     public float turnSpeed = 20f;
-    private float walkSpeed = 5f;
+    private float walkSpeed = 7f;
     // public float runSpeed = 5f;
     [SerializeField] private float dashSpeed = 100f; // 대시 속도
     [SerializeField] private string ballTag = "Ball"; // 볼 태그명
@@ -406,7 +406,7 @@ public class BasePlayerMovement : MonoBehaviour
             {
                 // 도착!
                 isDashingToBall = false;
-                m_TrailRenderer.Clear();
+                // m_TrailRenderer.Clear();
                 m_TrailRenderer.enabled = false;
                 return;
             }
