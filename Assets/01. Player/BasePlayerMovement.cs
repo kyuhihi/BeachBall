@@ -8,7 +8,7 @@ public class BasePlayerMovement : MonoBehaviour
     public float turnSpeed = 20f;
     private float walkSpeed = 5f;
     // public float runSpeed = 5f;
-    [SerializeField] private float jumpForce = 2f;
+    [SerializeField] private float jumpForce = 10f;
     [SerializeField] private float groundCheckDistance = 0.1f;
 
     [Header("Ground Check")]
@@ -57,9 +57,12 @@ public class BasePlayerMovement : MonoBehaviour
 
     void Awake()
     {
+        jumpForce = 10f;
         if (m_Animator == null)
             m_Animator = GetComponent<Animator>();
         m_Rigidbody = GetComponent<Rigidbody>();
+
+        
 
         // Rigidbody 설정
         // m_Rigidbody.freezeRotation = true;
