@@ -6,8 +6,8 @@ public class BasePlayerMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
     public float turnSpeed = 20f;
-    public float walkSpeed = 2f;
-    public float runSpeed = 5f;
+    private float walkSpeed = 5f;
+    // public float runSpeed = 5f;
     [SerializeField] private float jumpForce = 2f;
     [SerializeField] private float groundCheckDistance = 0.1f;
 
@@ -23,7 +23,7 @@ public class BasePlayerMovement : MonoBehaviour
     private Vector3 m_Movement;
     private Quaternion m_Rotation = Quaternion.identity;
     private Vector2 m_InputVector = Vector2.zero;
-    private bool m_IsRunning = false;
+    // private bool m_IsRunning = false;
 
     private bool m_IsJumping = false;
     private bool isGrounded;
@@ -31,8 +31,8 @@ public class BasePlayerMovement : MonoBehaviour
     public enum IdleWalkRunEnum
     {
         Idle = 0,
-        Walk = 1,
-        Run = 2
+        Walk = 2,
+        // Run = 2
     }
     private IdleWalkRunEnum m_eLocomotionState = IdleWalkRunEnum.Idle;
 
@@ -241,7 +241,7 @@ public class BasePlayerMovement : MonoBehaviour
 
     public void OnSprintInput(bool sprinting)
     {
-        m_IsRunning = sprinting;
+        // m_IsRunning = sprinting;
     }
     public void OnJumpInput(bool jumpInput)
     {
@@ -304,7 +304,8 @@ public class BasePlayerMovement : MonoBehaviour
         // 방향만 필요한 m_Movement는 정규화
         m_Movement = cameraForward.normalized;
 
-        float currentSpeed = m_IsRunning ? runSpeed : walkSpeed;
+        // float currentSpeed = m_IsRunning ? runSpeed : walkSpeed;
+        float currentSpeed = walkSpeed;
 
         // 애니메이터에 전달할 속도 (입력 강도에 따라)
         float appliedSpeed = inputMagnitude * currentSpeed;
@@ -453,10 +454,6 @@ public class BasePlayerMovement : MonoBehaviour
         {
             m_eLocomotionState = IdleWalkRunEnum.Idle;
         }
-        else if (m_IsRunning)
-        {
-            m_eLocomotionState = IdleWalkRunEnum.Run;
-        }
         else
         {
             m_eLocomotionState = IdleWalkRunEnum.Walk;
@@ -477,7 +474,8 @@ public class BasePlayerMovement : MonoBehaviour
 
     void OnPlayerMove()
     {
-        float currentSpeed = m_IsRunning ? runSpeed : walkSpeed;
+        // float currentSpeed = m_IsRunning ? runSpeed : walkSpeed;
+        float currentSpeed = walkSpeed;
 
         // Time.deltaTime을 Time.fixedDeltaTime으로 변경 (FixedUpdate에서 호출되므로)
         m_Rigidbody.MovePosition(m_Rigidbody.position + m_Movement * currentSpeed * Time.fixedDeltaTime);
