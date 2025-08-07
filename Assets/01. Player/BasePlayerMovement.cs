@@ -8,6 +8,14 @@ public class BasePlayerMovement : MonoBehaviour
     public float turnSpeed = 20f;
     private float walkSpeed = 5f;
     // public float runSpeed = 5f;
+    [SerializeField] private float dashSpeed = 100f; // 대시 속도
+    [SerializeField] private string ballTag = "Ball"; // 볼 태그명
+    private Transform ballTransform;
+
+    private Vector3 dashTargetPosition;
+    private bool isDashingToBall = false;
+    private float dashArriveDistance = 0.5f; // 도착 판정 거리
+
     [SerializeField] private float jumpForce = 10f;
     [SerializeField] private float groundCheckDistance = 0.1f;
 
@@ -19,6 +27,8 @@ public class BasePlayerMovement : MonoBehaviour
     [SerializeField]
     private Animator m_Animator;
     private Rigidbody m_Rigidbody;
+
+    private TrailRenderer m_TrailRenderer;
 
     private Vector3 m_Movement;
     private Quaternion m_Rotation = Quaternion.identity;
@@ -58,6 +68,17 @@ public class BasePlayerMovement : MonoBehaviour
     void Awake()
     {
         jumpForce = 10f;
+        dashSpeed = 100f; // 대시 속도
+
+        if (m_TrailRenderer == null)
+            m_TrailRenderer = GetComponent<TrailRenderer>();
+
+        // 시작할 때는 비활성화
+        if (m_TrailRenderer != null)
+        {
+            m_TrailRenderer.enabled = false;
+        }
+
         if (m_Animator == null)
             m_Animator = GetComponent<Animator>();
         m_Rigidbody = GetComponent<Rigidbody>();
@@ -222,7 +243,49 @@ public class BasePlayerMovement : MonoBehaviour
 
     public void OnSprint(InputValue value)
     {
-        OnSprintInput(value.isPressed);
+        // if (value.isPressed)
+        // {
+        //     // 한번만 딸깍 누르면 해당 위치로 이동하게 할지
+        //     // 꾹 누르고 해당 위치를 갱신하며 이동하게 할지
+        //     // 고민중
+
+
+        //     // 대시 활성화
+        //     m_TrailRenderer.enabled = true;
+        //     // Sprint 누를 때마다 Ball 위치를 다시 찾음
+        //     GameObject ballObj = GameObject.FindWithTag(ballTag);
+        //     if (ballObj != null)
+        //     {
+        //         ballTransform = ballObj.transform;
+        //         isDashingToBall = true;
+        //     }
+        //     else
+        //     {
+        //         isDashingToBall = false;
+        //     }
+        // }
+        // else
+        // {
+        //     m_TrailRenderer.Clear();
+        //     m_TrailRenderer.enabled = false;
+        //     isDashingToBall = false;
+        // }
+        if (value.isPressed)
+        {
+            GameObject ballObj = GameObject.FindWithTag(ballTag);
+            if (ballObj != null)
+            {
+                ballTransform = ballObj.transform;
+                dashTargetPosition = ballTransform.position;
+                dashTargetPosition.y = transform.position.y; // 수평면만 이동
+                isDashingToBall = true;
+                m_TrailRenderer.enabled = true;
+            }
+            else
+            {
+                isDashingToBall = false;
+            }
+        }
     }
     public void OnSmash(InputValue value)
     {
@@ -242,10 +305,6 @@ public class BasePlayerMovement : MonoBehaviour
         }
     }
 
-    public void OnSprintInput(bool sprinting)
-    {
-        // m_IsRunning = sprinting;
-    }
     public void OnJumpInput(bool jumpInput)
     {
         m_IsJumping = jumpInput;
@@ -297,6 +356,81 @@ public class BasePlayerMovement : MonoBehaviour
     {
         float horizontal = m_InputVector.x;
         float vertical = m_InputVector.y;
+
+        // Vector3 moveDirection;
+
+        // if (isDashingToBall && ballTransform != null)
+        // {
+        //             // 볼 방향 벡터 계산 (수평면만)
+        //     Vector3 toBall = ballTransform.position - transform.position;
+        //     toBall.y = 0f;
+        //     float distance = toBall.magnitude;
+        //     moveDirection = toBall.normalized;
+        //     m_Movement = moveDirection;
+
+        //     // 거리에 따라 속도 보간 (가까울수록 느려짐)
+        //     float minSpeed = 2f; // 최소 속도
+        //     float maxSpeed = dashSpeed; // 최대 속도
+        //     float slowDownDistance = 3f; // 이 거리 이내로 들어오면 감속 시작
+
+        //     float t = Mathf.Clamp01(distance / slowDownDistance);
+        //     float currentToDashSpeed = Mathf.Lerp(minSpeed, maxSpeed, t);
+
+        //     // 빠르게 볼 방향으로 이동
+        //     m_Rigidbody.MovePosition(m_Rigidbody.position + moveDirection * currentToDashSpeed * Time.fixedDeltaTime);
+
+        //     // 회전도 볼 방향으로
+        //     if (moveDirection.sqrMagnitude > 0.01f)
+        //     {
+        //         m_Rotation = Quaternion.LookRotation(moveDirection);
+        //         m_Rigidbody.MoveRotation(m_Rotation);
+        //     }
+
+        //     SetCurrentLocomotionState(currentToDashSpeed);
+        //     SetAnimatorParameters(1f);
+        //     return; // 아래 일반 이동 로직은 건너뜀
+        // }
+        // else
+        // {
+        //     isDashingToBall = false; // 대시가 끝나면 플래그 초기화
+        // }
+
+        
+        if (isDashingToBall)
+        {
+            Vector3 toTarget = dashTargetPosition - transform.position;
+            toTarget.y = 0f;
+            float distance = toTarget.magnitude;
+
+            if (distance < dashArriveDistance)
+            {
+                // 도착!
+                isDashingToBall = false;
+                m_TrailRenderer.Clear();
+                m_TrailRenderer.enabled = false;
+                return;
+            }
+
+            Vector3 moveDirection = toTarget.normalized;
+            float minSpeed = 2f;
+            float maxSpeed = dashSpeed;
+            float slowDownDistance = 3f;
+
+            float t = Mathf.Clamp01(distance / slowDownDistance);
+            float currentToDashSpeed = Mathf.Lerp(minSpeed, maxSpeed, t);
+
+            m_Rigidbody.MovePosition(m_Rigidbody.position + moveDirection * currentToDashSpeed * Time.fixedDeltaTime);
+
+            if (moveDirection.sqrMagnitude > 0.01f)
+            {
+                m_Rotation = Quaternion.LookRotation(moveDirection);
+                m_Rigidbody.MoveRotation(m_Rotation);
+            }
+
+            SetCurrentLocomotionState(currentToDashSpeed);
+            SetAnimatorParameters(1f);
+            return;
+        }
 
         // 카메라 기준으로 이동 방향 계산
         Vector3 cameraForward = GetCameraRelativeMovement(horizontal, vertical);

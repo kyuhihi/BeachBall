@@ -171,6 +171,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8016834362002721417, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: jumpForce
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 8557198426271000808, guid: 10906cb2729ff9742babf771c559e901, type: 3}
       propertyPath: m_Actions
       value: 
@@ -999,6 +1003,10 @@ PrefabInstance:
     - target: {fileID: 4834915266078812634, guid: 5f8b9ef56ee9c5b4f96e984a7c23b9da, type: 3}
       propertyPath: m_Name
       value: Canvas
+      objectReference: {fileID: 0}
+    - target: {fileID: 7737270016417667106, guid: 5f8b9ef56ee9c5b4f96e984a7c23b9da, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
