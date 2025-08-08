@@ -1,36 +1,62 @@
 using UnityEngine;
+using System.Collections;
 
 public class DiveState : StateMachineBehaviour
 {
     private Rigidbody m_Rigidbody;
     private BasePlayerMovement m_BasePlayerMovement;
 
-    [SerializeField] private float diveForce = 5f;
-    [SerializeField] private float diveDirectionY = 0.5f;
+    [SerializeField] private float diveForce = 7f;
+    [SerializeField] private float diveDirectionY = 1f;
+    [SerializeField] private DiveSequence diveSequence = DiveSequence.DoDive;
+    private CapsuleCollider capsuleCollider;
+    public enum DiveSequence
+    {
+        DoDive,
+        GetUp
+    }
 
-    // This class is currently empty, but can be used to define behaviors for the Dive state in a state machine.
-    // You can add methods like OnStateEnter, OnStateUpdate, and OnStateExit to handle specific behaviors when entering, updating, or exiting the Dive state.
-    // Example:
+
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        m_Rigidbody = animator.GetComponentInParent<Rigidbody>();
-        m_BasePlayerMovement = animator.GetComponentInParent<BasePlayerMovement>();
-        m_BasePlayerMovement.MoveByInput = false; // Disable input movement during dive
+        if (m_Rigidbody == null)
+        {
+            m_Rigidbody = animator.GetComponentInParent<Rigidbody>();
+            m_BasePlayerMovement = animator.GetComponentInParent<BasePlayerMovement>();
+            CapsuleCollider[] colliders = animator.transform.parent.GetComponentsInChildren<CapsuleCollider>();
+            
+            capsuleCollider = colliders[1]; // Ã¹ ¹øÂ° Ä¸½¶ ÄÝ¶óÀÌ´õ¸¦ »ç¿ë
+        }
 
-        Vector3 forward = animator.gameObject.transform.forward;
+        if (diveSequence == DiveSequence.DoDive)
+        {
+            capsuleCollider.enabled = true; // Ä¸½¶ ÄÝ¶óÀÌ´õ È°¼ºÈ­
+            m_BasePlayerMovement.MoveByInput = false;
 
-        forward.y += diveDirectionY;
-        m_Rigidbody.AddForce(forward * diveForce, ForceMode.Impulse);
+            Vector3 forward = animator.gameObject.transform.forward;
+            forward.y += diveDirectionY;
+            m_Rigidbody.AddForce(forward * diveForce, ForceMode.Impulse);
+        }
+        else
+        {
+            capsuleCollider.enabled = false; // Ä¸½¶ ÄÝ¶óÀÌ´õ È°¼ºÈ­
+
+            m_BasePlayerMovement.StartCoroutine(EnableMoveByInputAfterDelay(m_BasePlayerMovement, 1.0f));
+
+        }
 
     }
 
     public override void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        Vector3 NormalVelocity =  m_Rigidbody.linearVelocity.normalized * 2f;
+
+        Vector3 NormalVelocity = m_Rigidbody.linearVelocity.normalized * 2f;
         NormalVelocity.y += -diveDirectionY;
         m_Rigidbody.linearVelocity = NormalVelocity;
-        m_BasePlayerMovement.MoveByInput = true; // Disable input movement during dive
-
-        // Reset any necessary parameters or states when exiting the Dive state.
+    }
+    private IEnumerator EnableMoveByInputAfterDelay(BasePlayerMovement movement, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        movement.MoveByInput = true;
     }
 }

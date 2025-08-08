@@ -21,7 +21,7 @@ public class Ball : MonoBehaviour
     {
         m_Rigidbody = GetComponent<Rigidbody>();
         m_SphereCollider = GetComponent<SphereCollider>();
-        m_Rigidbody.useGravity = false; // �߷� ���? ����
+        m_Rigidbody.useGravity = false; // �߷� ��� ����
         if (m_HitParticle != null)
         {
             m_HitParticle = Instantiate(m_HitParticle, transform.position, Quaternion.identity);
@@ -81,6 +81,13 @@ public class Ball : MonoBehaviour
         {
             CameraShakingManager.Instance.DoShake(0.1f, 1f);
             HitStopManager.Instance.DoHitStop(0.1f, 0.1f);
+<<<<<<< HEAD
+            
+            // �÷��̾�� �浹 �� ���� ����
+            //��Ʈ��ž
+            return;
+=======
+>>>>>>> origin/Kyu_Ball_Logic
         }
 
 
@@ -97,7 +104,7 @@ public class Ball : MonoBehaviour
         }
         direction = Vector3.Reflect(direction, hitDir).normalized;
 
-        // ��ģ ��ŭ penetration ���?
+        // ��ģ ��ŭ penetration ���
         Collider otherCol = other.collider;
         Vector3 pushDir;
         float pushDistance;

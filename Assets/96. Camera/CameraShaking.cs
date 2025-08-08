@@ -51,10 +51,38 @@ public class CameraShaking : MonoBehaviour
     private ShakeState shakeState = ShakeState.Idle;
     public ShakeState State => shakeState;
 
+    [Header("Follow Target")]
+    [SerializeField] private Transform followTarget;
+    [SerializeField] private float maxFollowZDistance;
+
     void Start()
     {
-        originalPos = transform.localPosition;
-        originalRot = transform.localRotation;
+        originalPos = transform.position;
+        originalRot = transform.rotation;
+    }
+    public void Update()
+    {
+        if (shakeState == ShakeState.Restoring)
+        {
+            transform.position = Vector3.Lerp(transform.position, originalPos, Time.deltaTime / restoreDuration);
+            transform.rotation = Quaternion.Slerp(transform.rotation, originalRot, Time.deltaTime / restoreDuration);
+            // 위치 차이가 충분히 작으면 Idle로 상태 변경
+            if ((transform.position - originalPos).sqrMagnitude < 0.0001f && Quaternion.Angle(transform.rotation, originalRot) < 0.1f)
+            {
+                shakeState = ShakeState.Idle;
+            }
+        }
+        else if (shakeState == ShakeState.Idle)
+        {
+            Vector3 pos = transform.position;
+            float targetZ = Mathf.Lerp(
+                pos.z,
+                Mathf.Clamp(followTarget.position.z, originalPos.z - maxFollowZDistance, originalPos.z + maxFollowZDistance),
+                Time.deltaTime
+            );
+            transform.position = new Vector3(pos.x, pos.y, targetZ);
+
+        }
     }
 
 
@@ -96,26 +124,7 @@ public class CameraShaking : MonoBehaviour
         }
 
         shakeState = ShakeState.Restoring;
-        yield return StartCoroutine(RestoreRoutine());
-        shakeState = ShakeState.Idle;
-    }
 
-    private IEnumerator RestoreRoutine()
-    {
-        Vector3 startPos = transform.localPosition;
-        Quaternion startRot = transform.localRotation;
-        float elapsed = 0f;
-
-        while (elapsed < restoreDuration)
-        {
-            float t = elapsed / restoreDuration;
-            transform.localPosition = Vector3.Lerp(startPos, originalPos, t);
-            transform.localRotation = Quaternion.Slerp(startRot, originalRot, t);
-            elapsed += Time.unscaledDeltaTime;
-            yield return null;
-        }
-        transform.localPosition = originalPos;
-        transform.localRotation = originalRot;
     }
 
     private void OnValidate()
