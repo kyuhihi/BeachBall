@@ -6,7 +6,7 @@
             "id": "9be38b51-f97b-44f3-8e84-92cc575152e9",
             "actions": [
                 {
-                    "name": "Sprint",
+                    "name": "Dash",
                     "type": "Button",
                     "id": "693780a9-e2bc-40e7-8521-f352cb631a2c",
                     "expectedControlType": "",
@@ -77,7 +77,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Sprint",
+                    "action": "Dash",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },

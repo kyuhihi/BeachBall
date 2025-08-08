@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 public class BasePlayerMovement : MonoBehaviour
 {
@@ -241,37 +242,12 @@ public class BasePlayerMovement : MonoBehaviour
 
 
 
-    public void OnSprint(InputValue value)
+    public void OnDash(InputValue value)
     {
-        // if (value.isPressed)
-        // {
-        //     // 한번만 딸깍 누르면 해당 위치로 이동하게 할지
-        //     // 꾹 누르고 해당 위치를 갱신하며 이동하게 할지
-        //     // 고민중
-
-
-        //     // 대시 활성화
-        //     m_TrailRenderer.enabled = true;
-        //     // Sprint 누를 때마다 Ball 위치를 다시 찾음
-        //     GameObject ballObj = GameObject.FindWithTag(ballTag);
-        //     if (ballObj != null)
-        //     {
-        //         ballTransform = ballObj.transform;
-        //         isDashingToBall = true;
-        //     }
-        //     else
-        //     {
-        //         isDashingToBall = false;
-        //     }
-        // }
-        // else
-        // {
-        //     m_TrailRenderer.Clear();
-        //     m_TrailRenderer.enabled = false;
-        //     isDashingToBall = false;
-        // }
         if (value.isPressed)
         {
+            Debug.Log("Dashing to ball...");
+
             GameObject ballObj = GameObject.FindWithTag(ballTag);
             if (ballObj != null)
             {
@@ -283,6 +259,7 @@ public class BasePlayerMovement : MonoBehaviour
             }
             else
             {
+                Debug.LogWarning("Ball not found with tag: " + ballTag);
                 isDashingToBall = false;
             }
         }
@@ -347,10 +324,54 @@ public class BasePlayerMovement : MonoBehaviour
     //         Vector3 desiredForward = Vector3.RotateTowards(transform.forward, m_Movement, turnSpeed * Time.deltaTime, 0f);
     //         m_Rotation = Quaternion.LookRotation(desiredForward);
     //     }
-        
+
     //     OnPlayerMove();
     //     SetAnimatorParameters(inputMagnitude);
     // }
+        
+    IEnumerator DisableTrailAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        m_TrailRenderer.enabled = false;
+    }
+
+    private void HandleDashToBall()
+    {
+        Vector3 toTarget = dashTargetPosition - transform.position;
+        toTarget.y = 0f;
+        float distance = toTarget.magnitude;
+
+        if (distance < dashArriveDistance)
+        {
+            // 도착!
+            isDashingToBall = false;
+            // m_TrailRenderer.Clear();
+            //m_TrailRenderer.enabled = false;
+
+            StartCoroutine(DisableTrailAfterDelay(m_TrailRenderer.time)); // 트레일이 자연스럽게 사라지게   
+
+            return;
+        }
+
+        Vector3 moveDirection = toTarget.normalized;
+        float minSpeed = 2f;
+        float maxSpeed = dashSpeed;
+        float slowDownDistance = 3f;
+
+        float t = Mathf.Clamp01(distance / slowDownDistance);
+        float currentToDashSpeed = Mathf.Lerp(minSpeed, maxSpeed, t);
+
+        m_Rigidbody.MovePosition(m_Rigidbody.position + moveDirection * currentToDashSpeed * Time.fixedDeltaTime);
+
+        if (moveDirection.sqrMagnitude > 0.01f)
+        {
+            m_Rotation = Quaternion.LookRotation(moveDirection);
+            m_Rigidbody.MoveRotation(m_Rotation);
+        }
+
+        SetCurrentLocomotionState(currentToDashSpeed);
+        SetAnimatorParameters(1f);
+    }
 
     void FixedUpdate()
     {
@@ -398,37 +419,7 @@ public class BasePlayerMovement : MonoBehaviour
         
         if (isDashingToBall)
         {
-            Vector3 toTarget = dashTargetPosition - transform.position;
-            toTarget.y = 0f;
-            float distance = toTarget.magnitude;
-
-            if (distance < dashArriveDistance)
-            {
-                // 도착!
-                isDashingToBall = false;
-                // m_TrailRenderer.Clear();
-                m_TrailRenderer.enabled = false;
-                return;
-            }
-
-            Vector3 moveDirection = toTarget.normalized;
-            float minSpeed = 2f;
-            float maxSpeed = dashSpeed;
-            float slowDownDistance = 3f;
-
-            float t = Mathf.Clamp01(distance / slowDownDistance);
-            float currentToDashSpeed = Mathf.Lerp(minSpeed, maxSpeed, t);
-
-            m_Rigidbody.MovePosition(m_Rigidbody.position + moveDirection * currentToDashSpeed * Time.fixedDeltaTime);
-
-            if (moveDirection.sqrMagnitude > 0.01f)
-            {
-                m_Rotation = Quaternion.LookRotation(moveDirection);
-                m_Rigidbody.MoveRotation(m_Rotation);
-            }
-
-            SetCurrentLocomotionState(currentToDashSpeed);
-            SetAnimatorParameters(1f);
+            HandleDashToBall();
             return;
         }
 
