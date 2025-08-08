@@ -246,7 +246,7 @@ public class BasePlayerMovement : MonoBehaviour
     {
         if (value.isPressed)
         {
-            Debug.Log("Dashing to ball...");
+            // Debug.Log("Dashing to ball...");
 
             GameObject ballObj = GameObject.FindWithTag(ballTag);
             if (ballObj != null)
