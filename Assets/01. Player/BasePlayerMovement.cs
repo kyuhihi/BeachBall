@@ -253,7 +253,7 @@ public class BasePlayerMovement : MonoBehaviour
             {
                 ballTransform = ballObj.transform;
                 dashTargetPosition = ballTransform.position;
-                dashTargetPosition.y = transform.position.y; // 수평면만 이동
+                //dashTargetPosition.y = transform.position.y; // 수평면만 이동
                 isDashingToBall = true;
                 m_TrailRenderer.enabled = true;
             }
@@ -338,7 +338,7 @@ public class BasePlayerMovement : MonoBehaviour
     private void HandleDashToBall()
     {
         Vector3 toTarget = dashTargetPosition - transform.position;
-        toTarget.y = 0f;
+        //toTarget.y = 0f;
         float distance = toTarget.magnitude;
 
         if (distance < dashArriveDistance)
@@ -365,9 +365,15 @@ public class BasePlayerMovement : MonoBehaviour
 
         if (moveDirection.sqrMagnitude > 0.01f)
         {
-            m_Rotation = Quaternion.LookRotation(moveDirection);
-            m_Rigidbody.MoveRotation(m_Rotation);
+            Quaternion rotation = Quaternion.LookRotation(moveDirection);
+
+            Debug.Log($"Rotation: {rotation.eulerAngles}");
+            m_Animator.SetFloat("RotationY", rotation.eulerAngles.y, 0.01f, Time.deltaTime);
+            //m_Animator.SetFloat("RotationY", rotation.eulerAngles.y, 0.01f, Time.deltaTime);
+            //m_Rotation = Quaternion.LookRotation(moveDirection);
+            //m_Rigidbody.MoveRotation(m_Rotation);
         }
+
 
         SetCurrentLocomotionState(currentToDashSpeed);
         SetAnimatorParameters(1f);
@@ -495,6 +501,7 @@ public class BasePlayerMovement : MonoBehaviour
         m_Animator.SetInteger("IdleWalkRunEnum", (int)m_eLocomotionState);
         m_Animator.SetBool("Jump", m_IsJumping); // Jump 상태 추가
         m_Animator.SetBool("IsGrounded", isGrounded); // 추가로 Ground 상태도
+        m_Animator.SetBool("IsDashing", isDashingToBall); // 대시 상태 추가
 
         float localAngle = GetLocalMoveFromWorld();
         Vector2 directionVector = Get8DirectionVector(localAngle);
