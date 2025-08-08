@@ -556,7 +556,7 @@ AnimatorStateMachine:
     m_Position: {x: 160, y: 340, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2063959549114678876}
-    m_Position: {x: 270, y: 10, z: 0}
+    m_Position: {x: 600, y: 330, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 2823479408791890939}
     m_Position: {x: 270, y: 90, z: 0}
@@ -1014,6 +1014,12 @@ AnimatorController:
     m_Controller: {fileID: 9100000}
   - m_Name: RotationY
     m_Type: 1
+    m_DefaultFloat: 0
+    m_DefaultInt: 0
+    m_DefaultBool: 0
+    m_Controller: {fileID: 9100000}
+  - m_Name: Diving
+    m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
