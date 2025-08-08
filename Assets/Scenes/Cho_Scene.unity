@@ -380,7 +380,9 @@ MonoBehaviour:
   weightX: 1
   weightY: 1
   weightZ: 1
-  restoreDuration: 0.2
+  restoreDuration: 1
+  followTarget: {fileID: 873988531}
+  maxFollowZDistance: 1.73
 --- !u!114 &170638655
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2168,6 +2170,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 870876421}
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &873988531 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3515125723976739998, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
+  m_PrefabInstance: {fileID: 697343188}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &916769169
 GameObject:
   m_ObjectHideFlags: 0
