@@ -11,6 +11,7 @@ public class Ball : MonoBehaviour
     [SerializeField]private ParticleSystem m_LandSpotParticle;
     private SphereCollider m_SphereCollider;
     private int RayLayerMask = 0;
+    private const string PlayerTag = "Player";
     void Start()
     {
         m_Rigidbody = GetComponent<Rigidbody>();
@@ -44,11 +45,44 @@ public class Ball : MonoBehaviour
 
     void LateUpdate()
     {
-        transform.position += direction * speed * Time.deltaTime;
+        Vector3 PredictPos = transform.position + direction * speed * Time.deltaTime;
+        // 이동 예측 위치에서 penetration 체크
+        Collider[] overlaps = Physics.OverlapSphere(PredictPos, m_SphereCollider.radius, RayLayerMask);
+        bool corrected = false;
+
+        foreach (var col in overlaps)
+        {
+            if (col == m_SphereCollider) continue; // 자기 자신은 무시
+
+            Vector3 pushDir;
+            float pushDistance;
+            bool overlapped = Physics.ComputePenetration(
+                m_SphereCollider, PredictPos, transform.rotation,
+                col, col.transform.position, col.transform.rotation,
+                out pushDir, out pushDistance);
+
+            if (overlapped && pushDistance > 0f)
+            {
+                PredictPos += pushDir * pushDistance;
+                corrected = true;
+            }
+        }
+        transform.position = PredictPos; 
     }
 
     void OnCollisionEnter(Collision other)
     {
+        if(other.gameObject.CompareTag(PlayerTag))
+        {
+            CameraShakingManager.Instance.DoShake(0.1f, 1f);
+            HitStopManager.Instance.DoHitStop(0.1f, 0.1f);
+            
+            // 플레이어와 충돌 시 방향 반전
+            //히트스탑
+            return;
+        }
+
+
         Vector3 contactPoint = other.contacts[0].point;
         Vector3 hitDir = (transform.position - contactPoint).normalized;
         direction = Vector3.Reflect(direction, hitDir).normalized;

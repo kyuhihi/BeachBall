@@ -47,9 +47,6 @@ public class BasePlayerMovement : MonoBehaviour
     }
     private IdleWalkRunEnum m_eLocomotionState = IdleWalkRunEnum.Idle;
 
-    [SerializeField]
-    // private bool m_IsBackGo = false;
-
     // 첫 입력 추적용 변수 추가
     private bool hasReceivedInput = false;
 
@@ -59,7 +56,14 @@ public class BasePlayerMovement : MonoBehaviour
     private bool isRightPressed = false;
     private bool isUpPressed = false;
     private bool isDownPressed = false;
-    
+
+    private bool m_isMoveByInput = true;
+    public bool MoveByInput
+    {
+        get => m_isMoveByInput;
+        set => m_isMoveByInput = value;
+    }
+
     private float leftPressedTime = -1f;
     private float rightPressedTime = -1f;
     private float upPressedTime = -1f;
@@ -265,10 +269,16 @@ public class BasePlayerMovement : MonoBehaviour
         }
     }
     public void OnSmash(InputValue value)
-    {
+    {//스매시, 다이빙 동시처리.
+        if (!m_isMoveByInput)
+            return;
+        if (!isGrounded)
+                m_Animator.SetTrigger("Smash");
+            else
+            {
 
-        m_Animator.SetTrigger("Smash");
-        
+                m_Animator.SetTrigger("Diving");
+            }
     }
 
     public void OnJump(InputValue value)
@@ -416,7 +426,11 @@ public class BasePlayerMovement : MonoBehaviour
         //     isDashingToBall = false; // 대시가 끝나면 플래그 초기화
         // }
 
-        
+        if(!m_isMoveByInput)
+        {
+            // 입력이 비활성화된 상태에서는 이동하지 않음
+            return;
+        }
         if (isDashingToBall)
         {
             HandleDashToBall();
