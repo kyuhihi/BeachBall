@@ -37,6 +37,7 @@ public class BasePlayerMovement : MonoBehaviour
     // private bool m_IsRunning = false;
 
     private bool m_IsJumping = false;
+    private bool m_IsDoubleJumping = false;
     private bool isGrounded;
 
     public enum IdleWalkRunEnum
@@ -299,6 +300,19 @@ public class BasePlayerMovement : MonoBehaviour
             OnJumpInput(value.isPressed);
             m_Rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
+        else if (value.isPressed && !m_IsDoubleJumping&& !isGrounded)
+        {
+            OnDoubleJumpInput(value.isPressed);
+
+            // 기존 y속도를 0으로 만든다
+            Vector3 velocity = m_Rigidbody.linearVelocity;
+            velocity.y = 0f;
+            m_Rigidbody.linearVelocity = velocity;
+
+            // 새로운 점프 힘을 적용
+            m_Rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
+
     }
 
     public void OnJumpInput(bool jumpInput)
@@ -312,6 +326,20 @@ public class BasePlayerMovement : MonoBehaviour
             // if (m_IsJumping) m_Animator.SetTrigger("Jump");
         }
     }
+
+
+    public void OnDoubleJumpInput(bool doubleJumpInput)
+    {
+        m_IsDoubleJumping = doubleJumpInput;
+            // Animator 파라미터 업데이트
+        if (m_Animator != null)
+        {
+            m_Animator.SetBool("DoubleJump", m_IsDoubleJumping);
+            // 또는 Trigger를 사용한다면:
+            // if (m_IsJumping) m_Animator.SetTrigger("Jump");
+        }
+    }
+
 
 
 
@@ -454,6 +482,7 @@ public class BasePlayerMovement : MonoBehaviour
 
         m_Animator.SetInteger("IdleWalkRunEnum", (int)m_eLocomotionState);
         m_Animator.SetBool("Jump", m_IsJumping); // Jump 상태 추가
+        m_Animator.SetBool("DoubleJump", m_IsDoubleJumping); // Double Jump 상태 추가
         m_Animator.SetBool("IsGrounded", isGrounded); // 추가로 Ground 상태도
         m_Animator.SetBool("IsDashing", isDashingToBall); // 대시 상태 추가
 
@@ -524,9 +553,6 @@ public class BasePlayerMovement : MonoBehaviour
 
     private void SetCurrentLocomotionState(float appliedSpeed)
     {
-
-
-
         // 입력과 달리기 상태를 직접 확인하는 방식으로 변경
         if (m_InputVector.magnitude < 0.01f)
         {
@@ -569,6 +595,7 @@ public class BasePlayerMovement : MonoBehaviour
         if (!wasGrounded && isGrounded && m_IsJumping)
         {
             OnJumpInput(false); // 점프 상태 해제 (Animator도 함께 업데이트됨)
+            OnDoubleJumpInput(false);
         }
     }
 
