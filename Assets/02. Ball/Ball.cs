@@ -11,12 +11,17 @@ public class Ball : MonoBehaviour
     [SerializeField]private ParticleSystem m_LandSpotParticle;
     private SphereCollider m_SphereCollider;
     private int RayLayerMask = 0;
+
+    
     private const string PlayerTag = "Player";
+
+    public ParticleSystem LandSpotParticle => m_LandSpotParticle;
+
     void Start()
     {
         m_Rigidbody = GetComponent<Rigidbody>();
         m_SphereCollider = GetComponent<SphereCollider>();
-        m_Rigidbody.useGravity = false; // Áß·Â »ç¿ë ¾ÈÇÔ
+        m_Rigidbody.useGravity = false; // ï¿½ß·ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (m_HitParticle != null)
         {
             m_HitParticle = Instantiate(m_HitParticle, transform.position, Quaternion.identity);
@@ -46,13 +51,13 @@ public class Ball : MonoBehaviour
     void LateUpdate()
     {
         Vector3 PredictPos = transform.position + direction * speed * Time.deltaTime;
-        // ÀÌµ¿ ¿¹Ãø À§Ä¡¿¡¼­ penetration Ã¼Å©
+        // ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ï¿½ï¿½ penetration Ã¼Å©
         Collider[] overlaps = Physics.OverlapSphere(PredictPos, m_SphereCollider.radius, RayLayerMask);
         bool corrected = false;
 
         foreach (var col in overlaps)
         {
-            if (col == m_SphereCollider) continue; // ÀÚ±â ÀÚ½ÅÀº ¹«½Ã
+            if (col == m_SphereCollider) continue; // ï¿½Ú±ï¿½ ï¿½Ú½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
             Vector3 pushDir;
             float pushDistance;
@@ -77,8 +82,8 @@ public class Ball : MonoBehaviour
             CameraShakingManager.Instance.DoShake(0.1f, 1f);
             HitStopManager.Instance.DoHitStop(0.1f, 0.1f);
             
-            // ÇÃ·¹ÀÌ¾î¿Í Ãæµ¹ ½Ã ¹æÇâ ¹ÝÀü
-            //È÷Æ®½ºÅ¾
+            // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ ï¿½æµ¹ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+            //ï¿½ï¿½Æ®ï¿½ï¿½Å¾
             return;
         }
 
@@ -87,7 +92,7 @@ public class Ball : MonoBehaviour
         Vector3 hitDir = (transform.position - contactPoint).normalized;
         direction = Vector3.Reflect(direction, hitDir).normalized;
 
-        // °ãÄ£ ¸¸Å­ penetration °è»ê
+        // ï¿½ï¿½Ä£ ï¿½ï¿½Å­ penetration ï¿½ï¿½ï¿½
         Collider otherCol = other.collider;
         Vector3 pushDir;
         float pushDistance;
@@ -98,7 +103,7 @@ public class Ball : MonoBehaviour
 
         if (overlapped && pushDistance > 0f)
         {
-            // penetration ¹æÇâÀ¸·Î °ãÄ£ ¸¸Å­¸¸ ¹Ð¾î³¿
+            // penetration ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä£ ï¿½ï¿½Å­ï¿½ï¿½ ï¿½Ð¾î³¿
             transform.position += pushDir * pushDistance;
         }
 

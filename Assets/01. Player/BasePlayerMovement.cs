@@ -255,9 +255,18 @@ public class BasePlayerMovement : MonoBehaviour
             GameObject ballObj = GameObject.FindWithTag(ballTag);
             if (ballObj != null)
             {
-                ballTransform = ballObj.transform;
-                dashTargetPosition = ballTransform.position;
-                //dashTargetPosition.y = transform.position.y; // 수평면만 이동
+                // Ball 컴포넌트 가져오기
+                Ball ball = ballObj.GetComponent<Ball>();
+                if (ball != null)
+                {
+                    // LandSpotParticle 프로퍼티로 ParticleSystem 얻기
+                    ParticleSystem landSpotParticle = ball.LandSpotParticle;
+
+                    // landSpotParticle을 원하는 대로 사용
+                    ballTransform = landSpotParticle.transform;
+                    dashTargetPosition = ballTransform.position;
+                }   
+
                 isDashingToBall = true;
                 m_TrailRenderer.enabled = true;
             }
@@ -310,34 +319,6 @@ public class BasePlayerMovement : MonoBehaviour
     {
         // Debug.Log("발소리 재생");
     }
-
-    // void FixedUpdate()
-    // {
-    //     float horizontal = m_InputVector.x;
-    //     float vertical = m_InputVector.y;
-
-    //     // 이동 입력 벡터 계산
-    //     Vector3 rawMovement = new Vector3(horizontal, 0f, vertical);
-    //     float inputMagnitude = rawMovement.magnitude;
-    //     // 방향만 필요한 m_Movement는 정규화
-    //     m_Movement = rawMovement.normalized;
-
-    //     float currentSpeed = m_IsRunning ? runSpeed : walkSpeed;
-
-    //     // 애니메이터에 전달할 속도 (입력 강도에 따라)
-    //     float appliedSpeed = inputMagnitude * currentSpeed;
-
-    //     SetCurrentLocomotionState(appliedSpeed);
-
-    //     if (inputMagnitude > 0.01f)
-    //     {
-    //         Vector3 desiredForward = Vector3.RotateTowards(transform.forward, m_Movement, turnSpeed * Time.deltaTime, 0f);
-    //         m_Rotation = Quaternion.LookRotation(desiredForward);
-    //     }
-
-    //     OnPlayerMove();
-    //     SetAnimatorParameters(inputMagnitude);
-    // }
         
     IEnumerator DisableTrailAfterDelay(float delay)
     {
@@ -355,8 +336,6 @@ public class BasePlayerMovement : MonoBehaviour
         {
             // 도착!
             isDashingToBall = false;
-            // m_TrailRenderer.Clear();
-            //m_TrailRenderer.enabled = false;
 
             StartCoroutine(DisableTrailAfterDelay(m_TrailRenderer.time)); // 트레일이 자연스럽게 사라지게   
 
@@ -379,9 +358,7 @@ public class BasePlayerMovement : MonoBehaviour
 
             Debug.Log($"Rotation: {rotation.eulerAngles}");
             m_Animator.SetFloat("RotationY", rotation.eulerAngles.y, 0.01f, Time.deltaTime);
-            //m_Animator.SetFloat("RotationY", rotation.eulerAngles.y, 0.01f, Time.deltaTime);
-            //m_Rotation = Quaternion.LookRotation(moveDirection);
-            //m_Rigidbody.MoveRotation(m_Rotation);
+
         }
 
 
@@ -394,44 +371,7 @@ public class BasePlayerMovement : MonoBehaviour
         float horizontal = m_InputVector.x;
         float vertical = m_InputVector.y;
 
-        // Vector3 moveDirection;
-
-        // if (isDashingToBall && ballTransform != null)
-        // {
-        //             // 볼 방향 벡터 계산 (수평면만)
-        //     Vector3 toBall = ballTransform.position - transform.position;
-        //     toBall.y = 0f;
-        //     float distance = toBall.magnitude;
-        //     moveDirection = toBall.normalized;
-        //     m_Movement = moveDirection;
-
-        //     // 거리에 따라 속도 보간 (가까울수록 느려짐)
-        //     float minSpeed = 2f; // 최소 속도
-        //     float maxSpeed = dashSpeed; // 최대 속도
-        //     float slowDownDistance = 3f; // 이 거리 이내로 들어오면 감속 시작
-
-        //     float t = Mathf.Clamp01(distance / slowDownDistance);
-        //     float currentToDashSpeed = Mathf.Lerp(minSpeed, maxSpeed, t);
-
-        //     // 빠르게 볼 방향으로 이동
-        //     m_Rigidbody.MovePosition(m_Rigidbody.position + moveDirection * currentToDashSpeed * Time.fixedDeltaTime);
-
-        //     // 회전도 볼 방향으로
-        //     if (moveDirection.sqrMagnitude > 0.01f)
-        //     {
-        //         m_Rotation = Quaternion.LookRotation(moveDirection);
-        //         m_Rigidbody.MoveRotation(m_Rotation);
-        //     }
-
-        //     SetCurrentLocomotionState(currentToDashSpeed);
-        //     SetAnimatorParameters(1f);
-        //     return; // 아래 일반 이동 로직은 건너뜀
-        // }
-        // else
-        // {
-        //     isDashingToBall = false; // 대시가 끝나면 플래그 초기화
-        // }
-
+        
         if(!m_isMoveByInput)
         {
             // 입력이 비활성화된 상태에서는 이동하지 않음
@@ -585,18 +525,7 @@ public class BasePlayerMovement : MonoBehaviour
     private void SetCurrentLocomotionState(float appliedSpeed)
     {
 
-        // if (Mathf.Abs(appliedSpeed - runSpeed) < 0.01f)
-        // {
-        //     m_eLocomotionState = IdleWalkRunEnum.Run;
-        // }
-        // else if (Mathf.Abs(appliedSpeed - walkSpeed) < 0.01f)
-        // {
-        //     m_eLocomotionState = IdleWalkRunEnum.Walk;
-        // }
-        // else
-        // {
-        //     m_eLocomotionState = IdleWalkRunEnum.Idle;
-        // }
+
 
         // 입력과 달리기 상태를 직접 확인하는 방식으로 변경
         if (m_InputVector.magnitude < 0.01f)
@@ -608,18 +537,6 @@ public class BasePlayerMovement : MonoBehaviour
             m_eLocomotionState = IdleWalkRunEnum.Walk;
         }
     }
-
-    // void OnPlayerMove()
-    // {
-    //     float currentSpeed = m_IsRunning ? runSpeed : walkSpeed;
-
-    //     m_Rigidbody.MovePosition(m_Rigidbody.position + m_Movement * currentSpeed * Time.deltaTime);
-        
-    //     if (!m_IsBackGo)
-    //     {
-    //         m_Rigidbody.MoveRotation(m_Rotation);
-    //     }
-    // }
 
     void OnPlayerMove()
     {
