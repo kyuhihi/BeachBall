@@ -76,15 +76,20 @@ public class Ball : MonoBehaviour
         {
             CameraShakingManager.Instance.DoShake(0.1f, 1f);
             HitStopManager.Instance.DoHitStop(0.1f, 0.1f);
-            
-            // 플레이어와 충돌 시 방향 반전
-            //히트스탑
-            return;
         }
 
 
         Vector3 contactPoint = other.contacts[0].point;
-        Vector3 hitDir = (transform.position - contactPoint).normalized;
+        Vector3 hitDir;
+        Wall wall = other.gameObject.GetComponent<Wall>();
+        if (wall != null)
+        {
+            hitDir = wall.GetNormalDirection();
+        }
+        else
+        {
+            hitDir = (transform.position - contactPoint).normalized;
+        }
         direction = Vector3.Reflect(direction, hitDir).normalized;
 
         // 겹친 만큼 penetration 계산

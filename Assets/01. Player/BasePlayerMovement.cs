@@ -50,13 +50,13 @@ public class BasePlayerMovement : MonoBehaviour
     // 첫 입력 추적용 변수 추가
     private bool hasReceivedInput = false;
 
-    
+
     [Header("Individual Key Tracking")]
     private bool isLeftPressed = false;
     private bool isRightPressed = false;
     private bool isUpPressed = false;
     private bool isDownPressed = false;
-
+    [SerializeField]
     private bool m_isMoveByInput = true;
     public bool MoveByInput
     {
@@ -88,7 +88,7 @@ public class BasePlayerMovement : MonoBehaviour
             m_Animator = GetComponent<Animator>();
         m_Rigidbody = GetComponent<Rigidbody>();
 
-        
+
 
         // Rigidbody 설정
         // m_Rigidbody.freezeRotation = true;
@@ -139,9 +139,9 @@ public class BasePlayerMovement : MonoBehaviour
     private void UpdatePriorityInput()
     {
         Vector2 priorityInput = new Vector2(GetHorizontalInput(), GetVerticalInput());
-        
+
         OnMoveInput(priorityInput);
-        
+
         // // 디버그 로그
         // if (priorityInput.magnitude > 0.01f)
         // {
@@ -204,7 +204,7 @@ public class BasePlayerMovement : MonoBehaviour
         }
     }
 
-    
+
     // 우선순위 기반 입력 계산
     private float GetHorizontalInput()
     {
@@ -273,12 +273,12 @@ public class BasePlayerMovement : MonoBehaviour
         if (!m_isMoveByInput)
             return;
         if (!isGrounded)
-                m_Animator.SetTrigger("Smash");
-            else
-            {
+            m_Animator.SetTrigger("Smash");
+        else
+        {
 
-                m_Animator.SetTrigger("Diving");
-            }
+            m_Animator.SetTrigger("Diving");
+        }
     }
 
     public void OnJump(InputValue value)
@@ -295,7 +295,7 @@ public class BasePlayerMovement : MonoBehaviour
     public void OnJumpInput(bool jumpInput)
     {
         m_IsJumping = jumpInput;
-            // Animator 파라미터 업데이트
+        // Animator 파라미터 업데이트
         if (m_Animator != null)
         {
             m_Animator.SetBool("Jump", m_IsJumping);
@@ -338,7 +338,7 @@ public class BasePlayerMovement : MonoBehaviour
     //     OnPlayerMove();
     //     SetAnimatorParameters(inputMagnitude);
     // }
-        
+
     IEnumerator DisableTrailAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -391,6 +391,7 @@ public class BasePlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+
         float horizontal = m_InputVector.x;
         float vertical = m_InputVector.y;
 
@@ -432,11 +433,7 @@ public class BasePlayerMovement : MonoBehaviour
         //     isDashingToBall = false; // 대시가 끝나면 플래그 초기화
         // }
 
-        if(!m_isMoveByInput)
-        {
-            // 입력이 비활성화된 상태에서는 이동하지 않음
-            return;
-        }
+
         if (isDashingToBall)
         {
             HandleDashToBall();
@@ -445,7 +442,7 @@ public class BasePlayerMovement : MonoBehaviour
 
         // 카메라 기준으로 이동 방향 계산
         Vector3 cameraForward = GetCameraRelativeMovement(horizontal, vertical);
-        
+
         // 이동 입력 벡터 계산
         float inputMagnitude = new Vector2(horizontal, vertical).magnitude;
 
@@ -474,7 +471,7 @@ public class BasePlayerMovement : MonoBehaviour
 
         OnPlayerMove();
         SetAnimatorParameters(inputMagnitude);
-    }   
+    }
 
     // 카메라 기준 이동 방향 계산 메서드 추가
     private Vector3 GetCameraRelativeMovement(float horizontal, float vertical)
@@ -614,7 +611,7 @@ public class BasePlayerMovement : MonoBehaviour
     //     float currentSpeed = m_IsRunning ? runSpeed : walkSpeed;
 
     //     m_Rigidbody.MovePosition(m_Rigidbody.position + m_Movement * currentSpeed * Time.deltaTime);
-        
+
     //     if (!m_IsBackGo)
     //     {
     //         m_Rigidbody.MoveRotation(m_Rotation);
@@ -623,6 +620,11 @@ public class BasePlayerMovement : MonoBehaviour
 
     void OnPlayerMove()
     {
+        if (!m_isMoveByInput)
+        {
+            // 입력이 비활성화된 상태에서는 이동하지 않음
+            return;
+        }
         // float currentSpeed = m_IsRunning ? runSpeed : walkSpeed;
         float currentSpeed = walkSpeed;
 
