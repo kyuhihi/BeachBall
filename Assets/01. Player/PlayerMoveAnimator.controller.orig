@@ -556,6 +556,7 @@ AnimatorStateMachine:
     m_Position: {x: 160, y: 340, z: 0}
   - serializedVersion: 1
     m_State: {fileID: -2063959549114678876}
+<<<<<<< HEAD
     m_Position: {x: 270, y: 10, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 2823479408791890939}
@@ -563,6 +564,12 @@ AnimatorStateMachine:
   - serializedVersion: 1
     m_State: {fileID: 7234365158337821804}
     m_Position: {x: 270, y: -100, z: 0}
+=======
+    m_Position: {x: 610, y: 340, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: 2823479408791890939}
+    m_Position: {x: 290, y: 30, z: 0}
+>>>>>>> origin/Kyu_Ball_Logic
   m_ChildStateMachines:
   - serializedVersion: 1
     m_StateMachine: {fileID: 4199062980665387681}
@@ -1006,6 +1013,7 @@ AnimatorController:
     m_DefaultInt: 0
     m_DefaultBool: 0
     m_Controller: {fileID: 9100000}
+<<<<<<< HEAD
   - m_Name: IsDashing
     m_Type: 4
     m_DefaultFloat: 0
@@ -1014,6 +1022,10 @@ AnimatorController:
     m_Controller: {fileID: 9100000}
   - m_Name: RotationY
     m_Type: 1
+=======
+  - m_Name: Diving
+    m_Type: 9
+>>>>>>> origin/Kyu_Ball_Logic
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
