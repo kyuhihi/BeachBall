@@ -368,7 +368,10 @@ public class BasePlayerMovement : MonoBehaviour
 
     private void HandleDashToBall()
     {
+        
         Vector3 toTarget = dashTargetPosition - transform.position;
+        m_Rigidbody.linearVelocity = Vector3.zero;
+
         //toTarget.y = 0f;
         float distance = toTarget.magnitude;
 
@@ -396,7 +399,7 @@ public class BasePlayerMovement : MonoBehaviour
         {
             Quaternion rotation = Quaternion.LookRotation(moveDirection);
 
-            Debug.Log($"Rotation: {rotation.eulerAngles}");
+            //Debug.Log($"Rotation: {rotation.eulerAngles}");
             m_Animator.SetFloat("RotationY", rotation.eulerAngles.y, 0.01f, Time.deltaTime);
 
         }
@@ -607,7 +610,6 @@ public class BasePlayerMovement : MonoBehaviour
         bool wasGrounded = isGrounded;
         isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckDistance, groundLayer);
 
-        // Debug.Log($"Checking Grounded: wasGrounded = {wasGrounded}, isGrounded = {isGrounded}");
 
         // 착지했을 때 점프 상태 해제
         if (!wasGrounded && isGrounded && m_IsJumping)

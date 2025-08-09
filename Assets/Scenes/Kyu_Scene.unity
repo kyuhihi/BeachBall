@@ -575,7 +575,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 10.000002, y: 2.2204468e-16, z: 10}
   m_Center: {x: 0, y: 0, z: 0}
@@ -833,7 +833,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!1 &663563776
 GameObject:
   m_ObjectHideFlags: 0
@@ -923,8 +923,8 @@ BoxCollider:
   m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 21.656979, y: 1.9109782, z: 2.1494098}
-  m_Center: {x: 10.328505, y: 0.10799513, z: 0.05316448}
+  m_Size: {x: 21.656979, y: 2.557041, z: 2.1494098}
+  m_Center: {x: 10.328505, y: 0.43102798, z: 0.05316452}
 --- !u!23 &691915564
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1017,7 +1017,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!1 &787839920
 GameObject:
   m_ObjectHideFlags: 0
@@ -1246,7 +1246,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 10.000002, y: 0.00000032885592, z: 10.000004}
   m_Center: {x: 0, y: 0, z: 0}
@@ -1354,8 +1354,8 @@ BoxCollider:
   m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.326388, y: 2.1905699, z: 7.010024}
-  m_Center: {x: -0.16319397, y: 0.12296178, z: 3.0050123}
+  m_Size: {x: 1.6964417, y: 2.1905696, z: 7.010024}
+  m_Center: {x: 0.02183294, y: 0.12296178, z: 3.0050123}
 --- !u!23 &838205101
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1448,7 +1448,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!65 &881347330
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1466,7 +1466,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 10.000002, y: 2.2204468e-16, z: 10}
   m_Center: {x: 0, y: 0, z: 0}
@@ -1698,7 +1698,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 10, y: 2.2204463e-16, z: 10}
   m_Center: {x: 0, y: 0, z: 0}
@@ -1969,7 +1969,7 @@ BoxCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Size: {x: 10, y: 2.2204463e-16, z: 10}
   m_Center: {x: 0, y: 0, z: 0}
@@ -2013,8 +2013,8 @@ BoxCollider:
   m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 20.578432, y: 1.7651201, z: 2.2556987}
-  m_Center: {x: 9.789215, y: -0.004203369, z: -0.10804842}
+  m_Size: {x: 20.578432, y: 2.8411086, z: 2.2556987}
+  m_Center: {x: 9.789215, y: 0.53379154, z: -0.10804838}
 --- !u!23 &1340930672
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2122,7 +2122,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!1 &1397805882
 GameObject:
   m_ObjectHideFlags: 0
@@ -2307,7 +2307,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!1 &1828517656
 GameObject:
   m_ObjectHideFlags: 0
@@ -2425,8 +2425,8 @@ BoxCollider:
   m_ProvidesContacts: 1
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1.4607664, y: 1.8881111, z: 7.010025}
-  m_Center: {x: -0.23038292, y: 0.09343029, z: 3.0050123}
+  m_Size: {x: 1.8513684, y: 1.8881111, z: 7.010025}
+  m_Center: {x: -0.035081737, y: 0.09343024, z: 3.0050123}
 --- !u!23 &1861949430
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -2534,7 +2534,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!1 &1910219034
 GameObject:
   m_ObjectHideFlags: 0
@@ -2805,7 +2805,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!1001 &1996132287
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3075,6 +3075,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1108059251560433343, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: m_CollisionDetection
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 1553185321669430218, guid: 10906cb2729ff9742babf771c559e901, type: 3}
       propertyPath: m_Name
       value: Player
@@ -3503,57 +3507,25 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5772773053644884982, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
-      propertyPath: recordInterval
-      value: 0.03
+    - target: {fileID: 6862655991492671280, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
+      propertyPath: yFlipWindow
+      value: 0.3
       objectReference: {fileID: 0}
     - target: {fileID: 6862655991492671280, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
-      propertyPath: speed
-      value: 10
-      objectReference: {fileID: 0}
-    - target: {fileID: 6862655991492671280, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
-      propertyPath: bounciness
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6862655991492671280, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
-      propertyPath: gravityScale
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6862655991492671280, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
-      propertyPath: m_HitParticle
-      value: 
-      objectReference: {fileID: 862205229867568131, guid: e8a1b872c8809184992bd876901cf895, type: 3}
-    - target: {fileID: 6862655991492671280, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
-      propertyPath: PlusdirectionY
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6862655991492671280, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
-      propertyPath: m_LandSpotParticle
-      value: 
-      objectReference: {fileID: 6632219443899659631, guid: 30f52d6ad3369cf4f9eb822dc98d9910, type: 3}
-    - target: {fileID: 6862655991492671280, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
-      propertyPath: rayLayerMask.m_Bits
-      value: 64
-      objectReference: {fileID: 0}
-    - target: {fileID: 7547339612150077502, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
-      propertyPath: m_ProvidesContacts
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8219283477181641283, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
-      propertyPath: m_Mass
+      propertyPath: yLockDuration
       value: 0.1
       objectReference: {fileID: 0}
-    - target: {fileID: 8219283477181641283, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
-      propertyPath: m_CollisionDetection
-      value: 2
+    - target: {fileID: 6862655991492671280, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
+      propertyPath: yFlipThreshold
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6862655991492671280, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
+      propertyPath: forceDownRangeMinY
+      value: 7.8
       objectReference: {fileID: 0}
     - target: {fileID: 8617419807013372452, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
       propertyPath: m_Name
       value: volleyball
-      objectReference: {fileID: 0}
-    - target: {fileID: 8617419807013372452, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
-      propertyPath: m_TagString
-      value: Ball
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
