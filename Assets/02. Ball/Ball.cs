@@ -12,7 +12,10 @@ public class Ball : MonoBehaviour
     private SphereCollider m_SphereCollider;
     private int RayLayerMask = 0;
 
-    
+    private float _gravityforce = 0;
+    private const float Gravity = 9.81f;
+
+    private float _currentSpeed = 0.0f;
     private const string PlayerTag = "Player";
 
     public ParticleSystem LandSpotParticle => m_LandSpotParticle;
@@ -50,14 +53,12 @@ public class Ball : MonoBehaviour
 
     void LateUpdate()
     {
-        Vector3 PredictPos = transform.position + direction * speed * Time.deltaTime;
-        // �̵� ���� ��ġ���� penetration üũ
+        Vector3 PredictPos = transform.position + direction * _currentSpeed * Time.deltaTime;
         Collider[] overlaps = Physics.OverlapSphere(PredictPos, m_SphereCollider.radius, RayLayerMask);
-        bool corrected = false;
 
         foreach (var col in overlaps)
         {
-            if (col == m_SphereCollider) continue; // �ڱ� �ڽ��� ����
+            if (col == m_SphereCollider) continue;
 
             Vector3 pushDir;
             float pushDistance;
@@ -69,15 +70,19 @@ public class Ball : MonoBehaviour
             if (overlapped && pushDistance > 0f)
             {
                 PredictPos += pushDir * pushDistance;
-                corrected = true;
             }
         }
-        transform.position = PredictPos; 
+        _currentSpeed += Time.deltaTime * speed;
+        _currentSpeed = Mathf.Clamp(_currentSpeed, 0.0f, speed);
+        //PredictPos.y -= _gravityforce;
+        transform.position = PredictPos;
+        //_gravityforce += Time.deltaTime;
     }
 
     void OnCollisionEnter(Collision other)
     {
-        if(other.gameObject.CompareTag(PlayerTag))
+        _gravityforce = 0.0f;
+        if (other.gameObject.CompareTag(PlayerTag))
         {
             CameraShakingManager.Instance.DoShake(0.1f, 1f);
             HitStopManager.Instance.DoHitStop(0.1f, 0.1f);
@@ -97,7 +102,6 @@ public class Ball : MonoBehaviour
         }
         direction = Vector3.Reflect(direction, hitDir).normalized;
 
-        // ��ģ ��ŭ penetration ���?
         Collider otherCol = other.collider;
         Vector3 pushDir;
         float pushDistance;
@@ -108,7 +112,6 @@ public class Ball : MonoBehaviour
 
         if (overlapped && pushDistance > 0f)
         {
-            // penetration �������� ��ģ ��ŭ�� �о
             transform.position += pushDir * pushDistance;
         }
 

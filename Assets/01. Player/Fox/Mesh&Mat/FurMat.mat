@@ -107,6 +107,7 @@ Material:
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Offset: 0
+    - _OutlineWidth: 1
     - _Parallax: 0.02
     - _QueueOffset: 0
     - _ReadMask: 255
@@ -133,6 +134,7 @@ Material:
     - _BaseColor: {r: 1, g: 0.91024524, b: 0.7201257, a: 1}
     - _Color: {r: 1, g: 0.91024524, b: 0.7201257, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _OutlineColor: {r: 1, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
