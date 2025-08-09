@@ -298,7 +298,7 @@ public class BasePlayerMovement : MonoBehaviour
     {
         // Debug.Log("Jump Input: " + value.isPressed);
 
-        if (value.isPressed && isGrounded)
+        if (m_isMoveByInput && value.isPressed && isGrounded)
         {
             OnJumpInput(value.isPressed);
             m_Rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
