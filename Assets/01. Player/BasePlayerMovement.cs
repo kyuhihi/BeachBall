@@ -24,6 +24,9 @@ public class BasePlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundLayer = 1;
     [SerializeField] private Transform groundCheck;
 
+    [Header("ParticleSystem")]
+    [SerializeField] private ParticleSystem doubleJumpEffectPrefab;
+
 
     [SerializeField]
     private Animator m_Animator;
@@ -330,13 +333,22 @@ public class BasePlayerMovement : MonoBehaviour
 
     public void OnDoubleJumpInput(bool doubleJumpInput)
     {
+
+        
         m_IsDoubleJumping = doubleJumpInput;
-            // Animator 파라미터 업데이트
+        // Animator 파라미터 업데이트
         if (m_Animator != null)
         {
             m_Animator.SetBool("DoubleJump", m_IsDoubleJumping);
-            // 또는 Trigger를 사용한다면:
-            // if (m_IsJumping) m_Animator.SetTrigger("Jump");
+        }
+
+        // 더블점프 시작할 때 이펙트 생성
+        if (doubleJumpInput && doubleJumpEffectPrefab != null)
+        {
+            // 캐릭터 발밑 위치 계산 (y값을 약간 내리면 더 자연스러움)
+            Vector3 effectPos = transform.position + Vector3.down * 0.5f;
+            ParticleSystem effect = Instantiate(doubleJumpEffectPrefab, effectPos, Quaternion.identity);
+            Destroy(effect.gameObject, 0.5f); // 0.5초 후 자동 삭제
         }
     }
 
