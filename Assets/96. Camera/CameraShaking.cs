@@ -103,8 +103,7 @@ public class CameraShaking : MonoBehaviour
     {
         shakeState = ShakeState.Shaking;
         float elapsed = 0f;
-        originalPos = transform.localPosition;
-        originalRot = transform.localRotation;
+
 
         while (elapsed < duration)
         {
