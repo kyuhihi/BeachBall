@@ -73,6 +73,9 @@ public class BasePlayerMovement : MonoBehaviour
     private float upPressedTime = -1f;
     private float downPressedTime = -1f;
 
+    [SerializeField] private ParticleSystem footstepCloudPrefab;
+    [SerializeField] private Transform leftFootTransform;
+    [SerializeField] private Transform rightFootTransform;
 
     void Awake()
     {
@@ -137,6 +140,17 @@ public class BasePlayerMovement : MonoBehaviour
         {
             hasReceivedInput = true;
         }
+    }
+
+    private void SpawnFootstepEffect(bool isLeft)
+    {
+        if (footstepCloudPrefab == null) return;
+
+        Transform foot = isLeft ? leftFootTransform : rightFootTransform;
+        if (foot == null) return;
+
+        ParticleSystem effect = Instantiate(footstepCloudPrefab, foot.position, Quaternion.identity);
+        Destroy(effect.gameObject, 1f); // 1초 후 자동 삭제
     }
 
 
@@ -408,7 +422,8 @@ public class BasePlayerMovement : MonoBehaviour
         SetCurrentLocomotionState(currentToDashSpeed);
         SetAnimatorParameters(1f);
     }
-
+    private float footstepTimer = 0f;
+    private float footstepInterval = 0.3f; // 발자국 이펙트 간격    
     void FixedUpdate()
     {
 
@@ -454,6 +469,21 @@ public class BasePlayerMovement : MonoBehaviour
         {
             // 첫 입력 전이거나 입력이 없으면 현재 회전 유지
             m_Rotation = transform.rotation;
+        }
+
+        if (m_InputVector.magnitude > 0.1f && isGrounded)
+        {
+            footstepTimer += Time.deltaTime;
+            if (footstepTimer > footstepInterval)
+            {
+                // 왼발/오른발 번갈아가며
+                SpawnFootstepEffect((int)(Time.time * 2) % 2 == 0);
+                footstepTimer = 0f;
+            }
+        }
+        else
+        {
+            footstepTimer = 0f;
         }
 
         OnPlayerMove();
