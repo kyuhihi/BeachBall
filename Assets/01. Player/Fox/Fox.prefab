@@ -796,8 +796,8 @@ GameObject:
   - component: {fileID: 8557198426271000808}
   - component: {fileID: 1108059251560433343}
   - component: {fileID: 4850635988753098321}
-  - component: {fileID: 8016834362002721417}
   - component: {fileID: 3800572825995215374}
+  - component: {fileID: 2368182073865933111}
   m_Layer: 8
   m_Name: Fox
   m_TagString: Player
@@ -973,33 +973,6 @@ CapsuleCollider:
   m_Height: 1.5314207
   m_Direction: 1
   m_Center: {x: 0, y: 0.76571035, z: 0}
---- !u!114 &8016834362002721417
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1553185321669430218}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc21985089aa96d4b99a2aaf8b9ad675, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  turnSpeed: 20
-  dashSpeed: 100
-  ballTag: Ball
-  jumpForce: 10
-  groundCheckDistance: 0.1
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 1
-  groundCheck: {fileID: 0}
-  doubleJumpEffectPrefab: {fileID: 480769592149668674, guid: ebc5961199aa52449828071fdd0d2125, type: 3}
-  footstepCloudPrefab: {fileID: 480769592149668674, guid: 1ab264d29a87c404e889abc9c5e65071, type: 3}
-  leftFootTransform: {fileID: 1213745910581329705}
-  rightFootTransform: {fileID: 250431064749323011}
-  m_Animator: {fileID: 45186065190516198}
-  m_isMoveByInput: 1
 --- !u!96 &3800572825995215374
 TrailRenderer:
   serializedVersion: 3
@@ -1116,6 +1089,33 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!114 &2368182073865933111
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1553185321669430218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2a203f1f1936b144799ae7495ef8d4ce, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  turnSpeed: 20
+  dashSpeed: 100
+  ballTag: Ball
+  jumpForce: 10
+  groundCheckDistance: 0.1
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 1
+  groundCheck: {fileID: 0}
+  doubleJumpEffectPrefab: {fileID: 0}
+  footstepCloudPrefab: {fileID: 0}
+  leftFootTransform: {fileID: 0}
+  rightFootTransform: {fileID: 0}
+  m_Animator: {fileID: 0}
+  m_isMoveByInput: 1
 --- !u!1 &1611308871698182873
 GameObject:
   m_ObjectHideFlags: 0

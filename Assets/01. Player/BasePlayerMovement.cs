@@ -7,45 +7,45 @@ public class BasePlayerMovement : MonoBehaviour
 {
     [Header("Movement Settings")]
     public float turnSpeed = 20f;
-    private float walkSpeed = 7f;
+    protected float walkSpeed = 7f;
     // public float runSpeed = 5f;
-    [SerializeField] private float dashSpeed = 100f; // 대시 속도
-    [SerializeField] private string ballTag = "Ball"; // 볼 태그명
-    private Transform ballTransform;
+    [SerializeField] protected float dashSpeed = 100f; // 대시 속도
+    [SerializeField] protected string ballTag = "Ball"; // 볼 태그명
+    protected Transform ballTransform;
 
-    private Vector3 dashTargetPosition;
-    private bool isDashingToBall = false;
-    private float dashArriveDistance = 0.5f; // 도착 판정 거리
+    protected Vector3 dashTargetPosition;
+    protected bool isDashingToBall = false;
+    protected float dashArriveDistance = 0.5f; // 도착 판정 거리
 
-    [SerializeField] private float jumpForce = 10f;
-    [SerializeField] private float groundCheckDistance = 0.1f;
+    [SerializeField] protected float jumpForce = 10f;
+    [SerializeField] protected float groundCheckDistance = 0.1f;
 
     [Header("Ground Check")]
-    [SerializeField] private LayerMask groundLayer = 1;
-    [SerializeField] private Transform groundCheck;
+    [SerializeField] protected LayerMask groundLayer = 1;
+    [SerializeField] protected Transform groundCheck;
 
     [Header("ParticleSystem")]
-    [SerializeField] private ParticleSystem doubleJumpEffectPrefab;
-    [SerializeField] private ParticleSystem footstepCloudPrefab;
-    [SerializeField] private Transform leftFootTransform;
-    [SerializeField] private Transform rightFootTransform;
+    [SerializeField] protected ParticleSystem doubleJumpEffectPrefab;
+    [SerializeField] protected ParticleSystem footstepCloudPrefab;
+    [SerializeField] protected Transform leftFootTransform;
+    [SerializeField] protected Transform rightFootTransform;
 
 
     [Header("Animator")]
     [SerializeField]
-    private Animator m_Animator;
-    private Rigidbody m_Rigidbody;
+    protected Animator m_Animator;
+    protected Rigidbody m_Rigidbody;
 
-    private TrailRenderer m_TrailRenderer;
+    protected TrailRenderer m_TrailRenderer;
 
-    private Vector3 m_Movement;
-    private Quaternion m_Rotation = Quaternion.identity;
-    private Vector2 m_InputVector = Vector2.zero;
+    protected Vector3 m_Movement;
+    protected Quaternion m_Rotation = Quaternion.identity;
+    protected Vector2 m_InputVector = Vector2.zero;
     // private bool m_IsRunning = false;
 
-    private bool m_IsJumping = false;
-    private bool m_IsDoubleJumping = false;
-    private bool isGrounded;
+    protected bool m_IsJumping = false;
+    protected bool m_IsDoubleJumping = false;
+    protected bool isGrounded;
 
     public enum IdleWalkRunEnum
     {
@@ -53,31 +53,31 @@ public class BasePlayerMovement : MonoBehaviour
         Walk = 2,
         // Run = 2
     }
-    private IdleWalkRunEnum m_eLocomotionState = IdleWalkRunEnum.Idle;
+    protected IdleWalkRunEnum m_eLocomotionState = IdleWalkRunEnum.Idle;
 
     // 첫 입력 추적용 변수 추가
-    private bool hasReceivedInput = false;
+    protected bool hasReceivedInput = false;
 
 
     [Header("Individual Key Tracking")]
-    private bool isLeftPressed = false;
-    private bool isRightPressed = false;
-    private bool isUpPressed = false;
-    private bool isDownPressed = false;
+    protected bool isLeftPressed = false;
+    protected bool isRightPressed = false;
+    protected bool isUpPressed = false;
+    protected bool isDownPressed = false;
     [SerializeField]
-    private bool m_isMoveByInput = true;
+    protected bool m_isMoveByInput = true;
     public bool MoveByInput
     {
         get => m_isMoveByInput;
         set => m_isMoveByInput = value;
     }
 
-    private float leftPressedTime = -1f;
-    private float rightPressedTime = -1f;
-    private float upPressedTime = -1f;
-    private float downPressedTime = -1f;
+    protected float leftPressedTime = -1f;
+    protected float rightPressedTime = -1f;
+    protected float upPressedTime = -1f;
+    protected float downPressedTime = -1f;
 
-    void Awake()
+    protected void Awake()
     {
         jumpForce = 10f;
         dashSpeed = 100f; // 대시 속도
@@ -111,12 +111,12 @@ public class BasePlayerMovement : MonoBehaviour
         }
     }
 
-    void Start()
+    protected void Start()
     {
         // 필요한 초기화 코드
     }
 
-    void Update()
+    protected void Update()
     {
         CheckGrounded();
         HandleJump();
@@ -142,7 +142,7 @@ public class BasePlayerMovement : MonoBehaviour
         }
     }
 
-    private void SpawnFootstepEffect(bool isLeft)
+    protected void SpawnFootstepEffect(bool isLeft)
     {
         if (footstepCloudPrefab == null) return;
 
@@ -154,7 +154,7 @@ public class BasePlayerMovement : MonoBehaviour
     }
 
 
-    private void UpdatePriorityInput()
+    protected void UpdatePriorityInput()
     {
         Vector2 priorityInput = new Vector2(GetHorizontalInput(), GetVerticalInput());
 
@@ -224,7 +224,7 @@ public class BasePlayerMovement : MonoBehaviour
 
 
     // 우선순위 기반 입력 계산
-    private float GetHorizontalInput()
+    protected float GetHorizontalInput()
     {
         if (isLeftPressed && isRightPressed)
         {
@@ -243,7 +243,7 @@ public class BasePlayerMovement : MonoBehaviour
         return 0f;
     }
 
-    private float GetVerticalInput()
+    protected float GetVerticalInput()
     {
         if (isUpPressed && isDownPressed)
         {
@@ -369,18 +369,18 @@ public class BasePlayerMovement : MonoBehaviour
 
 
 
-    void OnFootstep()
+    protected void OnFootstep()
     {
         // Debug.Log("발소리 재생");
     }
         
-    IEnumerator DisableTrailAfterDelay(float delay)
+    protected IEnumerator DisableTrailAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
         m_TrailRenderer.enabled = false;
     }
 
-    private void HandleDashToBall()
+    protected void HandleDashToBall()
     {
         
         Vector3 toTarget = dashTargetPosition - transform.position;
@@ -422,9 +422,9 @@ public class BasePlayerMovement : MonoBehaviour
         SetCurrentLocomotionState(currentToDashSpeed);
         SetAnimatorParameters(1f);
     }
-    private float footstepTimer = 0f;
-    private float footstepInterval = 0.3f; // 발자국 이펙트 간격    
-    void FixedUpdate()
+    protected float footstepTimer = 0f;
+    protected float footstepInterval = 0.3f; // 발자국 이펙트 간격    
+    protected void FixedUpdate()
     {
 
         float horizontal = m_InputVector.x;
@@ -491,7 +491,7 @@ public class BasePlayerMovement : MonoBehaviour
     }
 
     // 카메라 기준 이동 방향 계산 메서드 추가
-    private Vector3 GetCameraRelativeMovement(float horizontal, float vertical)
+    protected Vector3 GetCameraRelativeMovement(float horizontal, float vertical)
     {
         // 메인 카메라 참조
         Camera mainCamera = Camera.main;
@@ -522,7 +522,7 @@ public class BasePlayerMovement : MonoBehaviour
         return moveDirection;
     }
 
-    private void SetAnimatorParameters(float inputMagnitude)
+    protected void SetAnimatorParameters(float inputMagnitude)
     {
         if (m_Animator == null) return;
 
@@ -546,7 +546,7 @@ public class BasePlayerMovement : MonoBehaviour
         }
     }
 
-    private float GetLocalMoveFromWorld()
+    protected float GetLocalMoveFromWorld()
     {
         if (m_Movement.sqrMagnitude < 0.0001f)
             return 0f;
@@ -573,7 +573,7 @@ public class BasePlayerMovement : MonoBehaviour
         return angle; // -180 ~ 180도
     }
 
-    private Vector2 Get8DirectionVector(float angle)
+    protected Vector2 Get8DirectionVector(float angle)
     {
         // -180 ~ 180 범위의 angle을 0~360으로 변환
         angle = (angle + 360f) % 360f;
@@ -597,7 +597,7 @@ public class BasePlayerMovement : MonoBehaviour
             return new Vector2(-1f, 1f);        // -45도
     }
 
-    private void SetCurrentLocomotionState(float appliedSpeed)
+    protected void SetCurrentLocomotionState(float appliedSpeed)
     {
         // 입력과 달리기 상태를 직접 확인하는 방식으로 변경
         if (m_InputVector.magnitude < 0.01f)
@@ -610,7 +610,7 @@ public class BasePlayerMovement : MonoBehaviour
         }
     }
 
-    void OnPlayerMove()
+    protected void OnPlayerMove()
     {
         if (!m_isMoveByInput)
         {
@@ -630,12 +630,12 @@ public class BasePlayerMovement : MonoBehaviour
         }
     }
 
-    private void HandleJump()
+    protected void HandleJump()
     {
         // OnJump에서 처리하므로 비워둠
     }
 
-    private void CheckGrounded()
+    protected void CheckGrounded()
     {
         bool wasGrounded = isGrounded;
         isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckDistance, groundLayer);
@@ -649,7 +649,7 @@ public class BasePlayerMovement : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmosSelected()
+    protected void OnDrawGizmosSelected()
     {
         if (groundCheck != null)
         {

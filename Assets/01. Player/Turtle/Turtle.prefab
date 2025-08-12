@@ -2818,8 +2818,8 @@ GameObject:
   - component: {fileID: 3168310491189232523}
   - component: {fileID: 3595366057071353328}
   - component: {fileID: 6261101915394965576}
-  - component: {fileID: 7687449244774501731}
   - component: {fileID: 9129648929585391626}
+  - component: {fileID: 6526465233267810416}
   m_Layer: 8
   m_Name: Turtle
   m_TagString: Player
@@ -2995,33 +2995,6 @@ CapsuleCollider:
   m_Height: 1.5314207
   m_Direction: 1
   m_Center: {x: 0, y: 0.76571035, z: 0}
---- !u!114 &7687449244774501731
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6507491445787028333}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cc21985089aa96d4b99a2aaf8b9ad675, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  turnSpeed: 20
-  dashSpeed: 100
-  ballTag: Ball
-  jumpForce: 10
-  groundCheckDistance: 0.1
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 1
-  groundCheck: {fileID: 0}
-  doubleJumpEffectPrefab: {fileID: 480769592149668674, guid: ebc5961199aa52449828071fdd0d2125, type: 3}
-  footstepCloudPrefab: {fileID: 480769592149668674, guid: 1ab264d29a87c404e889abc9c5e65071, type: 3}
-  leftFootTransform: {fileID: 6954392916226181275}
-  rightFootTransform: {fileID: 4438369641412019969}
-  m_Animator: {fileID: 7324515723299230041}
-  m_isMoveByInput: 1
 --- !u!96 &9129648929585391626
 TrailRenderer:
   serializedVersion: 3
@@ -3138,6 +3111,33 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!114 &6526465233267810416
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6507491445787028333}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 659d21b742781fb4699eac755fd25784, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  turnSpeed: 20
+  dashSpeed: 100
+  ballTag: Ball
+  jumpForce: 10
+  groundCheckDistance: 0.1
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 1
+  groundCheck: {fileID: 0}
+  doubleJumpEffectPrefab: {fileID: 480769592149668674, guid: ebc5961199aa52449828071fdd0d2125, type: 3}
+  footstepCloudPrefab: {fileID: 480769592149668674, guid: 1ab264d29a87c404e889abc9c5e65071, type: 3}
+  leftFootTransform: {fileID: 6954392916226181275}
+  rightFootTransform: {fileID: 4438369641412019969}
+  m_Animator: {fileID: 7324515723299230041}
+  m_isMoveByInput: 1
 --- !u!1 &6521386645337900659
 GameObject:
   m_ObjectHideFlags: 0
