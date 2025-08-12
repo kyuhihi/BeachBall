@@ -26,8 +26,12 @@ public class BasePlayerMovement : MonoBehaviour
 
     [Header("ParticleSystem")]
     [SerializeField] private ParticleSystem doubleJumpEffectPrefab;
+    [SerializeField] private ParticleSystem footstepCloudPrefab;
+    [SerializeField] private Transform leftFootTransform;
+    [SerializeField] private Transform rightFootTransform;
 
 
+    [Header("Animator")]
     [SerializeField]
     private Animator m_Animator;
     private Rigidbody m_Rigidbody;
@@ -72,10 +76,6 @@ public class BasePlayerMovement : MonoBehaviour
     private float rightPressedTime = -1f;
     private float upPressedTime = -1f;
     private float downPressedTime = -1f;
-
-    [SerializeField] private ParticleSystem footstepCloudPrefab;
-    [SerializeField] private Transform leftFootTransform;
-    [SerializeField] private Transform rightFootTransform;
 
     void Awake()
     {
