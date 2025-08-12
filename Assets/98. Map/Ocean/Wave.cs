@@ -4,11 +4,14 @@ using UnityEngine;
 public class Wave : MonoBehaviour
 {
     MeshRenderer meshRenderer;
+    BoatMovement boatMovement;
     Material material;
+    
 
     void Start()
     {
         meshRenderer = GetComponent<MeshRenderer>();
+        boatMovement = GetComponent<BoatMovement>();
         if (meshRenderer != null)
         {
             material = meshRenderer.material;
@@ -16,17 +19,11 @@ public class Wave : MonoBehaviour
     }
     void Update()
     {
-
         if (material != null)
         {
-            float dissolveAmount = material.GetFloat("_DissolveAmount");
-            if (dissolveAmount >= 1.0f)
-            {
-                // Reset the dissolve effect
-                material.SetFloat("_DissolveAmount", 0.0f);
-                return;
-            }
-            material.SetFloat("_DissolveAmount", Mathf.Lerp(0.0f, 1.0f, Time.time * 2f));
+            float dissolveTime = boatMovement.GetCurrentWaveHeight();
+
+            material.SetFloat("_DissolveAmount", dissolveTime);
         }
     }
 }

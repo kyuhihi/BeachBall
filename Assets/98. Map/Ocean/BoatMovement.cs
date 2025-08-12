@@ -2,61 +2,77 @@ using UnityEngine;
 
 public class BoatMovement : MonoBehaviour
 {
-    public Transform boat;
-    public float waveSpeed = 3f;
+    public Transform boat;        // 배 오브젝트
+    public float waveSpeed = 3f;  // Shader와 동일
     public float waveStrength = 1f;
-    public float xMultiplier = 2f;
-    public float xWaveStrength = 0.5f; // X 방향 흔들림 크기
-    public float offsetY = 0.5f;
-    public float forwardSpeed = 1f; // 앞으로 가는 속도
+    public float xMultiplier = 2f; // Shader에서 pos.x * 2 한 부분
+    public float xWaveStrength = 0.5f; // X축 움직임 크기
+    public float offsetY = 0.5f;  // 물 위에서 띄우는 높이
     public GameObject waterMesh;
 
     private Vector3 startPos;
 
-    // 인스턴스별 오프셋 추가
-    [SerializeField] private float phaseOffset = 0f;    // 파동 위상 오프셋
-    [SerializeField] private float xSampleOffset = 0f;  // 샘플링 X 오프셋
-    private float spawnTime;
+    private float currentWaveHeight = 0f; // Y축 파도 높이
+    public float GetCurrentWaveHeight()
+    {
+        return currentWaveHeight;
+    }
+
+    [SerializeField] private float trendDeadZone = 0.001f; // 미세 변동 무시
+    private float prevWaveHeight = 0f;
+    private bool hasPrev = false;
 
     void Start()
     {
         boat = transform;
         startPos = boat.position;
-        spawnTime = Time.time;
-
-        // 기본적으로 인스턴스마다 다른 값 부여(원하면 WaveGenerator에서 직접 세팅)
-        if (Mathf.Approximately(phaseOffset, 0f))
-            phaseOffset = (GetInstanceID() & 0xFFFF) * 0.013f; // 임의성 부여
-        if (Mathf.Approximately(xSampleOffset, 0f))
-            xSampleOffset = (GetInstanceID() & 0xFFFF) * 0.01f;
     }
 
     void Update()
     {
-        if (waterMesh == null) return;
+        Vector3 localPos = waterMesh.transform.InverseTransformPoint(boat.position);
 
-        // 인스턴스별 시간 기준(스폰 시점부터 흐르는 시간)
-        float t = Time.time - spawnTime;
+        // Y축 파도
+        float waveHeight = Mathf.Sin(
+            (localPos.x * xMultiplier) + (Time.time * waveSpeed)
+        ) * waveStrength;
 
-        // 기본 전진 이동 (인스턴스별 시작점 기준)
-        float forwardX = startPos.x + (t * forwardSpeed);
+        // 증가/감소 추세에 따라 currentWaveHeight 설정
+        if (!hasPrev)
+        {
+            prevWaveHeight = waveHeight; // 첫 프레임 초기화
+            hasPrev = true;
+            currentWaveHeight = waveHeight; // 초기값
+        }
+        else
+        {
+            float delta = waveHeight - prevWaveHeight;
+            if (delta > trendDeadZone)
+            {
+                // 커지는 중
+                currentWaveHeight = Mathf.Lerp(currentWaveHeight, waveHeight, 0.1f);
+            }
+            else if (delta < -trendDeadZone)
+            {
+                // 작아지는 중
+                currentWaveHeight = waveHeight;
+            }
+            //currentWaveHeight = waveHeight;
+        }
 
-        // waterMesh 로컬 좌표 변환 + 샘플 오프셋
-        Vector3 sampleWorld = new Vector3(forwardX + xSampleOffset, boat.position.y, boat.position.z);
-        Vector3 localPos = waterMesh.transform.InverseTransformPoint(sampleWorld);
+        // X축 파도 (살짝 지연시켜서 더 자연스럽게)
+        float waveX = Mathf.Cos(
+            (localPos.x * xMultiplier * 0.5f) + (Time.time * waveSpeed * 0.8f)
+        ) * xWaveStrength;
 
-        // 파도 Y 높이 계산(위상 오프셋 적용)
-        float arg = (localPos.x * xMultiplier) + ((t + phaseOffset) * waveSpeed);
-        float waveHeight = Mathf.Sin(arg) * waveStrength;
-
-        // 파도에 따른 X축 흔들림
-        float waveXOffset = Mathf.Cos(arg) * xWaveStrength;
-
-        // 최종 위치 적용
         boat.position = new Vector3(
-            forwardX + waveXOffset,
-            waterMesh.transform.position.y + waveHeight + offsetY,
-            boat.position.z
+            startPos.x + waveX, // X축 이동
+            waterMesh.transform.position.y + currentWaveHeight + offsetY, // Y축 이동
+            boat.position.z // Z축 그대로
         );
+
+        // 다음 프레임을 위한 기록
+        prevWaveHeight = waveHeight;
     }
 }
+
