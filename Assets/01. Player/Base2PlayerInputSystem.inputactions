@@ -67,6 +67,24 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "AttackSkill",
+                    "type": "Button",
+                    "id": "1b1e0b7f-68ff-4d8a-8ff6-33f663c37db2",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "DefenceSkill",
+                    "type": "Button",
+                    "id": "58cc7cc0-bfc8-4cf9-a477-8dedcc1a8e68",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -144,6 +162,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Smash",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "c43a86e0-19d0-40bd-818d-ae963cbeb107",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "AttackSkill",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f1cb1068-9fa2-4cfe-9fbe-7a33538712e3",
+                    "path": "<Keyboard>/g",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "DefenceSkill",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

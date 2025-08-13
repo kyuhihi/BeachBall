@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: d9afaacc9fe836e4dac00b0d70e196b2
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 127325
+  packageName: Particle Pack
+  packageVersion: 3.1
+  assetPath: Assets/UnityTechnologies/ParticlePack/EffectExamples/Water Effects/Materials/Splash.mat
+  uploadId: 691001
