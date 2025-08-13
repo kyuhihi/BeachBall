@@ -111,7 +111,7 @@ public class BasePlayerMovement : MonoBehaviour
         }
     }
 
-    protected void Start()
+    protected virtual void Start()
     {
         // 필요한 초기화 코드
     }
@@ -366,7 +366,17 @@ public class BasePlayerMovement : MonoBehaviour
         }
     }
 
+    public virtual void OnAttackSkill(InputValue value)
+    {
+        // 기본 동작(없거나, 공통 이펙트 등)
+        Debug.Log("AttackSkill (Base): 아무 동작 없음");
+    }
 
+    public virtual void OnDefenceSkill(InputValue value)
+    {
+        // 기본 동작(없거나, 공통 이펙트 등)
+        Debug.Log("DefenceSkill (Base): 아무 동작 없음");
+    }
 
 
     protected void OnFootstep()
