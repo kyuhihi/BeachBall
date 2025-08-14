@@ -2,31 +2,39 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 
-
 public class TurtlePlayerMovement : BasePlayerMovement
 {
-    [SerializeField] private ParticleSystem waterCannonParticle;
-    [SerializeField] private ParticleSystem waterCannonByEffectParticle;
-    [SerializeField] private Transform mouthTransform; // 거북이 입 위치
+    [SerializeField] private ParticleSystem waterCannonParticlePrefab; // 프리팹으로 변경
+    private ParticleSystem waterCannonParticleInstance;
 
+    [SerializeField] private ParticleSystem waterCannonByEffectParticlePrefab;
+    private ParticleSystem waterCannonByEffectParticleInstance;
+
+    [SerializeField] private Transform mouthTransform;
+
+    Vector3 ballPos = Vector3.zero;
+
+
+    private Quaternion originalMouthRotation;
 
     protected override void Start()
     {
         base.Start();
         if (mouthTransform != null)
+        {
             originalMouthRotation = mouthTransform.rotation;
+
+        }
     }
 
-    private Quaternion originalMouthRotation;
     public override void OnAttackSkill(InputValue value)
     {
         if (value.isPressed)
         {
-            // 거북이만의 공격 스킬
             Debug.Log("Turtle: 등껍질 돌진!");
-            // 등껍질 돌진 구현
         }
     }
+
     public override void OnDefenceSkill(InputValue value)
     {
         if (value.isPressed)
@@ -34,71 +42,123 @@ public class TurtlePlayerMovement : BasePlayerMovement
             Debug.Log("Turtle: 물대포!");
 
             GameObject ballObj = GameObject.FindWithTag(ballTag);
-            if (ballObj != null && waterCannonParticle != null && mouthTransform != null)
+            if (ballObj != null && waterCannonParticlePrefab != null && mouthTransform != null)
             {
-                Vector3 ballPos = ballObj.transform.position;
+                ballPos = ballObj.transform.position;
                 Vector3 dir = (ballPos - mouthTransform.position).normalized;
 
-                // 현재 머리의 y축(월드) 각도와, 목표 방향의 y축 각도 비교
                 float currentY = mouthTransform.eulerAngles.y;
                 float targetY = Quaternion.LookRotation(dir).eulerAngles.y;
-
-                // 각도 차이 계산 (0~180)
                 float angleDiff = Mathf.DeltaAngle(currentY, targetY);
+                float maxAngle = 60f;
 
-                float maxAngle = 60f; // 제한 각도
-
-                // 제한 각도 이상이면 물대포 발사 불가
                 if (Mathf.Abs(angleDiff) > maxAngle)
                 {
                     Debug.Log("너무 돌아가서 물대포 불가!");
                     return;
                 }
 
-                if (!waterCannonParticle.isPlaying)
-                    originalMouthRotation = mouthTransform.rotation;
-
-                mouthTransform.rotation = Quaternion.LookRotation(dir);
-
-                waterCannonParticle.transform.position = mouthTransform.position;
-                waterCannonParticle.transform.rotation = mouthTransform.rotation;
-                waterCannonByEffectParticle.transform.position = mouthTransform.position;
-                waterCannonByEffectParticle.transform.rotation = mouthTransform.rotation;
-
-                if (waterCannonParticle.isPlaying)
+                if (waterCannonParticleInstance != null && waterCannonParticleInstance.isPlaying)
                 {
-                    waterCannonParticle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-                    waterCannonByEffectParticle.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                    waterCannonParticleInstance.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                    Destroy(waterCannonParticleInstance.gameObject);
+
+                    if (waterCannonByEffectParticleInstance != null)
+                    {
+                        waterCannonByEffectParticleInstance.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+                        Destroy(waterCannonByEffectParticleInstance.gameObject);
+                    }
 
                     MoveByInput = true;
                     mouthTransform.rotation = originalMouthRotation;
                 }
                 else
                 {
-                    waterCannonParticle.Play();
-                    waterCannonByEffectParticle.Play();
+
+                    // 입을 Ball 방향으로 회전
+                    mouthTransform.rotation = Quaternion.LookRotation(dir);
+
+
+
+                    // 파티클 인스턴스 생성
+                    waterCannonParticleInstance = Instantiate(
+                        waterCannonParticlePrefab,
+                        mouthTransform.position,
+                        mouthTransform.rotation
+                    );
+                    waterCannonParticleInstance.Play();
+
+                    // 부가 이펙트도 필요하다면 인스턴스 생성
+                    if (waterCannonByEffectParticlePrefab != null)
+                    {
+                        waterCannonByEffectParticleInstance = Instantiate(
+                            waterCannonByEffectParticlePrefab,
+                            mouthTransform.position,
+                            mouthTransform.rotation
+                        );
+                        waterCannonByEffectParticleInstance.Play();
+                    }
+
+
+
+
                     MoveByInput = false;
-                    StartCoroutine(EnableMoveAfterParticle(waterCannonParticle.main.duration));
-                    StartCoroutine(RestoreMouthRotationAfterDelay(waterCannonParticle.main.duration));
+                    StartCoroutine(EnableMoveAfterParticle(waterCannonParticleInstance.main.duration));
+                    StartCoroutine(RestoreMouthRotationAfterDelay(waterCannonParticleInstance.main.duration));
                 }
             }
+        }
+    }
+    protected override void FixedUpdate()
+    {
+        base.FixedUpdate();
+        if (waterCannonParticleInstance != null && waterCannonParticleInstance.isPlaying)
+        {
+            // Ball 쪽으로 입과 파티클, 히트박스를 계속 회전
+            GameObject ballObj = GameObject.FindWithTag(ballTag);
+            if (ballObj != null && mouthTransform != null)
+            {
+                Vector3 dir = (ballObj.transform.position - mouthTransform.position).normalized;
+                mouthTransform.rotation = Quaternion.LookRotation(dir);
+
+                // 파티클 인스턴스도 같은 방향으로 회전
+                waterCannonParticleInstance.transform.position = mouthTransform.position;
+                waterCannonParticleInstance.transform.rotation = mouthTransform.rotation;
+
+                if (waterCannonByEffectParticleInstance != null)
+                {
+                    waterCannonByEffectParticleInstance.transform.position = mouthTransform.position;
+                    waterCannonByEffectParticleInstance.transform.rotation = mouthTransform.rotation;
+                }
+
+
+            }
+
         }
     }
 
     private IEnumerator EnableMoveAfterParticle(float delay)
     {
         yield return new WaitForSeconds(delay);
+        mouthTransform.rotation = originalMouthRotation; // 입모양 원래대로 복원
+
         MoveByInput = true;
     }
 
-    // 2. 파티클 끝나면 머리 방향 복귀
     private IEnumerator RestoreMouthRotationAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
-        if (mouthTransform != null)
+
+        // 파티클 인스턴스 삭제
+        if (waterCannonParticleInstance != null)
         {
-            // x=180, y=90, z=0의 로컬 회전값으로 고정
-            mouthTransform.localRotation = Quaternion.Euler(180f, 90f, 0f);
+            Destroy(waterCannonParticleInstance.gameObject);
+            waterCannonParticleInstance = null;
+        }
+        if (waterCannonByEffectParticleInstance != null)
+        {
+            Destroy(waterCannonByEffectParticleInstance.gameObject);
+            waterCannonByEffectParticleInstance = null;
         }
     }
 }

@@ -16,7 +16,8 @@ GameObject:
   - component: {fileID: 8219283477181641283}
   - component: {fileID: 5772773053644884982}
   - component: {fileID: 2995266558378096843}
-  m_Layer: 0
+  - component: {fileID: 3038581458761526824}
+  m_Layer: 8
   m_Name: volleyball
   m_TagString: Ball
   m_Icon: {fileID: 0}
@@ -291,3 +292,24 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!135 &3038581458761526824
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8617419807013372452}
+  m_Material: {fileID: 13400000, guid: 847ae1285f7f94f4ea0abe7431365b68, type: 2}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 1
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.11514227
+  m_Center: {x: 0, y: -0.000000007450581, z: -0.0000000037252903}

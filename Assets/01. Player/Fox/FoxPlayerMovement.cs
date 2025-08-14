@@ -11,6 +11,7 @@ public class FoxPlayerMovement : BasePlayerMovement
 
     }
 
+
     public override void OnAttackSkill(InputValue value)
     {
         if (value.isPressed)
@@ -30,4 +31,14 @@ public class FoxPlayerMovement : BasePlayerMovement
             // 회피 구현
         }
     }
+
+
+    protected override void FixedUpdate()
+    {
+        base.FixedUpdate();
+
+        // 여우의 특수한 움직임이나 기능이 있다면 여기에 추가
+        // 예: 빠른 이동, 점프 등
+    }
+
 }

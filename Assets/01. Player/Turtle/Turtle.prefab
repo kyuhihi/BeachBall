@@ -2820,7 +2820,7 @@ GameObject:
   - component: {fileID: 6261101915394965576}
   - component: {fileID: 9129648929585391626}
   - component: {fileID: 6526465233267810416}
-  m_Layer: 8
+  m_Layer: 0
   m_Name: Turtle
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -3138,6 +3138,9 @@ MonoBehaviour:
   rightFootTransform: {fileID: 4438369641412019969}
   m_Animator: {fileID: 7324515723299230041}
   m_isMoveByInput: 1
+  waterCannonParticlePrefab: {fileID: 7514380116403822961, guid: f6efd9daabfe2544d86568dd0690416b, type: 3}
+  waterCannonByEffectParticlePrefab: {fileID: 4404156071658950816, guid: 955b5dc8b7604754baade5ee180e3800, type: 3}
+  mouthTransform: {fileID: 993900989736193437}
 --- !u!1 &6521386645337900659
 GameObject:
   m_ObjectHideFlags: 0
@@ -4447,11 +4450,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ad0a19fca0ba7344a99966ccc5feea19, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ad0a19fca0ba7344a99966ccc5feea19, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.7071068
+      value: 0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ad0a19fca0ba7344a99966ccc5feea19, type: 3}
       propertyPath: m_LocalRotation.y
@@ -4459,7 +4462,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ad0a19fca0ba7344a99966ccc5feea19, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0.7071068
+      value: -0.7071068
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ad0a19fca0ba7344a99966ccc5feea19, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -4467,7 +4470,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ad0a19fca0ba7344a99966ccc5feea19, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -270
+      value: 90
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: ad0a19fca0ba7344a99966ccc5feea19, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z

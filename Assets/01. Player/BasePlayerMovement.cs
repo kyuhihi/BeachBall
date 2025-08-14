@@ -434,7 +434,7 @@ public class BasePlayerMovement : MonoBehaviour
     }
     protected float footstepTimer = 0f;
     protected float footstepInterval = 0.3f; // 발자국 이펙트 간격    
-    protected void FixedUpdate()
+    protected virtual void FixedUpdate()
     {
 
         float horizontal = m_InputVector.x;

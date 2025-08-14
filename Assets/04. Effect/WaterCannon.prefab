@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3576166369554635218}
   - component: {fileID: 4502317055950802439}
   - component: {fileID: 3133344181411519834}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Ripple
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4914,7 +4914,8 @@ GameObject:
   - component: {fileID: 6408657474720037469}
   - component: {fileID: 7514380116403822961}
   - component: {fileID: 8082787349271137295}
-  m_Layer: 0
+  - component: {fileID: 3002551906990211207}
+  m_Layer: 7
   m_Name: WaterCannon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4929,15 +4930,15 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6183123905896617800}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.07641323, y: -0.7045081, z: -0.70145625, w: -0.07608194}
-  m_LocalPosition: {x: 12.044, y: 8.459, z: -1.79}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.28532037, y: 1.3471922, z: -4.018466}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3576166369554635218}
   - {fileID: 304156813234581522}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: -77.617, y: -268.84, z: 88.867}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!198 &7514380116403822961
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -4953,7 +4954,7 @@ ParticleSystem:
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 1
-  looping: 0
+  looping: 1
   prewarm: 0
   playOnAwake: 1
   useUnscaledTime: 0
@@ -5021,7 +5022,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 1.4
+      scalar: 1.8
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -8544,9 +8545,9 @@ ParticleSystem:
   CollisionModule:
     enabled: 1
     serializedVersion: 4
-    type: 0
+    type: 1
     collisionMode: 0
-    colliderForce: 0
+    colliderForce: 10
     multiplyColliderForceByParticleSize: 0
     multiplyColliderForceByParticleSpeed: 0
     multiplyColliderForceByCollisionAngle: 1
@@ -8716,16 +8717,16 @@ ParticleSystem:
         m_PreInfinity: 2
         m_PostInfinity: 2
         m_RotationOrder: 4
-    minKillSpeed: 0
+    minKillSpeed: 100
     maxKillSpeed: 10000
     radiusScale: 1
     collidesWith:
       serializedVersion: 2
-      m_Bits: 4294967295
+      m_Bits: 320
     maxCollisionShapes: 256
     quality: 0
     voxelSize: 0.5
-    collisionMessages: 0
+    collisionMessages: 1
     collidesWithDynamic: 1
     interiorCollisions: 0
   TriggerModule:
@@ -9773,6 +9774,19 @@ ParticleSystemRenderer:
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
   m_MaskInteraction: 0
+--- !u!114 &3002551906990211207
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6183123905896617800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f5ef9d3ac6010ba43931fd3c1ecf99a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pushForce: 5
 --- !u!1 &7566216954076835946
 GameObject:
   m_ObjectHideFlags: 0
@@ -9784,7 +9798,7 @@ GameObject:
   - component: {fileID: 304156813234581522}
   - component: {fileID: 8457813361178313814}
   - component: {fileID: 668231369862112761}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: SmallSplash
   m_TagString: Untagged
   m_Icon: {fileID: 0}
