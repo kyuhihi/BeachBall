@@ -651,13 +651,26 @@ public class BasePlayerMovement : MonoBehaviour
         isGrounded = Physics.CheckSphere(groundCheck.position, groundCheckDistance, groundLayer);
 
 
-        // 착지했을 때 점프 상태 해제
-        if (!wasGrounded && isGrounded && m_IsJumping)
+        // OverlapSphere로 충돌체 목록 얻기
+        Collider[] hits = Physics.OverlapSphere(groundCheck.position, groundCheckDistance, groundLayer);
+
+        isGrounded = hits.Length > 0;
+
+        // 디버그: 닿은 오브젝트 이름 출력
+        if (hits.Length > 0)
         {
-            OnJumpInput(false); // 점프 상태 해제 (Animator도 함께 업데이트됨)
-            OnDoubleJumpInput(false);
+            foreach (var hit in hits)
+            {
+                Debug.Log($"[GroundCheck] 닿은 오브젝트: {hit.gameObject.name} (Layer: {LayerMask.LayerToName(hit.gameObject.layer)})");
+            }
         }
-    }
+            // 착지했을 때 점프 상태 해제
+            if (!wasGrounded && isGrounded && m_IsJumping)
+            {
+                OnJumpInput(false); // 점프 상태 해제 (Animator도 함께 업데이트됨)
+                OnDoubleJumpInput(false);
+            }
+        }
 
     protected void OnDrawGizmosSelected()
     {

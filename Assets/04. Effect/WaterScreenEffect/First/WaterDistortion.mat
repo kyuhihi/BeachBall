@@ -42,7 +42,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _CleanRadius: 0
-    - _Distortion: 0
+    - _Distortion: 0.0028523623
     - _FallOff: 0.05
     - _Flow_Speed: 0.1
     - _Fullscreen_DepthWrite: 0
