@@ -804,7 +804,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4118572001638248854
 Transform:
   m_ObjectHideFlags: 0
@@ -1110,11 +1110,11 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   groundCheck: {fileID: 0}
-  doubleJumpEffectPrefab: {fileID: 0}
-  footstepCloudPrefab: {fileID: 0}
-  leftFootTransform: {fileID: 0}
-  rightFootTransform: {fileID: 0}
-  m_Animator: {fileID: 0}
+  doubleJumpEffectPrefab: {fileID: 480769592149668674, guid: ebc5961199aa52449828071fdd0d2125, type: 3}
+  footstepCloudPrefab: {fileID: 480769592149668674, guid: 1ab264d29a87c404e889abc9c5e65071, type: 3}
+  leftFootTransform: {fileID: 1213745910581329705}
+  rightFootTransform: {fileID: 250431064749323011}
+  m_Animator: {fileID: 45186065190516198}
   m_isMoveByInput: 1
 --- !u!1 &1611308871698182873
 GameObject:
