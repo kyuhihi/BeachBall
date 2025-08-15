@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Rendering;
 
 [DisallowMultipleComponent]
 public class CameraShaking : MonoBehaviour
@@ -167,3 +168,5 @@ public class CameraShaking : MonoBehaviour
     }
 
 }
+
+

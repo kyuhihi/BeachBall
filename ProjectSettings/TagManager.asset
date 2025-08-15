@@ -8,6 +8,7 @@ TagManager:
   - PixelationEffect
   - UICamera
   - Ball
+  - Cloud
   layers:
   - Default
   - TransparentFX
