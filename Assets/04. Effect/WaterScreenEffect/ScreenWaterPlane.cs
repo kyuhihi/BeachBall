@@ -54,7 +54,6 @@ public class ScreenWaterPlane : MonoBehaviour
 
     public void Update()
     {
-        Debug.Log(m_WaterPlaneMaterial.GetColor(m_WaterPlaneLerpColorProperty));
 
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
