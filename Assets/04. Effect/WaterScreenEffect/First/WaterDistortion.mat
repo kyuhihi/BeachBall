@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Test_2
+  m_Name: WaterDistortion
   m_Shader: {fileID: -6465566751694194690, guid: bb6743c7967bb5b41850d0c1fd5bc75a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -24,7 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _NoiseTex:
-        m_Texture: {fileID: 2800000, guid: 419762941b23bf542a58d16902a586db, type: 3}
+        m_Texture: {fileID: 2800000, guid: 6cbc0f188f6456d4cbc7dee5c12bfc0d, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -42,15 +42,15 @@ Material:
     m_Ints: []
     m_Floats:
     - _CleanRadius: 0
-    - _Distortion: 0.006
-    - _FallOff: 0.09
+    - _Distortion: 0
+    - _FallOff: 0.05
     - _Flow_Speed: 0.1
     - _Fullscreen_DepthWrite: 0
     m_Colors:
     - _Color: {r: 0, g: 0, b: 0, a: 0}
     - _Color_1: {r: 0, g: 0, b: 0, a: 1}
     - _FlowSpeed: {r: 0, g: 0.2, b: 0, a: 0}
-    - _LerpColor: {r: 0.2509804, g: 0.28627452, b: 1, a: 0.23137255}
+    - _LerpColor: {r: 0.24213806, g: 0.2778486, b: 1, a: 0.21176471}
     - _MultipleColor: {r: 0, g: 0, b: 0, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
