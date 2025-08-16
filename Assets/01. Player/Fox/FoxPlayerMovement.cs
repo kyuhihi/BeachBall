@@ -5,6 +5,7 @@ using System.Collections;
 
 public class FoxPlayerMovement : BasePlayerMovement
 {
+
     protected override void Start()
     {
         base.Start();
@@ -24,18 +25,16 @@ public class FoxPlayerMovement : BasePlayerMovement
 
     public override void OnDefenceSkill(InputValue value)
     {
-        if (value.isPressed)
-        {
-            // 여우만의 방어 스킬
-            Debug.Log("Fox: 빠른 회피!");
-            // 회피 구현
-        }
+        m_Animator.SetBool("DefenceSkill", value.isPressed);
+
+
     }
 
 
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
+
 
         // 여우의 특수한 움직임이나 기능이 있다면 여기에 추가
         // 예: 빠른 이동, 점프 등

@@ -661,7 +661,7 @@ public class BasePlayerMovement : MonoBehaviour
         {
             foreach (var hit in hits)
             {
-                Debug.Log($"[GroundCheck] 닿은 오브젝트: {hit.gameObject.name} (Layer: {LayerMask.LayerToName(hit.gameObject.layer)})");
+                // Debug.Log($"[GroundCheck] 닿은 오브젝트: {hit.gameObject.name} (Layer: {LayerMask.LayerToName(hit.gameObject.layer)})");
             }
         }
             // 착지했을 때 점프 상태 해제

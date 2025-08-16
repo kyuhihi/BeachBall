@@ -14276,7 +14276,7 @@ ParticleSystem:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-    m_Mesh: {fileID: 6494282298072627852, guid: 372a3d4065cf4c54daa87513ea5a209a, type: 3}
+    m_Mesh: {fileID: 6494282298072627852, guid: a39f34a17ac3d1643b1ac13050cbcfa6, type: 3}
     m_MeshRenderer: {fileID: 0}
     m_SkinnedMeshRenderer: {fileID: 0}
     m_Sprite: {fileID: 0}
@@ -18529,6 +18529,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7137986871356099450, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: frequency
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7137986871356099450, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: amplitudeDeg
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 7875732037954902161, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -19032,8 +19044,8 @@ SceneRoots:
   - {fileID: 8557227154655754367}
   - {fileID: 663563777}
   - {fileID: 1109866214}
-  - {fileID: 3082539635589213090}
   - {fileID: 1832078066}
   - {fileID: 1498923244}
   - {fileID: 2096407014}
   - {fileID: 1011065979}
+  - {fileID: 3082539635589213090}
