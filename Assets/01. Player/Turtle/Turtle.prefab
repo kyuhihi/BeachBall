@@ -1146,6 +1146,7 @@ GameObject:
   - component: {fileID: 8933516133118575322}
   - component: {fileID: 7324515723299230041}
   - component: {fileID: 681203235629589911}
+  - component: {fileID: 5706521900900465235}
   m_Layer: 0
   m_Name: Animal
   m_TagString: Untagged
@@ -1202,6 +1203,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4672d63302df76c479c2980b2daf33e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  turtlePlayer: {fileID: 6526465233267810416}
+--- !u!114 &5706521900900465235
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2734729376846686506}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1788f333b315b834cae664cc17398a6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turtlePlayer: {fileID: 6526465233267810416}
@@ -2032,6 +2046,7 @@ Transform:
   - {fileID: 4559875857282308659}
   - {fileID: 6334280413055061411}
   - {fileID: 5757279517852317911}
+  - {fileID: 1436415486931170890}
   m_Father: {fileID: 8003974279020940004}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4883000555161029446
@@ -3155,6 +3170,10 @@ MonoBehaviour:
   waterCannonParticlePrefab: {fileID: 7514380116403822961, guid: f6efd9daabfe2544d86568dd0690416b, type: 3}
   waterCannonByEffectParticlePrefab: {fileID: 4404156071658950816, guid: 955b5dc8b7604754baade5ee180e3800, type: 3}
   mouthTransform: {fileID: 993900989736193437}
+  shellPrefab: {fileID: 8433895303125896932, guid: 9ca5bcbfec5b4424988866185a808fbf, type: 3}
+  shellHoldPoint: {fileID: 1436415486931170890}
+  shellThrowPoint: {fileID: 1436415486931170890}
+  throwEffectPrefab: {fileID: 5808410478869098105, guid: f4e66aa1dd50d0945945a6a5c63dff69, type: 3}
 --- !u!1 &6521386645337900659
 GameObject:
   m_ObjectHideFlags: 0
@@ -4163,6 +4182,37 @@ Transform:
   - {fileID: 8899364498350399773}
   m_Father: {fileID: 3361409014304053828}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8960068127543515074
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1436415486931170890}
+  m_Layer: 9
+  m_Name: ShellThrowSpot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1436415486931170890
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8960068127543515074}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.26927102, y: -0.66400605, z: 0.28947243, w: 0.6346611}
+  m_LocalPosition: {x: -1.08, y: 0.8299, z: 0.07}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1383089293762932682}
+  m_LocalEulerAnglesHint: {x: 46.57, y: -92.236, z: 0.82}
 --- !u!1 &8963262073322910573
 GameObject:
   m_ObjectHideFlags: 0
