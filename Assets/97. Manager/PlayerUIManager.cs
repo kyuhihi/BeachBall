@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class PlayerUIManager : MonoBehaviour
@@ -13,11 +14,10 @@ public class PlayerUIManager : MonoBehaviour
     private List<PlayerUI> Players = new List<PlayerUI>();
 
     // Raycast �ɼ�
-    [SerializeField] private LayerMask groundMask = ~0;   // ��� ���̾� �⺻
-    private float rayStartHeight = 0.0f; // �÷��̾� ������ ���
+    [SerializeField] private LayerMask groundMask = ~0;   // ���? ���̾� �⺻
+    private float rayStartHeight = 0.0f; // �÷��̾� ������ ���?
     private float maxRayDistance = 100f;  // �ִ� �Ÿ�
      private float hoverHeight = 0.1f;   // ���� ���� ��¦ ����
-    private float smoothLerp = 0f;      // �ε巴�� ���󰡱�(0�̸� ���)
 
     void Start()
     {
@@ -28,7 +28,6 @@ public class PlayerUIManager : MonoBehaviour
                 PlayerObject = player,
                 BottomUI = Instantiate(playerBottomUIprefab, player.transform)
             };
-            // playerUI.BottomUI.GetComponent<Material>().color = player.GetComponent<IPlayerInfo>().m_PlayerDefaultColor;
             Players.Add(playerUI);
         }
     }
@@ -49,16 +48,9 @@ public class PlayerUIManager : MonoBehaviour
             {
                 targetPos = p ;
             }
+            playerUI.BottomUI.transform.position = targetPos;
+            playerUI.BottomUI.GetComponent<Renderer>().material.SetColor("_Color", playerUI.PlayerObject.GetComponent<IPlayerInfo>().m_PlayerDefaultColor);
 
-            if (smoothLerp > 0f)
-            {
-                playerUI.BottomUI.transform.position =
-                    Vector3.Lerp(playerUI.BottomUI.transform.position, targetPos, Time.deltaTime * smoothLerp);
-            }
-            else
-            {
-                playerUI.BottomUI.transform.position = targetPos;
-            }
         }
     }
 }
