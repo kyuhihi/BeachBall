@@ -12,12 +12,12 @@ public class PlayerUIManager : MonoBehaviour
     [SerializeField] private GameObject playerBottomUIprefab;
     private List<PlayerUI> Players = new List<PlayerUI>();
 
-    // Raycast ¿É¼Ç
-    [SerializeField] private LayerMask groundMask = ~0;   // ¸ðµç ·¹ÀÌ¾î ±âº»
-    private float rayStartHeight = 0.0f; // ÇÃ·¹ÀÌ¾î À§¿¡¼­ ½î±â
-    private float maxRayDistance = 100f;  // ÃÖ´ë °Å¸®
-     private float hoverHeight = 0.1f;   // Áö¸é À§·Î »ìÂ¦ ¶ç¿ì±â
-    private float smoothLerp = 0f;      // ºÎµå·´°Ô µû¶ó°¡±â(0ÀÌ¸é Áï½Ã)
+    // Raycast ï¿½É¼ï¿½
+    [SerializeField] private LayerMask groundMask = ~0;   // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ì¾ï¿½ ï¿½âº»
+    private float rayStartHeight = 0.0f; // ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
+    private float maxRayDistance = 100f;  // ï¿½Ö´ï¿½ ï¿½Å¸ï¿½
+     private float hoverHeight = 0.1f;   // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Â¦ ï¿½ï¿½ï¿½ï¿½
+    private float smoothLerp = 0f;      // ï¿½Îµå·´ï¿½ï¿½ ï¿½ï¿½ï¿½ó°¡±ï¿½(0ï¿½Ì¸ï¿½ ï¿½ï¿½ï¿½)
 
     void Start()
     {
@@ -28,6 +28,7 @@ public class PlayerUIManager : MonoBehaviour
                 PlayerObject = player,
                 BottomUI = Instantiate(playerBottomUIprefab, player.transform)
             };
+            // playerUI.BottomUI.GetComponent<Material>().color = player.GetComponent<IPlayerInfo>().m_PlayerDefaultColor;
             Players.Add(playerUI);
         }
     }

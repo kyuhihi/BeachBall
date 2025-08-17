@@ -3,8 +3,11 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 
-public class BasePlayerMovement : MonoBehaviour
+public class BasePlayerMovement : MonoBehaviour , IPlayerInfo
 {
+    public IPlayerInfo.PlayerType m_PlayerType { get; set; }
+    public Color m_PlayerDefaultColor { get; set; }
+
     [Header("Movement Settings")]
     public float turnSpeed = 20f;
     protected float walkSpeed = 7f;

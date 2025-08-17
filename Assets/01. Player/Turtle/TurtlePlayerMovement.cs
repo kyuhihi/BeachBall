@@ -32,7 +32,8 @@ public class TurtlePlayerMovement : BasePlayerMovement
     protected override void Start()
     {
         base.Start();
-
+        m_PlayerType = IPlayerInfo.PlayerType.Turtle;
+        m_PlayerDefaultColor = Color.skyBlue;
     }
 
     public override void OnAttackSkill(InputValue value)

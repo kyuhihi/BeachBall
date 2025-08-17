@@ -9,7 +9,8 @@ public class FoxPlayerMovement : BasePlayerMovement
     protected override void Start()
     {
         base.Start();
-
+        m_PlayerType = IPlayerInfo.PlayerType.Fox;
+        m_PlayerDefaultColor = Color.orange;
     }
 
 
