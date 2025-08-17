@@ -22,7 +22,7 @@ public class WaterPush : MonoBehaviour
 
             rb.AddForce(pushDir * pushForce, ForceMode.Impulse);
 
-            Debug.Log("Object pushed by water particle!");
+            // Debug.Log("Object pushed by water particle!");
         }
     }
 }

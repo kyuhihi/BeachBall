@@ -11,7 +11,16 @@ public class TurtlePlayerMovement : BasePlayerMovement
     private ParticleSystem waterCannonByEffectParticleInstance;
 
     [SerializeField] private Transform mouthTransform;
-    
+
+    // 거북이 attack skill
+    private bool isShellThrowCannonActive = false;
+
+    [SerializeField] private GameObject shellPrefab;
+    [SerializeField] private Transform shellHoldPoint; // 손에 들고 있을 위치
+    [SerializeField] private Transform shellThrowPoint; // 던질 때 시작 위치
+    [SerializeField] private GameObject throwEffectPrefab; // 이펙트 프리팹
+    private GameObject heldShell = null;
+
 
     Vector3 ballPos = Vector3.zero;
 
@@ -20,18 +29,35 @@ public class TurtlePlayerMovement : BasePlayerMovement
     private float waterCannonTurnSpeed = 180f; // 초당 회전 각도
     private float waterCannonAngleThreshold = 5f; // 몇 도 이내면 "완료"로 간주
 
-
     protected override void Start()
     {
         base.Start();
-        
+
     }
 
     public override void OnAttackSkill(InputValue value)
     {
         if (value.isPressed)
         {
-            Debug.Log("Turtle: 등껍질 돌진!");
+            if (isShellThrowCannonActive || isWaterCannonActive || isWaterCannonRotating)
+                return;
+            isShellThrowCannonActive = true;
+            // Debug.Log("Turtle: 등껍질 돌진!");
+            MoveByInput = false;
+
+            // 등껍질 미리 생성해서 손에 들고 있게
+            if (heldShell == null && shellPrefab != null && shellHoldPoint != null)
+            {
+                heldShell = Instantiate(shellPrefab, shellHoldPoint.position, shellHoldPoint.rotation, shellHoldPoint);
+
+                GameObject throweffect = Instantiate(throwEffectPrefab, shellThrowPoint.position, shellThrowPoint.rotation);
+                Destroy(throweffect, 1f); // 1초 뒤 자동 파괴 (필요시 시간 조절) -> 어차피 알아서 없어짐
+
+            }
+
+            // 애니메이션 트리거
+            if (m_Animator != null)
+                m_Animator.SetTrigger("ThrowShell");
         }
     }
 
@@ -40,7 +66,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
         if (value.isPressed)
         {
             // 이미 물대포가 진행 중이거나 회전 중이면 무시
-            if (isWaterCannonActive || isWaterCannonRotating)
+            if (isWaterCannonActive || isWaterCannonRotating || isShellThrowCannonActive)
                 return;
 
             isWaterCannonRotating = true;
@@ -130,10 +156,60 @@ public class TurtlePlayerMovement : BasePlayerMovement
         }
     }
 
+    public void ThrowShellAtOpponent()
+    {
+        // Debug.Log("Turtle: 등껍질 던지기!!!!!!");
+        if (heldShell == null)
+        {
+            // Debug.LogWarning("손에 든 등껍질이 없습니다!");
+            return;
+        }
+
+        // 상대 플레이어 찾기
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        GameObject opponent = null;
+        foreach (var player in players)
+        {
+            if (player != this.gameObject)
+            {
+                opponent = player;
+                break;
+            }
+        }
+        if (opponent == null)
+        {
+            Debug.LogWarning("상대 플레이어를 찾을 수 없습니다!");
+            Destroy(heldShell);
+            heldShell = null;
+            return;
+        }
+
+        // 등껍질을 손에서 떼고 던지기 위치로 이동
+        heldShell.transform.SetParent(null);
+        if (shellThrowPoint != null)
+            heldShell.transform.position = shellThrowPoint.position;
+
+        // 던질 방향 계산
+        Vector3 throwDir = (opponent.transform.position - heldShell.transform.position).normalized;
+
+        // Rigidbody로 힘을 가해 던지기
+        Rigidbody shellRb = heldShell.GetComponent<Rigidbody>();
+        if (shellRb != null)
+        {
+            float throwForce = 20f; // 원하는 힘으로 조절
+            shellRb.isKinematic = false; // 혹시 손에 들 때 kinematic으로 했다면 해제
+            shellRb.AddForce(throwDir * throwForce, ForceMode.Impulse);
+        }
+
+        MoveByInput = true; // 던진 후 이동 가능
+        heldShell = null; // 손에 든 등껍질 비움
+        isShellThrowCannonActive = false; // 등껍질 던지기 종료
+    }
+
     // 애니메이션 이벤트에서 호출
     public void FireWaterCannon()
     {
-        Debug.Log("Turtle: 물대포 발사!");
+        // Debug.Log("Turtle: 물대포 발사!");
         GameObject ballObj = GameObject.FindWithTag(ballTag);
         if (ballObj != null && waterCannonParticlePrefab != null && mouthTransform != null)
         {

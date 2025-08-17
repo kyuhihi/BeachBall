@@ -378,6 +378,13 @@ public class BasePlayerMovement : MonoBehaviour
         Debug.Log("DefenceSkill (Base): 아무 동작 없음");
     }
 
+    public virtual void OnUltimateSkill(InputValue value)
+    {
+        // 기본 동작(없거나, 공통 이펙트 등)
+        Debug.Log("UltimateSkill (Base): 아무 동작 없음");
+    }
+
+
 
     protected void OnFootstep()
     {
@@ -670,7 +677,22 @@ public class BasePlayerMovement : MonoBehaviour
                 OnJumpInput(false); // 점프 상태 해제 (Animator도 함께 업데이트됨)
                 OnDoubleJumpInput(false);
             }
-        }
+    }
+
+    public void Stun(float duration)
+    {
+        // 기절 처리(이동 불가, 애니메이션 등)
+        // 예시:
+        MoveByInput = false;
+        StartCoroutine(StunCoroutine(duration));
+    }
+
+    private IEnumerator StunCoroutine(float duration)
+    {
+        // 기절 애니메이션 등 추가 가능
+        yield return new WaitForSeconds(duration);
+        MoveByInput = true;
+    }
 
     protected void OnDrawGizmosSelected()
     {
