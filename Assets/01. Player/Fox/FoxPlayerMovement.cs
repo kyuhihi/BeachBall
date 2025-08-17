@@ -30,6 +30,11 @@ public class FoxPlayerMovement : BasePlayerMovement
 
     }
 
+    public override void OnUltimateSkill(InputValue value)
+    {
+        Debug.Log("유 성 화 산");
+    }
+
 
     protected override void FixedUpdate()
     {

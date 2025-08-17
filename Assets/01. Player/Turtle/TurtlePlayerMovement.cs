@@ -73,6 +73,10 @@ public class TurtlePlayerMovement : BasePlayerMovement
             MoveByInput = false;
         }
     }
+    public override void OnUltimateSkill(InputValue value)
+    {
+        Debug.Log("물이 없는 곳에서 이 정도의 수둔을!!");
+    }
 
     protected override void FixedUpdate()
     {
