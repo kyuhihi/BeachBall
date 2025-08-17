@@ -15,6 +15,7 @@ public class FoxTail : MonoBehaviour
     private float yawAccumDeg;
 
     [SerializeField] private GameObject m_TailGameObject;
+    [SerializeField] private DefenceEffector m_DefenceEffector;
     private Material m_TrailMaterial;
     private Vector2 m_TrailSpeed = new Vector2(1.0f, 10.0f);
 
@@ -25,11 +26,12 @@ public class FoxTail : MonoBehaviour
     private Coroutine m_BlendCo;
 
     // Alpha Cutoff 페이드 설정
-    [SerializeField] private string alphaCutoffProperty = "_Cutoff"; // Shader Graph이면 "AlphaClipThreshold"
-    [SerializeField] private float cutoffActive = 0.4f;            // Active 시 목표 컷오프
-    [SerializeField] private float cutoffInactive = 1.0f;            // Deactive 시 목표 컷오프
-    [SerializeField] private float cutoffBlendTime = 0.20f;          // 컷오프 보간 시간
-    [SerializeField] private AnimationCurve cutoffEase = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    private string alphaCutoffProperty = "_Cutoff"; // Shader Graph이면 "AlphaClipThreshold"
+    private float cutoffActive = 0.4f;            // Active 시 목표 컷오프
+    private float cutoffInactive = 1.0f;            // Deactive 시 목표 컷오프
+    private float cutoffBlendTime = 0.20f;          // 컷오프 보간 시간
+    private AnimationCurve cutoffEase = AnimationCurve.EaseInOut(0, 0, 1, 1);
+
 
     public enum TailState
     {
@@ -70,6 +72,7 @@ public class FoxTail : MonoBehaviour
         // 기존 코루틴 중지 후 새 보간 시작
         if (m_BlendCo != null) StopCoroutine(m_BlendCo);
         m_BlendCo = StartCoroutine(Co_BlendState(state));
+        m_DefenceEffector.SetActive(state == TailState.Defence);
     }
 
     void IdleTick()

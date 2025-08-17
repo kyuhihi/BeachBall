@@ -118,67 +118,73 @@ public class Ball : MonoBehaviour
         transform.position = PredictPos;
     }
 
-    void OnCollisionEnter(Collision other)
+    public void OnCollisionEnter(Collision other)
     {
-        if (other.gameObject.CompareTag(PlayerTag))
+        // 충돌 데이터에서 필요한 값 추출 후 공용 처리 호출
+        Vector3 contactPoint = other.contacts[0].point;
+        Vector3 hitNormal;
+        var wall = other.gameObject.GetComponent<Wall>();
+        if (wall != null) hitNormal = wall.GetNormalDirection();
+        else              hitNormal = (transform.position - contactPoint).normalized;
+
+        ProcessHit(other.gameObject, other.collider, contactPoint, hitNormal);
+    }
+
+    // 외부에서도 동일 로직을 호출할 수 있는 진입점
+    public void ExternalHit(Vector3 contactPoint, Vector3 hitNormal, Collider otherCollider = null, GameObject otherGO = null)
+    {
+        ProcessHit(otherGO, otherCollider, contactPoint, hitNormal);
+    }
+
+    // 충돌 처리 공용 메서드(원래 OnCollisionEnter 내용)
+    private void ProcessHit(GameObject otherGO, Collider otherCol, Vector3 contactPoint, Vector3 hitNormal)
+    {
+        // 1) 플레이어와 충돌 효과
+        if (otherGO != null && otherGO.CompareTag(PlayerTag))
         {
             CameraShakingManager.Instance.DoShake(0.1f, 1f);
             HitStopManager.Instance.DoHitStop(0.1f, 0.1f);
             _currentSpeed = MaxSmashSpeed;
         }
 
+        // 2) 히트 노멀 보정(없을 경우 추정)
+        if (hitNormal == Vector3.zero)
+            hitNormal = (transform.position - contactPoint).normalized;
 
-        Vector3 contactPoint = other.contacts[0].point;
-        Vector3 hitDir;
-        Wall wall = other.gameObject.GetComponent<Wall>();
-        if (wall != null)
-        {
-            hitDir = wall.GetNormalDirection();
-        }
-        else
-        {
-            hitDir = (transform.position - contactPoint).normalized;
-        }
+        // 3) 반사 방향 계산 및 Y-플립 제어
+        Vector3 newDir = Vector3.Reflect(direction, hitNormal).normalized;
 
-        // 반사 계산
-        Vector3 newDir = Vector3.Reflect(direction, hitDir).normalized;
-
-        // y부호 플립 감지(짧은 시간 창 기준)
         int newSign = newDir.y >= 0f ? 1 : -1;
         if (newSign != lastYSign)
         {
             lastYSign = newSign;
-            RegisterYFlipTime(); // 추가: 부호 변경 시각 기록
+            RegisterYFlipTime();
         }
-
-        // 짧은 시간 안에 임계 이상 플립되면 Y를 잠시 음수로 고정
         if (ShouldLockYByFlipBurst())
         {
             newDir = new Vector3(newDir.x, -Mathf.Abs(newDir.y), newDir.z).normalized;
-
             if (yLockCoroutine != null) StopCoroutine(yLockCoroutine);
             yLockCoroutine = StartCoroutine(LockYNegativeFor(yLockDuration));
-
-            yFlipTimes.Clear(); // 창 카운트 리셋
-            lastYSign = -1;     // 현재 상태를 음수로 가정
+            yFlipTimes.Clear();
+            lastYSign = -1;
             Debug.Log($"Y Flip Burst Detected! Locking Y for {yLockDuration} seconds.");
         }
-
         direction = newDir;
 
-        Collider otherCol = other.collider;
-        Vector3 pushDir;
-        float pushDistance;
-        bool overlapped = Physics.ComputePenetration(
-            m_SphereCollider, transform.position, transform.rotation,
-            otherCol, otherCol.transform.position, otherCol.transform.rotation,
-            out pushDir, out pushDistance);
-
-        if (overlapped && pushDistance > 0f)
+        // 4) 관통 보정(상대 콜라이더가 있으면)
+        if (otherCol != null)
         {
-            transform.position += pushDir * pushDistance;
+            Vector3 pushDir;
+            float pushDistance;
+            bool overlapped = Physics.ComputePenetration(
+                m_SphereCollider, transform.position, transform.rotation,
+                otherCol, otherCol.transform.position, otherCol.transform.rotation,
+                out pushDir, out pushDistance);
+            if (overlapped && pushDistance > 0f)
+                transform.position += pushDir * pushDistance;
         }
 
+        // 5) 파티클/랜드 스팟
         if (m_HitParticle != null)
         {
             m_HitParticle.Stop();
