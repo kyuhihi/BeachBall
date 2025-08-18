@@ -1,15 +1,18 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using UnityEngine.Playables;
 
 
 public class FoxPlayerMovement : BasePlayerMovement
 {
     [SerializeField] private Transform m_FireBallSpawnPoint;
     private FireBallContainer m_FireBallContainer;
+    private PlayableDirector m_PlayableDirector;
     protected override void Start()
     {
         base.Start();
+        m_PlayableDirector = GetComponent<PlayableDirector>();
         m_PlayerType = IPlayerInfo.PlayerType.Fox;
         m_PlayerDefaultColor = Color.orange;
 
@@ -41,7 +44,8 @@ public class FoxPlayerMovement : BasePlayerMovement
 
     public override void OnUltimateSkill(InputValue value)
     {
-        Debug.Log("유 성 화 산");
+
+        m_PlayableDirector.Play();
     }
 
 

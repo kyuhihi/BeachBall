@@ -44,7 +44,7 @@ public class CameraShaking : MonoBehaviour
     [SerializeField] private float weightZ = 1f;
 
     [Header("복원 시간(초)")]
-    [SerializeField] private float restoreDuration = 0.2f;
+    [SerializeField] private float restoreDuration = 1.0f;
 
     private Vector3 originalPos;
     private Quaternion originalRot;
@@ -54,12 +54,16 @@ public class CameraShaking : MonoBehaviour
 
     [Header("Follow Target")]
     [SerializeField] private Transform followTarget;
-    [SerializeField] private float maxFollowZDistance;
+    [SerializeField] private float maxFollowZDistance = 1.73f;
 
     void Start()
     {
         originalPos = transform.position;
         originalRot = transform.rotation;
+        if (followTarget == null)
+        {
+            followTarget = GameObject.FindFirstObjectByType<Ball>()?.transform;
+        }
     }
     public void Update()
     {

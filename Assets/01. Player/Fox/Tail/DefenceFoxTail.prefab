@@ -97,7 +97,7 @@ GameObject:
   - component: {fileID: 4932768577014194025}
   - component: {fileID: 2871609756265190291}
   m_Layer: 0
-  m_Name: FoxTail
+  m_Name: DefenceFoxTail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

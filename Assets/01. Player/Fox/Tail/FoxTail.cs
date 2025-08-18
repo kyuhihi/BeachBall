@@ -10,6 +10,7 @@ public class FoxTail : MonoBehaviour
     [SerializeField] private float amplitudeDeg = 10f;  // 진폭(도)
     [SerializeField] private float frequency = 0.1f;    // 진동 빈도(Hz)
     [SerializeField] private TailState tailState = TailState.Defence;
+    public TailState GetTailType() { return tailState; }
     [SerializeField] private float yawSpeedDegPerSec = 1440f; // 초당 회전 속도(도)
     [SerializeField] private float DefenceRoationX = 45f;
     private float yawAccumDeg;

@@ -13,7 +13,7 @@ public class FireBall : MonoBehaviour
 
     private void OnEnable()
     {
-        m_DisappearTime = 2.0f;
+        m_DisappearTime = 3.0f;
     }
     void Start()
     {
@@ -27,7 +27,7 @@ public class FireBall : MonoBehaviour
         if (m_Target != null && m_DisappearTime > 1.0f)
         {
             Vector3 TargetOffset = m_Target.transform.position;
-            TargetOffset.y += 0.5f;
+            TargetOffset.y += 1.5f;
             Vector3 toTarget = TargetOffset - transform.position;
             if (toTarget.sqrMagnitude > 1e-6f)
             {
@@ -38,6 +38,7 @@ public class FireBall : MonoBehaviour
         }
         // 2) 항상 현재 forward로 전진
         transform.position += transform.forward * speed * Time.deltaTime;
+        transform.rotation *= Quaternion.Euler(0f, 0.0f, turnSpeedDegPerSec * Time.deltaTime);
 
         m_DisappearTime -= Time.deltaTime;
         if (m_DisappearTime <= 0f)
