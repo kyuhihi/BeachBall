@@ -88,7 +88,6 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     {
         Signals.Cutscene.AddStart(OnStartCutScene);
         Signals.Cutscene.AddEnd(OnEndCutscene);
-        Debug.Log("FoxPlayerMovement OnEnable called");
     }
     void OnDisable()
     {
