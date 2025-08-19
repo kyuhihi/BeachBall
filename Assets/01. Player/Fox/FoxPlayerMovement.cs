@@ -9,16 +9,33 @@ public class FoxPlayerMovement : BasePlayerMovement
     [SerializeField] private Transform m_FireBallSpawnPoint;
     private FireBallContainer m_FireBallContainer;
     private PlayableDirector m_PlayableDirector;
+    
+    [Header("Ultimate Setting")]
+    const string m_UltimateFlashGameObjName = "UltimateMesh";
+    private GameObject m_UltimateFlashGameObject;
+    private Material m_UltimateFlashMaterial;
     protected override void Start()
     {
         base.Start();
         m_PlayableDirector = GetComponent<PlayableDirector>();
         m_PlayerType = IPlayerInfo.PlayerType.Fox;
         m_PlayerDefaultColor = Color.orange;
+        m_CourtPosition = IPlayerInfo.CourtPosition.COURT_RIGHT;
 
         m_FireBallContainer = GameObject.FindFirstObjectByType<FireBallContainer>();
+        int iChildCnt = transform.childCount;
+        for (int i = 0; i < iChildCnt; i++)
+        {
+            if (transform.GetChild(i).name == m_UltimateFlashGameObjName)
+            {
+                m_UltimateFlashGameObject = transform.GetChild(i).gameObject;
+                m_UltimateFlashMaterial = m_UltimateFlashGameObject.GetComponent<ParticleSystemRenderer>().material;
+                break;
+            }
+        }
     }
-    
+
+
     public override void OnAttackSkill(InputValue value)
     {
         if (value.isPressed)
@@ -33,7 +50,11 @@ public class FoxPlayerMovement : BasePlayerMovement
         fireball.GetComponent<FireBall>().ShootFireBall(m_FireBallSpawnPoint, this.gameObject);
     }
 
-    
+    protected override void Update()
+    {
+        base.Update();
+        m_UltimateFlashMaterial.SetFloat("_LocalYClipOffset",transform.position.y);
+    }
 
     public override void OnDefenceSkill(InputValue value)
     {
@@ -44,9 +65,18 @@ public class FoxPlayerMovement : BasePlayerMovement
 
     public override void OnUltimateSkill(InputValue value)
     {
-
+        transform.position = GameManager.GetInstance().GetUltimatePos(m_PlayerType, m_CourtPosition);
         m_PlayableDirector.Play();
     }
+    public override void OnStartCutScene()
+    {
+        m_UltimateFlashGameObject.SetActive(true);
+    }
+    public override void OnEndCutscene()
+    {
+        m_UltimateFlashGameObject.SetActive(false);
+
+    }//이거 오버라이딩해야함.
 
 
     protected override void FixedUpdate()
