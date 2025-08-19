@@ -3,10 +3,11 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 
-public class BasePlayerMovement : MonoBehaviour , IPlayerInfo
+public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
 {
     public IPlayerInfo.PlayerType m_PlayerType { get; set; }
     public Color m_PlayerDefaultColor { get; set; }
+    public IPlayerInfo.CourtPosition m_CourtPosition { get; set; }
 
     [Header("Movement Settings")]
     public float turnSpeed = 20f;
@@ -80,6 +81,19 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo
     protected float upPressedTime = -1f;
     protected float downPressedTime = -1f;
 
+    public virtual void OnStartCutScene(){}
+    public virtual void OnEndCutscene(){}//이거 오버라이딩해야함.
+
+    void OnEnable()
+    {
+        Signals.Cutscene.AddStart(OnStartCutScene);
+        Signals.Cutscene.AddEnd(OnEndCutscene);
+    }
+    void OnDisable()
+    {
+        Signals.Cutscene.RemoveStart(OnStartCutScene);
+        Signals.Cutscene.RemoveEnd(OnEndCutscene);
+    }
     protected void Awake()
     {
         jumpForce = 10f;
@@ -119,7 +133,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo
         // 필요한 초기화 코드
     }
 
-    protected void Update()
+    protected virtual void Update()
     {
         CheckGrounded();
         HandleJump();

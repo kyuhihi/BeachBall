@@ -2,8 +2,10 @@ using UnityEngine;
 
 public interface IPlayerInfo
 {
-    PlayerType m_PlayerType { get; set; }
-    Color m_PlayerDefaultColor { get; set; }
+    public PlayerType m_PlayerType { get; set; }
+    public Color m_PlayerDefaultColor { get; set; }
+    public CourtPosition m_CourtPosition { get; set; }
+
     public enum PlayerType
     {
         Fox = 1,
@@ -11,4 +13,17 @@ public interface IPlayerInfo
         Penguin = 3,
         Monkey = 4
     }
+
+    public enum CourtPosition
+    {
+        COURT_RIGHT,
+        COURT_LEFT,
+        COURT_END
+    }
+}
+
+public interface ICutSceneListener
+{
+    void OnStartCutScene();
+    void OnEndCutscene();
 }
