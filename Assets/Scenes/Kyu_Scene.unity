@@ -13649,6 +13649,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5069529709561098266, guid: b784da870b94d874eadfdc67f3a40aa8, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 8524230767976896381, guid: b784da870b94d874eadfdc67f3a40aa8, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -19395,10 +19399,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 3667381618395995390, guid: 10906cb2729ff9742babf771c559e901, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 4118572001638248854, guid: 10906cb2729ff9742babf771c559e901, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.09
@@ -19438,14 +19438,6 @@ PrefabInstance:
     - target: {fileID: 4118572001638248854, guid: 10906cb2729ff9742babf771c559e901, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4535025930198626433, guid: 10906cb2729ff9742babf771c559e901, type: 3}
-      propertyPath: playOnAwake
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7343539204451267007, guid: 10906cb2729ff9742babf771c559e901, type: 3}
-      propertyPath: playOnAwake
-      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8818059597635963912, guid: 10906cb2729ff9742babf771c559e901, type: 3}
       propertyPath: m_SceneBindings.Array.data[2].value
