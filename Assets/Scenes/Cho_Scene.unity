@@ -19728,18 +19728,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 152306847340043727, guid: c290f079e148a00498d5d113fb0b7ed4, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 152306847340043727, guid: c290f079e148a00498d5d113fb0b7ed4, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 152306847340043727, guid: c290f079e148a00498d5d113fb0b7ed4, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 152306847340043727, guid: c290f079e148a00498d5d113fb0b7ed4, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.43
       objectReference: {fileID: 0}
@@ -19782,10 +19770,6 @@ PrefabInstance:
     - target: {fileID: 2496141474858492121, guid: c290f079e148a00498d5d113fb0b7ed4, type: 3}
       propertyPath: m_Name
       value: DropWaterFromWall
-      objectReference: {fileID: 0}
-    - target: {fileID: 7009004012829076353, guid: c290f079e148a00498d5d113fb0b7ed4, type: 3}
-      propertyPath: m_SortingOrder
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
