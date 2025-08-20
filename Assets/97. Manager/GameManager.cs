@@ -2,6 +2,7 @@ using Cinemachine;
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+// using UnityEngine.Experimental.GlobalIllumination;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,28 +10,15 @@ public class GameManager : MonoBehaviour
     public static GameManager GetInstance() => Instance;
     public static void SetInstance(GameManager instance) => Instance = instance;
     private GameState m_eCurrentGameState = GameState.GAME;
-    [SerializeField] private CinemachineVirtualCamera m_GameVirtualCam;
-    [SerializeField]private CinemachineVirtualCamera m_CutSceneVirtualCam;
+    private CinemachineVirtualCamera m_GameVirtualCam;
+    private CinemachineVirtualCamera m_CutSceneVirtualCam;
     private const int OnVirtualCameraPriority = 50;
     private const int OffVirtualCameraPriority = 10;
+    private UltimateSetting m_FoxUltimateSetting;//Include Environment, CutsceneTransform
+    private EnvironmentConfig m_OriginEnvironmentConfig;
+    private Light m_DirectionalLight;
+    private Coroutine _lightColorCo;
 
-    private static readonly Vector3 FoxRightPos = new Vector3(0.09f, 0.52f, -5.96f);
-    private UltimatePos m_FoxUltimatePos = new UltimatePos(IPlayerInfo.PlayerType.Fox, FoxRightPos);
-
-    public struct UltimatePosition
-    {
-        private IPlayerInfo.CourtPosition eCourtPosition;
-        private Vector3 CutScenePosition;
-
-        public IPlayerInfo.CourtPosition GetCourtPosition() => eCourtPosition;
-        public Vector3 GetCutScenePosition() => CutScenePosition;
-
-        public UltimatePosition(IPlayerInfo.CourtPosition courtPosition, Vector3 cutScenePosition)
-        {
-            eCourtPosition = courtPosition;
-            CutScenePosition = cutScenePosition;
-        }
-    }
     public enum GameState
     {
         GAME,
@@ -42,6 +30,21 @@ public class GameManager : MonoBehaviour
     public void Start()
     {
         SetInstance(this);
+        InitializeCamera();
+        m_DirectionalLight = FindFirstObjectByType<Light>();
+        LoadScriptableObjects();
+
+    }
+    private void LoadScriptableObjects()
+    {
+        if (m_FoxUltimateSetting == null)
+            m_FoxUltimateSetting = UltimateConfigLoader.LoadFoxUltimate();
+        if (m_OriginEnvironmentConfig == null)
+            m_OriginEnvironmentConfig = UltimateConfigLoader.LoadOriginEnv();
+    }
+
+    private void InitializeCamera()
+    {
         GameObject[] Cams = GameObject.FindGameObjectsWithTag("MainCamera");
         foreach (var cam in Cams)
         {
@@ -54,41 +57,90 @@ public class GameManager : MonoBehaviour
                 m_CutSceneVirtualCam = cam.GetComponent<CinemachineVirtualCamera>();
             }
         }
+
     }
 
     public void StartCutScene()
     {
+        // Emission > Filter 색 변경
+        if (m_DirectionalLight != null)
+        {
+            Color UltimateSkyColor = m_FoxUltimateSetting.ApplyEnvironment();
+            StartLightColorLerp(UltimateSkyColor, 1f);
+        }
         m_eCurrentGameState = GameState.CUTSCENE;
         m_GameVirtualCam.Priority = OffVirtualCameraPriority;
         m_CutSceneVirtualCam.Priority = OnVirtualCameraPriority;
         Signals.Cutscene.RaiseStart();
     }
+
     public void EndCutScene()
     {
         m_eCurrentGameState = GameState.GAME;
         m_GameVirtualCam.Priority = OnVirtualCameraPriority;
         m_CutSceneVirtualCam.Priority = OffVirtualCameraPriority;
-        // 컷신 종료 브로드캐스트
+
+        // 원래 필터 색 복귀
+        if (m_DirectionalLight != null)
+        {
+            StartLightColorLerp(m_OriginEnvironmentConfig.LightFilterColor, 1f);
+            RenderSettings.skybox = m_OriginEnvironmentConfig.SkyBoxMat;
+        }
         Signals.Cutscene.RaiseEnd();
     }
 
-    public Vector3 GetUltimatePos(IPlayerInfo.PlayerType ePlayerType, IPlayerInfo.CourtPosition eCourtPosition)
+    public bool GetUltimatePos(IPlayerInfo.PlayerType ePlayerType,
+    IPlayerInfo.CourtPosition eCourtPosition,
+    out Vector3 position,
+    out Quaternion rotation)
     {
-        Vector3 RetPos = Vector3.zero;
         switch (ePlayerType)
         {
             case IPlayerInfo.PlayerType.Fox:
-                RetPos = m_FoxUltimatePos.GetUltimatePosition(eCourtPosition);
-                break;
+                position = m_FoxUltimateSetting.GetUltimatePosition(eCourtPosition);
+                rotation = m_FoxUltimateSetting.GetUltimateRotation(eCourtPosition);
+                return true;
             case IPlayerInfo.PlayerType.Turtle:
-                break;
+                position = Vector3.zero;
+                rotation = Quaternion.identity;
+                return true;
 
             case IPlayerInfo.PlayerType.Penguin:
-                break;
+                position = Vector3.zero;
+                rotation = Quaternion.identity;
+                return true;
             case IPlayerInfo.PlayerType.Monkey:
-                break;
+                position = Vector3.zero;
+                rotation = Quaternion.identity;
+                return true;
         }
-        return RetPos;
+        position = Vector3.zero;
+        rotation = Quaternion.identity;
+        return false;
+    }
+
+    // 색상 보간 시작(기존 코루틴이 있으면 중지)
+    private void StartLightColorLerp(Color target, float duration)
+    {
+        if (_lightColorCo != null) StopCoroutine(_lightColorCo);
+        _lightColorCo = StartCoroutine(Co_LerpLightColor(target, duration));
+    }
+
+    private System.Collections.IEnumerator Co_LerpLightColor(Color target, float duration)
+    {
+        if (m_DirectionalLight == null) yield break;
+        duration = Mathf.Max(0.0001f, duration);
+        Color from = m_DirectionalLight.color;
+        float t = 0f;
+        while (t < duration)
+        {
+            t += Time.deltaTime;
+            float k = Mathf.Clamp01(t / duration);
+            m_DirectionalLight.color = Color.Lerp(from, target, k);
+            yield return null;
+        }
+        m_DirectionalLight.color = target;
+        _lightColorCo = null;
     }
 }
 

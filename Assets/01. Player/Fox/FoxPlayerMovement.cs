@@ -65,8 +65,16 @@ public class FoxPlayerMovement : BasePlayerMovement
 
     public override void OnUltimateSkill(InputValue value)
     {
-        transform.position = GameManager.GetInstance().GetUltimatePos(m_PlayerType, m_CourtPosition);
-        m_PlayableDirector.Play();
+        Vector3 OutPos = Vector3.zero;
+        Quaternion OutRot = Quaternion.identity;
+        bool bRetVal = GameManager.GetInstance().GetUltimatePos(m_PlayerType, m_CourtPosition, out OutPos, out OutRot);
+
+        if (bRetVal)
+        {
+            transform.position = OutPos;
+            transform.rotation = OutRot;
+            m_PlayableDirector.Play();
+        }
     }
     public override void OnStartCutScene()
     {

@@ -15,7 +15,6 @@ public class OrbitSpheres : MonoBehaviour
     private ORBIT_STATE m_OrbitState = ORBIT_STATE.ORBIT_STANDBY;
     // 발사 시퀀스 설정
     [Header("Shoot Settings")]
-    [SerializeField] private float shootInterval = 0.001f;          // 몇 초 간격으로 다음 구체 발사
     [SerializeField] private float shootDuration = 0.6f;            // 목표 지점까지 걸리는 시간
     [SerializeField] private float shootTargetOffsetRadius = 0.35f; // 카메라 주변 랜덤 오프셋 반경
     [SerializeField] private AnimationCurve shootCurve = AnimationCurve.EaseInOut(0,0,1,1);
