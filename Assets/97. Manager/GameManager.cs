@@ -69,6 +69,7 @@ public class GameManager : MonoBehaviour
         if (m_DirectionalLight != null)
         {
             Color UltimateSkyColor = m_FoxUltimateSetting.ApplyEnvironment();
+            RenderSettings.skybox.SetFloat("_Exposure", 0f);
             StartLightColorLerp(UltimateSkyColor, 1f);
         }
         m_eCurrentGameState = GameState.CUTSCENE;
@@ -86,8 +87,9 @@ public class GameManager : MonoBehaviour
         // ���� ���� �� ����
         if (m_DirectionalLight != null)
         {
-            StartLightColorLerp(m_OriginEnvironmentConfig.LightFilterColor, 1f);
             RenderSettings.skybox = m_OriginEnvironmentConfig.SkyBoxMat;
+            RenderSettings.skybox.SetFloat("_Exposure", 0f);
+            StartLightColorLerp(m_OriginEnvironmentConfig.LightFilterColor, 1f);
         }
         Signals.Cutscene.RaiseEnd();
     }
@@ -140,9 +142,12 @@ public class GameManager : MonoBehaviour
             t += Time.deltaTime;
             float k = Mathf.Clamp01(t / duration);
             m_DirectionalLight.color = Color.Lerp(from, target, k);
+            RenderSettings.skybox.SetFloat("_Exposure", t / duration);
             yield return null;
         }
         m_DirectionalLight.color = target;
+        RenderSettings.skybox.SetFloat("_Exposure", 1f);
+
         _lightColorCo = null;
     }
 }

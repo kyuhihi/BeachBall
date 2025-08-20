@@ -24210,6 +24210,8 @@ GameObject:
   - component: {fileID: 1628536007988945515}
   - component: {fileID: 4220313015652842740}
   - component: {fileID: 141283106453099539}
+  - component: {fileID: -5013272922096066402}
+  - component: {fileID: 8503436620152306698}
   m_Layer: 0
   m_Name: UnSuk
   m_TagString: Untagged
@@ -24226,7 +24228,7 @@ Transform:
   m_GameObject: {fileID: 7562888294545755022}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 3.8, y: 26.1, z: -13.7}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 400, y: 400, z: 400}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -24286,6 +24288,41 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &-5013272922096066402
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7562888294545755022}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79a207e871345d942ab2eb687adc7e46, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_FireEffect: {fileID: 4282257804515165367, guid: 5c10a04aeae905d45af7fbf6bf08166b, type: 3}
+  m_ExplosionEffect: {fileID: 6263740528581064563, guid: 289c0e71a0f5f8742a2d00f0e6dbe65f, type: 3}
+--- !u!135 &8503436620152306698
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7562888294545755022}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.012
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7603329176646891152
 GameObject:
   m_ObjectHideFlags: 0

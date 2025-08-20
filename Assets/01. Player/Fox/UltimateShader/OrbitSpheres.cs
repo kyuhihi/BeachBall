@@ -17,8 +17,10 @@ public class OrbitSpheres : MonoBehaviour
     [Header("Shoot Settings")]
     [SerializeField] private float shootDuration = 0.6f;            // 목표 지점까지 걸리는 시간
     [SerializeField] private float shootTargetOffsetRadius = 0.35f; // 카메라 주변 랜덤 오프셋 반경
-    [SerializeField] private AnimationCurve shootCurve = AnimationCurve.EaseInOut(0,0,1,1);
+    [SerializeField] private AnimationCurve shootCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
     private readonly List<Coroutine> _shootCos = new List<Coroutine>();
+
+    private UnSukCreator m_UnSukCreator;
 
     public enum ORBIT_STATE
     {
@@ -31,6 +33,15 @@ public class OrbitSpheres : MonoBehaviour
     void Start()
     {
         player = transform.parent.gameObject.transform;
+        for (int i = 0; i < player.childCount; ++i)
+        {
+            if (player.GetChild(i).name == "UnSukCreator")
+            {
+                m_UnSukCreator = player.GetChild(i).GetComponent<UnSukCreator>();
+            }
+            
+        }
+        
         MainCamera = Camera.main.gameObject;
         // 구체 미리 생성
         for (int i = 0; i < sphereCount; i++)
@@ -38,6 +49,7 @@ public class OrbitSpheres : MonoBehaviour
             GameObject obj = Instantiate(spherePrefab, player.position, Quaternion.identity, gameObject.transform);
             spheres.Add(obj.transform);
         }
+
         SetOrbitState(ORBIT_STATE.ORBIT_STANDBY);
     }
 
@@ -116,7 +128,7 @@ public class OrbitSpheres : MonoBehaviour
             // 카메라 주변 랜덤 오프셋(상하 흔들림은 과하지 않게 Y를 절반)
             Vector3 rand = Random.insideUnitSphere * shootTargetOffsetRadius;
             rand.y *= 0.5f;
-            Vector3 target = MainCamera.transform.position+ (-MainCamera.transform.forward) + rand;
+            Vector3 target = MainCamera.transform.position + (-MainCamera.transform.forward) + rand;
 
             var co = StartCoroutine(Co_ThrowTo(sphere, target, shootDuration));
             _shootCos.Add(co);
@@ -181,10 +193,7 @@ public class OrbitSpheres : MonoBehaviour
     {
         SetOrbitState(ORBIT_STATE.ORBIT_ONHEAD);
     }
-    public void OrbitEnd()
-    {
-        SetOrbitState(ORBIT_STATE.ORBIT_STANDBY);
-    }
+
     public void OrbitSky()
     {
         SetOrbitState(ORBIT_STATE.ORBIT_SKY);
@@ -192,6 +201,12 @@ public class OrbitSpheres : MonoBehaviour
     public void OrbitShoot()
     {
         SetOrbitState(ORBIT_STATE.ORBIT_SHOOT);
+    }
+    public void OrbitEnd()
+    {
+        m_UnSukCreator.SpawnUnSuk();
+        SetOrbitState(ORBIT_STATE.ORBIT_STANDBY);
+
     }
 
 }
