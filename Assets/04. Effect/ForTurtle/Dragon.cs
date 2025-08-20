@@ -1,8 +1,9 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEditor.ShaderKeywordFilter;
 
 [RequireComponent(typeof(MeshFilter))]
-public class MeshWaveWiggle : MonoBehaviour
+public class Dragon : MonoBehaviour
 {
     public float amplitude = 0.0005f;
     public float frequency = 5f;
@@ -10,6 +11,13 @@ public class MeshWaveWiggle : MonoBehaviour
     public float groupSize = 0.0001f;
 
     private float yCenter; // 전체 y 중앙값
+
+
+    [SerializeField] private ParticleSystem AroundDragonParticle;
+
+    [SerializeField] private ParticleSystem AroundDragonParticle2;
+    [SerializeField] private ParticleSystem AroundDragonParticle3;
+
 
     private Mesh mesh;
     private Vector3[] originalVertices;
@@ -22,6 +30,10 @@ public class MeshWaveWiggle : MonoBehaviour
 
     void Start()
     {
+        AroundDragonParticle.Stop();
+        AroundDragonParticle2.Stop();
+        AroundDragonParticle3.Stop();
+
         mesh = GetComponent<MeshFilter>().mesh;
         mesh = Instantiate(mesh);
         GetComponent<MeshFilter>().mesh = mesh;
@@ -142,6 +154,12 @@ public class MeshWaveWiggle : MonoBehaviour
         }
         else
         {
+
+            AroundDragonParticle.Play();
+            AroundDragonParticle2.Play();
+            AroundDragonParticle3.Play();
+
+
             // 3초 후: 각 그룹마다 x축으로 일정한 속도로 회전, 그룹별로 각도 다르게
             float drillSpeed = 5f; // 회전 속도 (라디안/초)
             float baseAngle = (Time.time - transitionTime) * drillSpeed;

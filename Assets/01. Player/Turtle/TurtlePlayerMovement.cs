@@ -10,6 +10,31 @@ public class TurtlePlayerMovement : BasePlayerMovement
     [SerializeField] private ParticleSystem waterCannonByEffectParticlePrefab;
     private ParticleSystem waterCannonByEffectParticleInstance;
 
+
+
+    [SerializeField] private ParticleSystem dropWaterFromWallPrefab;
+    private ParticleSystem dropWaterFromWallInstance;
+
+    private Vector3 dropwaterFromWallPos = Vector3.zero;
+    private Quaternion dropwaterFromWallRot = Quaternion.identity;
+
+    [SerializeField] private ParticleSystem waterDropParticlePrefab;
+    private ParticleSystem waterDropParticleInstance;
+
+    private Vector3 waterDropParticlePos = Vector3.zero;
+    private Quaternion waterDropParticleRot = Quaternion.identity;
+
+    [SerializeField] private GameObject waterDragonPrefab;
+    private GameObject waterDragonInstance;
+
+    [SerializeField] private ParticleSystem waterDragonSplashPrefab;
+    private ParticleSystem waterDragonSplashInstance;
+
+
+
+
+
+
     [SerializeField] private Transform mouthTransform;
 
     // 거북이 attack skill
@@ -29,7 +54,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
     private float waterCannonTurnSpeed = 180f; // 초당 회전 각도
     private float waterCannonAngleThreshold = 5f; // 몇 도 이내면 "완료"로 간주
 
-    
+
 
     protected override void Start()
     {
@@ -37,6 +62,25 @@ public class TurtlePlayerMovement : BasePlayerMovement
         m_PlayableDirector = GetComponent<PlayableDirector>();
         m_PlayerType = IPlayerInfo.PlayerType.Turtle;
         m_PlayerDefaultColor = Color.skyBlue;
+        m_CourtPosition = IPlayerInfo.CourtPosition.COURT_RIGHT;
+
+        if (m_CourtPosition == IPlayerInfo.CourtPosition.COURT_RIGHT)
+        {
+            dropwaterFromWallPos = new Vector3(0.3f, 6.28f, -11.56f);
+            dropwaterFromWallRot = Quaternion.Euler(21.364996f, 0, 0);
+
+            waterDropParticlePos = new Vector3(-0.019f, 0.202f, -10.842f);
+            waterDropParticleRot = Quaternion.identity;
+        }
+        else // COURT_LEFT
+        {
+            dropwaterFromWallPos = new Vector3(-0.3f, 6.28f, 11.56f); // 예시값, 실제 위치에 맞게 조정
+            dropwaterFromWallRot = Quaternion.Euler(21.364996f, 180f, 0);
+
+            waterDropParticlePos = new Vector3(0.019f, 0.202f, 10.842f);
+            waterDropParticleRot = Quaternion.identity;
+        }
+
     }
 
     public override void OnAttackSkill(InputValue value)
@@ -54,7 +98,8 @@ public class TurtlePlayerMovement : BasePlayerMovement
             {
                 heldShell = Instantiate(shellPrefab, shellHoldPoint.position, shellHoldPoint.rotation, shellHoldPoint);
 
-                GameObject throweffect = Instantiate(throwEffectPrefab, shellThrowPoint.position, shellThrowPoint.rotation);
+                GameObject throweffect = Instantiate(throwEffectPrefab, shellHoldPoint.position, shellHoldPoint.rotation);
+                // throweffect.transform.SetParent(shellHoldPoint); // 이 줄을 제거!
                 Destroy(throweffect, 1f); // 1초 뒤 자동 파괴 (필요시 시간 조절) -> 어차피 알아서 없어짐
 
             }
@@ -93,6 +138,56 @@ public class TurtlePlayerMovement : BasePlayerMovement
             }
         }
     }
+
+    public void SummonDropWaterFromWall()
+    {
+        if (dropWaterFromWallPrefab != null && dropWaterFromWallInstance == null)
+        {
+            // dropWaterFromWallInstance = Instantiate(dropWaterFromWallPrefab, transform.position, Quaternion.identity);
+            dropWaterFromWallInstance = Instantiate(dropWaterFromWallPrefab, dropwaterFromWallPos, dropwaterFromWallRot);
+
+            // Debug.Log(dropwaterFromWallPos + " " + dropwaterFromWallRot);
+
+            // dropWaterFromWallInstance.transform.SetParent(transform);
+            // dropWaterFromWallInstance.transform.localPosition = Vector3.zero;
+            dropWaterFromWallInstance.Play();
+        }
+        
+    }
+    public void SummonWaterDropParticle()
+    {
+        if (waterDropParticlePrefab != null && waterDropParticleInstance == null)
+        {
+            waterDropParticleInstance = Instantiate(waterDropParticlePrefab, waterDropParticlePos, waterDropParticleRot);
+            // waterDropParticleInstance.transform.SetParent(transform);
+            // waterDropParticleInstance.transform.localPosition = Vector3.zero;
+
+            waterDropParticleInstance.Play();
+        }
+    }
+
+    public void SummonWaterDragon()
+    {
+        if (waterDragonPrefab != null && waterDragonInstance == null)
+        {
+            waterDragonInstance = Instantiate(waterDragonPrefab, transform.position, Quaternion.identity);
+            waterDragonInstance.transform.SetParent(transform);
+            waterDragonInstance.transform.localPosition = Vector3.zero;
+
+        }
+    }
+
+    public void SummonWaterDragonSplash()
+    {
+        if (waterDragonSplashPrefab != null && waterDragonSplashInstance == null)
+        {
+            waterDragonSplashInstance = Instantiate(waterDragonSplashPrefab, transform.position, Quaternion.identity);
+            waterDragonSplashInstance.transform.SetParent(transform);
+            waterDragonSplashInstance.transform.localPosition = Vector3.zero;
+        }
+    }
+
+
 
     public override void OnStartCutScene()
     {
@@ -298,4 +393,5 @@ public class TurtlePlayerMovement : BasePlayerMovement
             m_Animator.SetBool("WaterCannonActive", false);
         mouthTransform.localRotation = Quaternion.Euler(180f, 90f, 0f);
     }
+
 }
