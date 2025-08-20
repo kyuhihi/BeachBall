@@ -2,12 +2,16 @@ using UnityEngine;
 
 public static class UltimateConfigLoader
 {
-    // Resources ±âÁØ °æ·Î(È®ÀåÀÚ/Assets/ Á¦¿Ü)
+    // Resources ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½(È®ï¿½ï¿½ï¿½ï¿½/Assets/ ï¿½ï¿½ï¿½ï¿½)
     public const string FoxUltimatePath = "UltimateSetting/FoxUltimateSetting";
+    public const string TurtleUltimatePath = "UltimateSetting/TurtleUltimateSetting";
     public const string OriginEnvPath   = "OriginSkySetting";
 
     public static UltimateSetting LoadFoxUltimate()
         => Resources.Load<UltimateSetting>(FoxUltimatePath);
+
+    public static UltimateSetting LoadTurtleUltimate()
+        => Resources.Load<UltimateSetting>(TurtleUltimatePath);
 
     public static EnvironmentConfig LoadOriginEnv()
         => Resources.Load<EnvironmentConfig>(OriginEnvPath);

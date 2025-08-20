@@ -8,7 +8,6 @@ public class FoxPlayerMovement : BasePlayerMovement
 {
     [SerializeField] private Transform m_FireBallSpawnPoint;
     private FireBallContainer m_FireBallContainer;
-    private PlayableDirector m_PlayableDirector;
     
     [Header("Ultimate Setting")]
     const string m_UltimateFlashGameObjName = "UltimateMesh";

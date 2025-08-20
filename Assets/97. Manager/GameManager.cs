@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
     private const int OnVirtualCameraPriority = 50;
     private const int OffVirtualCameraPriority = 10;
     private UltimateSetting m_FoxUltimateSetting;//Include Environment, CutsceneTransform
+    private UltimateSetting m_TurtleUltimateSetting;//Include Environment, CutsceneTransform
     private EnvironmentConfig m_OriginEnvironmentConfig;
     private Light m_DirectionalLight;
     private Coroutine _lightColorCo;
@@ -39,6 +40,8 @@ public class GameManager : MonoBehaviour
     {
         if (m_FoxUltimateSetting == null)
             m_FoxUltimateSetting = UltimateConfigLoader.LoadFoxUltimate();
+        if (m_TurtleUltimateSetting == null)
+            m_TurtleUltimateSetting = UltimateConfigLoader.LoadTurtleUltimate();
         if (m_OriginEnvironmentConfig == null)
             m_OriginEnvironmentConfig = UltimateConfigLoader.LoadOriginEnv();
     }
@@ -62,7 +65,7 @@ public class GameManager : MonoBehaviour
 
     public void StartCutScene()
     {
-        // Emission > Filter »ö º¯°æ
+        // Emission > Filter ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (m_DirectionalLight != null)
         {
             Color UltimateSkyColor = m_FoxUltimateSetting.ApplyEnvironment();
@@ -80,7 +83,7 @@ public class GameManager : MonoBehaviour
         m_GameVirtualCam.Priority = OnVirtualCameraPriority;
         m_CutSceneVirtualCam.Priority = OffVirtualCameraPriority;
 
-        // ¿ø·¡ ÇÊÅÍ »ö º¹±Í
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (m_DirectionalLight != null)
         {
             StartLightColorLerp(m_OriginEnvironmentConfig.LightFilterColor, 1f);
@@ -101,8 +104,8 @@ public class GameManager : MonoBehaviour
                 rotation = m_FoxUltimateSetting.GetUltimateRotation(eCourtPosition);
                 return true;
             case IPlayerInfo.PlayerType.Turtle:
-                position = Vector3.zero;
-                rotation = Quaternion.identity;
+                position = m_TurtleUltimateSetting.GetUltimatePosition(eCourtPosition);
+                rotation = m_TurtleUltimateSetting.GetUltimateRotation(eCourtPosition);
                 return true;
 
             case IPlayerInfo.PlayerType.Penguin:
@@ -119,7 +122,7 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-    // »ö»ó º¸°£ ½ÃÀÛ(±âÁ¸ ÄÚ·çÆ¾ÀÌ ÀÖÀ¸¸é ÁßÁö)
+    // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ ï¿½Ú·ï¿½Æ¾ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
     private void StartLightColorLerp(Color target, float duration)
     {
         if (_lightColorCo != null) StopCoroutine(_lightColorCo);
@@ -150,10 +153,10 @@ public static class Signals
 {
     public static class Cutscene
     {
-        public static event Action Start; // »ó½Ã ±¸µ¶¸¸ À¯Áö
+        public static event Action Start; // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         public static void AddStart(Action cb) { Start += cb; }
         public static void RemoveStart(Action cb) { Start -= cb; }
-        public static event Action End; // »ó½Ã ±¸µ¶¸¸ À¯Áö
+        public static event Action End; // ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
         public static void AddEnd(Action cb) { End += cb; }
         public static void RemoveEnd(Action cb) { End -= cb; }

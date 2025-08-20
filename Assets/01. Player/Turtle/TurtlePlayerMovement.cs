@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
-
+using UnityEngine.Playables;
 public class TurtlePlayerMovement : BasePlayerMovement
 {
     [SerializeField] private ParticleSystem waterCannonParticlePrefab;
@@ -29,9 +29,12 @@ public class TurtlePlayerMovement : BasePlayerMovement
     private float waterCannonTurnSpeed = 180f; // 초당 회전 각도
     private float waterCannonAngleThreshold = 5f; // 몇 도 이내면 "완료"로 간주
 
+    
+
     protected override void Start()
     {
         base.Start();
+        m_PlayableDirector = GetComponent<PlayableDirector>();
         m_PlayerType = IPlayerInfo.PlayerType.Turtle;
         m_PlayerDefaultColor = Color.skyBlue;
     }
@@ -78,9 +81,28 @@ public class TurtlePlayerMovement : BasePlayerMovement
     {
         if (value.isPressed)
         {
-            Debug.Log("물이 없는 곳에서 이 정도의 수둔을!!");
+            Vector3 OutPos = Vector3.zero;
+            Quaternion OutRot = Quaternion.identity;
+            bool bRetVal = GameManager.GetInstance().GetUltimatePos(m_PlayerType, m_CourtPosition, out OutPos, out OutRot);
+
+            if (bRetVal)
+            {
+                transform.position = OutPos;
+                transform.rotation = OutRot;
+                m_PlayableDirector.Play();
+            }
         }
     }
+
+    public override void OnStartCutScene()
+    {
+        // m_UltimateFlashGameObject.SetActive(true);
+    }
+    public override void OnEndCutscene()
+    {
+        // m_UltimateFlashGameObject.SetActive(false);
+    }//이거 오버라이딩해야함.
+
 
     protected override void FixedUpdate()
     {

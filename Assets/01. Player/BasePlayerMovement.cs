@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using UnityEngine.Playables;
 
 public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
 {
@@ -50,6 +51,8 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     protected bool m_IsJumping = false;
     protected bool m_IsDoubleJumping = false;
     protected bool isGrounded;
+
+    protected PlayableDirector m_PlayableDirector;
 
     public enum IdleWalkRunEnum
     {
