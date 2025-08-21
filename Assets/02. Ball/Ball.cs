@@ -73,6 +73,21 @@ public class Ball : MonoBehaviour
 
     void LateUpdate()
     {
+        if (GameManager.GetInstance().CurrentGameState == GameManager.GameState.CUTSCENE)
+        {
+            m_Rigidbody.Sleep();
+            return;
+        }
+        else
+        {
+            m_Rigidbody.WakeUp();
+        }
+        Movement();
+
+    }
+
+    private void Movement()
+    {
         // 잠시 y 음수 고정 유지
         if (isYLocked && direction.y > 0f)
         {

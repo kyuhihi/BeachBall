@@ -14,6 +14,7 @@ public class GameManager : MonoBehaviour
 
     //==============================CutSceneSetting==============================
     private GameState m_eCurrentGameState = GameState.GAME;
+    public GameState CurrentGameState => m_eCurrentGameState;
     private CinemachineVirtualCamera m_GameVirtualCam;
     private CinemachineVirtualCamera m_CutSceneVirtualCam;
     private const int OnVirtualCameraPriority = 50;

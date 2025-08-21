@@ -19431,7 +19431,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4118572001638248854, guid: 10906cb2729ff9742babf771c559e901, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4.82
+      value: -7.4
       objectReference: {fileID: 0}
     - target: {fileID: 4118572001638248854, guid: 10906cb2729ff9742babf771c559e901, type: 3}
       propertyPath: m_LocalRotation.w
@@ -19492,6 +19492,34 @@ PrefabInstance:
     - target: {fileID: 7354189815331505461, guid: 10906cb2729ff9742babf771c559e901, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 3.255
+      objectReference: {fileID: 0}
+    - target: {fileID: 7838086797910571750, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: side
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7838086797910571750, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: leftColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7838086797910571750, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: leftColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7838086797910571750, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: leftColor.r
+      value: 0.019966125
+      objectReference: {fileID: 0}
+    - target: {fileID: 7838086797910571750, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: rightColor.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7838086797910571750, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: rightColor.g
+      value: 0.17268777
+      objectReference: {fileID: 0}
+    - target: {fileID: 7838086797910571750, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: rightColor.r
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7838086797910571750, guid: 10906cb2729ff9742babf771c559e901, type: 3}
       propertyPath: groundMask.m_Bits

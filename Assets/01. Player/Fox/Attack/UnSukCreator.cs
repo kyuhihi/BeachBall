@@ -11,48 +11,64 @@ public class UnSukCreator : MonoBehaviour
     [SerializeField] private float rangeY = 3f;      // Y 범위(0 ~ rangeY)
     [SerializeField] private float rangeZ = 16.28f;  // Z 범위(±rangeZ)
 
-    private Vector3 spawnOriginPoint = new Vector3(11.5f, 25.58f, -20.13f);
+    [Header("Center/Radius (hitPoint 기준)")]
+    [SerializeField] private Vector3 baseSpawnOriginPoint = new Vector3(11.5f, 25.58f, -20.13f);
+    [SerializeField] private Vector3 baseHitPoint        = new Vector3(-0.370f, 0.0f, 4.02f);
+    [SerializeField] private float spawnRadius = 8f; // hitPoint를 중심으로 사용할 반지름
+
+    private Vector3 spawnOriginPoint; // side에 따라 계산된 실제 값
+    private Vector3 hitPoint;         // side에 따라 계산된 실제 값
+
+    private enum CourtSide { Right, Left }
+    [SerializeField] private CourtSide side = CourtSide.Right;
+
     private readonly uint m_SpawnMaxCnt = 20;
 
-    [Header("Gizmo & Raycast")]
-    [SerializeField] private LayerMask groundMask = 0;  // 바닥 레이어 지정
-    private float rayDistance = 1000f;
-    [SerializeField] private bool drawOnlyWhenSelected = false;
-    [SerializeField] private Color arrowColor = Color.cyan;
-    [SerializeField] private Color rayColor = new Color(0.2f, 1f, 0.2f, 1f);
-    [SerializeField] private Color circleLineColor = new Color(1f, 0.3f, 0.9f, 1f);
-    [SerializeField, Range(12, 128)] private int circleSegments = 64;
+    [Header("Gizmos")]
+    [SerializeField] private bool drawGizmos = true;
+    [SerializeField, Range(8, 128)] private int circleSegments = 64;
+    [SerializeField] private Color rightColor = new Color(0.2f, 0.9f, 1f, 1f);
+    [SerializeField] private Color leftColor  = new Color(1f, 0.4f, 0.8f, 1f);
 
-    private void Start()
+    private void Awake()     { ApplySide(); }
+#if UNITY_EDITOR
+    private void OnValidate(){ ApplySide(); }
+#endif
+
+    [ContextMenu("Toggle Side (Left/Right)")]
+    public void ToggleSide()
     {
-        if (gameObject.transform.parent.position.z > 0)
+        ApplySide();
+    }
+
+    private void ApplySide()
+    {
+        if(transform.parent.position.z > 0f)
         {
-            Debug.Log("tt");
-            spawnOriginPoint.z = Math.Abs(spawnOriginPoint.z);
-            Vector3 euler = transform.localEulerAngles;
-            euler.y = 203.0f;
-            transform.localEulerAngles = euler;
+            side = CourtSide.Left;
+        }
+        else
+        {
+            side = CourtSide.Right;
+        }
+        // z축 기준 미러링 규칙(기존 코드의 의도 반영)
+        if (side == CourtSide.Right)
+        {
+            spawnOriginPoint = new Vector3(baseSpawnOriginPoint.x, baseSpawnOriginPoint.y, -Mathf.Abs(baseSpawnOriginPoint.z));
+            hitPoint = new Vector3(baseHitPoint.x, baseHitPoint.y, Mathf.Abs(baseHitPoint.z));
+        }
+        else // Left
+        {
+            spawnOriginPoint = new Vector3(baseSpawnOriginPoint.x, baseSpawnOriginPoint.y, Mathf.Abs(baseSpawnOriginPoint.z));
+            hitPoint = new Vector3(baseHitPoint.x, baseHitPoint.y, -Mathf.Abs(baseHitPoint.z));
         }
     }
 
     public void SpawnUnSuk()
     {
-        // 전방 레이로 원의 중심/반경 계산(실패 시 기본값)
-        Vector3 origin = spawnOriginPoint;
-        Vector3 dirFwd = transform.forward.normalized;
-        int layerMask = groundMask.value != 0 ? groundMask.value : Physics.DefaultRaycastLayers;
-        Vector3 center;
-        float radius;
-        if (Physics.Raycast(origin, dirFwd, out var hit, rayDistance, layerMask, QueryTriggerInteraction.Ignore))
-        {
-            center = new Vector3(hit.point.x, hit.point.y + 0.01f, hit.point.z);
-            radius = Mathf.Min(Mathf.Abs(rangeX), Mathf.Abs(rangeZ))* 0.5f;
-        }
-        else
-        {
-            center = origin;
-            radius = Mathf.Min(Mathf.Abs(rangeX), Mathf.Abs(rangeZ));
-        }
+        // hitPoint(센터)와 반지름 사용
+        Vector3 center = new Vector3(hitPoint.x, hitPoint.y + 0.01f, hitPoint.z);
+        float radius = Mathf.Max(0f, spawnRadius);
 
         for (uint i = 0; i < m_SpawnMaxCnt; ++i)
         {
@@ -69,10 +85,9 @@ public class UnSukCreator : MonoBehaviour
             float theta = UnityEngine.Random.Range(0f, Mathf.PI * 2f);
             float r = Mathf.Sqrt(UnityEngine.Random.value) * radius; // 원 영역에서 균일 랜덤
             Vector3 offsetXZ = new Vector3(Mathf.Cos(theta) * r, 0f, Mathf.Sin(theta) * r);
-            Vector3 target = new Vector3(center.x, 0f, center.z) + offsetXZ;
+            Vector3 target = new Vector3(center.x, center.y, center.z) + offsetXZ;
 
-            Vector3 lookDir = target - pos; 
-            // up을 고정하지 않고, 로컬 Z(전방)를 lookDir로 맞춤(운석 낙하 각도 그대로)
+            Vector3 lookDir = target - pos;
             Quaternion rot = lookDir.sqrMagnitude > 1e-6f
                 ? Quaternion.FromToRotation(Vector3.forward, lookDir)
                 : transform.rotation;
@@ -81,63 +96,43 @@ public class UnSukCreator : MonoBehaviour
         }
     }
 
-    // --- Gizmos ---
     private void OnDrawGizmos()
     {
-        if (!drawOnlyWhenSelected) DrawForwardAndCircleGizmos();
-    }
-    private void OnDrawGizmosSelected()
-    {
-        if (drawOnlyWhenSelected) DrawForwardAndCircleGizmos();
-    }
+        if (!drawGizmos) return;
+        // Gizmo 색상은 사이드에 따라 변경
+        Gizmos.color = (side == CourtSide.Right) ? rightColor : leftColor;
 
-    private void DrawForwardAndCircleGizmos()
-    {
-        // 1) forward 화살표
-        DrawArrow(spawnOriginPoint, transform.forward, 2.0f, 0.35f, 0.2f, arrowColor);
+        // 센터/원
+        Vector3 center = Application.isPlaying ? new Vector3(hitPoint.x, hitPoint.y + 0.01f, hitPoint.z)
+                                               : new Vector3(
+                                                     (side == CourtSide.Right ? baseHitPoint.x : baseHitPoint.x),
+                                                     baseHitPoint.y + 0.01f,
+                                                     (side == CourtSide.Right ?  Mathf.Abs(baseHitPoint.z)
+                                                                              : -Mathf.Abs(baseHitPoint.z)));
+        DrawCircleXZ(center, Mathf.Max(0f, spawnRadius), circleSegments);
 
-        // 2) 전방 레이캐스트
-        Vector3 origin = spawnOriginPoint;
-        Vector3 dir = transform.forward.normalized;
-        if (Physics.Raycast(origin, dir, out var hit, rayDistance, groundMask, QueryTriggerInteraction.Ignore))
-        {
-            Gizmos.color = rayColor;
-            Gizmos.DrawLine(origin, hit.point);
-            Gizmos.DrawSphere(hit.point, 0.05f);
-
-            // X/Z 범위를 기반으로 한 원의 반지름
-            float radius = Mathf.Min(Mathf.Abs(rangeX), Mathf.Abs(rangeZ))*0.5f;
-            Vector3 center = new Vector3(hit.point.x, hit.point.y + 0.01f, hit.point.z); // 지면과 겹침 방지로 살짝 올림
-            DrawCircleXZ(center, radius, circleSegments, circleLineColor);
-        }
-        else
-        {
-            Gizmos.color = rayColor;
-            Gizmos.DrawLine(origin, origin + dir * rayDistance);
-        }
+        // forward 화살표
+        Vector3 pos = Application.isPlaying ? spawnOriginPoint : baseSpawnOriginPoint;
+        if (side == CourtSide.Right) pos.z = -Mathf.Abs(pos.z); else pos.z = Mathf.Abs(pos.z);
+        DrawArrow(pos, transform.forward, 2.0f, 0.35f, 0.2f);
     }
 
-    private static void DrawArrow(Vector3 pos, Vector3 dir, float length, float headLen, float headWidth, Color color)
+    private static void DrawArrow(Vector3 pos, Vector3 dir, float length, float headLen, float headWidth)
     {
         dir = dir.normalized;
         Vector3 tip = pos + dir * length;
-        Gizmos.color = color;
         Gizmos.DrawLine(pos, tip);
-
+        // 간단 화살촉
         Vector3 up = Mathf.Abs(Vector3.Dot(dir, Vector3.up)) > 0.99f ? Vector3.right : Vector3.up;
         Vector3 right = Vector3.Cross(dir, up).normalized;
-        Vector3 upOrtho = Vector3.Cross(right, dir).normalized;
         Vector3 basePt = tip - dir * headLen;
         Gizmos.DrawLine(tip, basePt + right * headWidth);
         Gizmos.DrawLine(tip, basePt - right * headWidth);
-        Gizmos.DrawLine(tip, basePt + upOrtho * headWidth);
-        Gizmos.DrawLine(tip, basePt - upOrtho * headWidth);
     }
 
-    private static void DrawCircleXZ(Vector3 center, float radius, int segments, Color lineColor)
+    private static void DrawCircleXZ(Vector3 center, float radius, int segments)
     {
         if (radius <= 0f || segments < 3) return;
-        Gizmos.color = lineColor;
         Vector3 prev = center + new Vector3(radius, 0f, 0f);
         for (int i = 1; i <= segments; i++)
         {

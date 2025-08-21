@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class UnSukMovement : MonoBehaviour
 {
-    private const string WallLayerName = "Wall and Ground";
+    private const string WallLayerName = "Wall And Ground";
     private float m_MovementSpeed = 3.0f;
 
     private int m_iEffectCnt = 3;
@@ -45,6 +45,7 @@ public class UnSukMovement : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (!CheckTimingCollision(other)) return;
+        Debug.Log(other.name);
 
         if (m_iEffectCnt > 0)
         {
@@ -59,13 +60,13 @@ public class UnSukMovement : MonoBehaviour
     }
     private bool CheckTimingCollision(Collider other)
     {
-        if (other.GetComponent<UnSukMovement>() != null)
+        if (other.GetComponent<UnSukMovement>() != null || other.GetComponent<Ball>() != null)
             return false;
 
-        if(other.gameObject.layer == LayerMask.NameToLayer(WallLayerName))
+        if (other.gameObject.layer == LayerMask.NameToLayer(WallLayerName))
         {
-            if (other.gameObject.transform.position.y > 0f)
-                return false;
+            if (other.gameObject.name != "Ground")
+                    return false;
         }
 
         return true;
