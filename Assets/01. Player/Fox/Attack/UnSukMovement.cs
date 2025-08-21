@@ -45,7 +45,6 @@ public class UnSukMovement : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         if (!CheckTimingCollision(other)) return;
-        Debug.Log(other.name);
 
         if (m_iEffectCnt > 0)
         {
