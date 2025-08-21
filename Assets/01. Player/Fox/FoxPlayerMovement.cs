@@ -19,7 +19,6 @@ public class FoxPlayerMovement : BasePlayerMovement
         m_PlayableDirector = GetComponent<PlayableDirector>();
         m_PlayerType = IPlayerInfo.PlayerType.Fox;
         m_PlayerDefaultColor = Color.orange;
-        m_CourtPosition = IPlayerInfo.CourtPosition.COURT_RIGHT;
 
         m_FireBallContainer = GameObject.FindFirstObjectByType<FireBallContainer>();
         int iChildCnt = transform.childCount;
@@ -75,14 +74,19 @@ public class FoxPlayerMovement : BasePlayerMovement
             m_PlayableDirector.Play();
         }
     }
-    public override void OnStartCutScene()
+    public override void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
-        m_UltimateFlashGameObject.SetActive(true);
-    }
-    public override void OnEndCutscene()
-    {
-        m_UltimateFlashGameObject.SetActive(false);
+        m_isMoveByInput = false;
 
+        if (playerType == m_PlayerType && courtPosition == m_CourtPosition)
+            m_UltimateFlashGameObject.SetActive(true);
+
+    }
+    public override void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
+    {
+        if (playerType == m_PlayerType && courtPosition == m_CourtPosition)
+            m_UltimateFlashGameObject.SetActive(false);
+        m_isMoveByInput = true;
     }//이거 오버라이딩해야함.
 
 

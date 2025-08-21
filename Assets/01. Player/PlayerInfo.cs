@@ -24,6 +24,6 @@ public interface IPlayerInfo
 
 public interface ICutSceneListener
 {
-    void OnStartCutScene();
-    void OnEndCutscene();
+    void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition);
+    void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition);
 }

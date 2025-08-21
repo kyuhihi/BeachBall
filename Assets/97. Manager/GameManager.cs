@@ -6,19 +6,29 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
+    //==============================SingleTonSetting=============================
     private static GameManager Instance;
     public static GameManager GetInstance() => Instance;
     public static void SetInstance(GameManager instance) => Instance = instance;
+    //==============================SingleTonSetting=============================
+
+    //==============================CutSceneSetting==============================
     private GameState m_eCurrentGameState = GameState.GAME;
     private CinemachineVirtualCamera m_GameVirtualCam;
     private CinemachineVirtualCamera m_CutSceneVirtualCam;
     private const int OnVirtualCameraPriority = 50;
     private const int OffVirtualCameraPriority = 10;
-    private UltimateSetting m_FoxUltimateSetting;//Include Environment, CutsceneTransform
-    private UltimateSetting m_TurtleUltimateSetting;//Include Environment, CutsceneTransform
+    private UltimateSetting m_FoxUltimateSetting;   //Include Environment, CutsceneTransform
+    private UltimateSetting m_TurtleUltimateSetting;    //Include Environment, CutsceneTransform
     private EnvironmentConfig m_OriginEnvironmentConfig;
+    private GameObject m_CutsceneCameraRoot = null;
     private Light m_DirectionalLight;
     private Coroutine _lightColorCo;
+
+    private IPlayerInfo.CourtPosition m_eLastUltimateCourtPosition = IPlayerInfo.CourtPosition.COURT_END;
+    private IPlayerInfo.PlayerType m_eLastUltimatePlayerType = IPlayerInfo.PlayerType.Fox;
+    //==============================CutSceneSetting==============================
+
 
     public enum GameState
     {
@@ -58,6 +68,7 @@ public class GameManager : MonoBehaviour
             else if (cam.name == "CutSceneCam")
             {
                 m_CutSceneVirtualCam = cam.GetComponent<CinemachineVirtualCamera>();
+                m_CutsceneCameraRoot = cam.gameObject.transform.parent.gameObject;
             }
         }
 
@@ -65,7 +76,6 @@ public class GameManager : MonoBehaviour
 
     public void StartCutScene()
     {
-        // Emission > Filter �� ����
         if (m_DirectionalLight != null)
         {
             Color UltimateSkyColor = m_FoxUltimateSetting.ApplyEnvironment();
@@ -75,7 +85,7 @@ public class GameManager : MonoBehaviour
         m_eCurrentGameState = GameState.CUTSCENE;
         m_GameVirtualCam.Priority = OffVirtualCameraPriority;
         m_CutSceneVirtualCam.Priority = OnVirtualCameraPriority;
-        Signals.Cutscene.RaiseStart();
+        Signals.Cutscene.RaiseStart(m_eLastUltimatePlayerType, m_eLastUltimateCourtPosition);
     }
 
     public void EndCutScene()
@@ -84,14 +94,13 @@ public class GameManager : MonoBehaviour
         m_GameVirtualCam.Priority = OnVirtualCameraPriority;
         m_CutSceneVirtualCam.Priority = OffVirtualCameraPriority;
 
-        // ���� ���� �� ����
         if (m_DirectionalLight != null)
         {
             RenderSettings.skybox = m_OriginEnvironmentConfig.SkyBoxMat;
             RenderSettings.skybox.SetFloat("_Exposure", 0f);
             StartLightColorLerp(m_OriginEnvironmentConfig.LightFilterColor, 1f);
         }
-        Signals.Cutscene.RaiseEnd();
+        Signals.Cutscene.RaiseEnd(m_eLastUltimatePlayerType, m_eLastUltimateCourtPosition);
     }
 
     public bool GetUltimatePos(IPlayerInfo.PlayerType ePlayerType,
@@ -99,6 +108,16 @@ public class GameManager : MonoBehaviour
     out Vector3 position,
     out Quaternion rotation)
     {
+        m_eLastUltimateCourtPosition = eCourtPosition;
+        m_eLastUltimatePlayerType = ePlayerType;
+        if (eCourtPosition == IPlayerInfo.CourtPosition.COURT_LEFT)
+        {
+            m_CutsceneCameraRoot.transform.localScale = new Vector3(-1f, 1f, 1f);
+        }
+        else
+        {
+            m_CutsceneCameraRoot.transform.localScale = new Vector3(1f, 1f, 1f);
+        }
         switch (ePlayerType)
         {
             case IPlayerInfo.PlayerType.Fox:
@@ -124,7 +143,6 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-    // ���� ���� ����(���� �ڷ�ƾ�� ������ ����)
     private void StartLightColorLerp(Color target, float duration)
     {
         if (_lightColorCo != null) StopCoroutine(_lightColorCo);
@@ -158,22 +176,25 @@ public static class Signals
 {
     public static class Cutscene
     {
-        public static event Action Start; // ��� ������ ����
-        public static void AddStart(Action cb) { Start += cb; }
-        public static void RemoveStart(Action cb) { Start -= cb; }
-        public static event Action End; // ��� ������ ����
+        // 파라미터: (컷신 주인, 코트 방향)
+        public static event Action<IPlayerInfo.PlayerType, IPlayerInfo.CourtPosition> Start;
+        public static event Action<IPlayerInfo.PlayerType, IPlayerInfo.CourtPosition> End;
 
-        public static void AddEnd(Action cb) { End += cb; }
-        public static void RemoveEnd(Action cb) { End -= cb; }
+        // 구독/해제
+        public static void AddStart(Action<IPlayerInfo.PlayerType, IPlayerInfo.CourtPosition> cb)  { Start += cb; }
+        public static void RemoveStart(Action<IPlayerInfo.PlayerType, IPlayerInfo.CourtPosition> cb){ Start -= cb; }
+        public static void AddEnd(Action<IPlayerInfo.PlayerType, IPlayerInfo.CourtPosition> cb)    { End += cb; }
+        public static void RemoveEnd(Action<IPlayerInfo.PlayerType, IPlayerInfo.CourtPosition> cb) { End -= cb; }
 
-        public static void RaiseEnd()
+        // 브로드캐스트(권장 사용)
+        public static void RaiseStart(IPlayerInfo.PlayerType owner, IPlayerInfo.CourtPosition court)
         {
-            try { End?.Invoke(); }
+            try { Start?.Invoke(owner, court); }
             catch (Exception e) { Debug.LogException(e); }
         }
-        public static void RaiseStart()
+        public static void RaiseEnd(IPlayerInfo.PlayerType owner, IPlayerInfo.CourtPosition court)
         {
-            try { Start?.Invoke(); }
+            try { End?.Invoke(owner, court); }
             catch (Exception e) { Debug.LogException(e); }
         }
     }

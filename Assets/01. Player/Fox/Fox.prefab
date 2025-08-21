@@ -10946,6 +10946,11 @@ MonoBehaviour:
   rightFootTransform: {fileID: 250431064749323011}
   m_Animator: {fileID: 45186065190516198}
   m_isMoveByInput: 1
+  m_PlayableAssetList:
+  - playableAsset: {fileID: 11400000, guid: fae82af0655ef444abc2bdca88b33883, type: 2}
+    courtPosition: 0
+  - playableAsset: {fileID: 11400000, guid: 1be32b252409e1a4cad43a1b75787aec, type: 2}
+    courtPosition: 1
   m_FireBallSpawnPoint: {fileID: 3247886071233625896}
 --- !u!320 &8818059597635963912
 PlayableDirector:
@@ -11259,7 +11264,7 @@ Transform:
   m_GameObject: {fileID: 2280595571756783660}
   serializedVersion: 2
   m_LocalRotation: {x: 0.42261827, y: 0, z: 0, w: 0.9063079}
-  m_LocalPosition: {x: -0.55, y: 25.58, z: -20.130001}
+  m_LocalPosition: {x: 11.5, y: 25.58, z: -20.130001}
   m_LocalScale: {x: 400, y: 400, z: 400}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -33535,11 +33540,7 @@ Animator:
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_AnimatePhysics: 0
-  m_WarningMessage: "\nBinding warning: Some generic clip(s) animate transforms that
-    are already bound by a Humanoid avatar. These transforms can only be changed
-    by Humanoid clips.\n\tTransform 'ArmL2'\n\tTransform 'Spine2'\n\tTransform 'AllRoot'\n\tTransform
-    'ShoulderL'\n\tTransform 'HandR'\n\tTransform 'JointRoot'\n\tTransform 'LegR1'\n\tTransform
-    'ToeL'\n\tTransform 'LegR2'\n\tTransform 'ToeR'\n\tand more ..."
+  m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0

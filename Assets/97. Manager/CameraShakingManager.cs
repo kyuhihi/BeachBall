@@ -1,10 +1,17 @@
+using Cinemachine;
 using UnityEngine;
 
 public class CameraShakingManager : MonoBehaviour
 {
     public static CameraShakingManager Instance { get; private set; }
 
-    private CameraShaking cameraShaking;
+    private const string CameraTag = "MainCamera";
+    private CameraShaking[] m_Cameras = new CameraShaking[2];
+    enum CameraIndex
+    {
+        GameCamera = 0,
+        CutSceneCamera = 1
+    }
 
     private void Awake()
     {
@@ -16,13 +23,25 @@ public class CameraShakingManager : MonoBehaviour
         {
             Instance = this;
         }
-
-        // Main Camera에서 CameraShaking 컴포넌트 찾기
-        if (cameraShaking == null)
+    }
+    private void Start()
+    {
+        if (m_Cameras[0] == null)
         {
-            Camera mainCam = Camera.main;
-            if (mainCam != null)
-                cameraShaking = mainCam.GetComponent<CameraShaking>();
+            GameObject[] cameras = GameObject.FindGameObjectsWithTag(CameraTag);
+            int iCnt = 0;
+            for (int i = 0; i < cameras.Length; ++i)
+            {
+                if (iCnt < m_Cameras.Length)
+                {
+                    CameraShaking cameraShaking = cameras[i].GetComponent<CameraShaking>();
+                    if (cameraShaking)
+                    {
+                        m_Cameras[iCnt] = cameraShaking;
+                        iCnt++;
+                    }
+                }
+            }
         }
     }
 
@@ -31,9 +50,20 @@ public class CameraShakingManager : MonoBehaviour
     /// </summary>
     public void DoShake(float duration = -1f, float magnitude = -1f)
     {
-        if (cameraShaking != null)
+
+        for (int i = 0; i < m_Cameras.Length; i++)
         {
-            cameraShaking.Shake(duration, magnitude);
+            if (m_Cameras[i] == null)
+            {
+                Debug.LogError($"CameraShakingManager: Camera at index {i} is not initialized.");
+                return;
+            }
+            else
+            {
+                m_Cameras[i].Shake(duration, magnitude);
+            }
         }
+
+
     }
 }

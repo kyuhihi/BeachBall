@@ -94,11 +94,11 @@ public class TurtlePlayerMovement : BasePlayerMovement
         }
     }
 
-    public override void OnStartCutScene()
+    public override void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
         // m_UltimateFlashGameObject.SetActive(true);
     }
-    public override void OnEndCutscene()
+    public override void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
         // m_UltimateFlashGameObject.SetActive(false);
     }//이거 오버라이딩해야함.

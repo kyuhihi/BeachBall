@@ -3,6 +3,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 using UnityEngine.Playables;
+using System.Threading;
+using System.Collections.Generic;
 
 public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
 {
@@ -52,7 +54,6 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     protected bool m_IsDoubleJumping = false;
     protected bool isGrounded;
 
-    protected PlayableDirector m_PlayableDirector;
 
     public enum IdleWalkRunEnum
     {
@@ -84,18 +85,31 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     protected float upPressedTime = -1f;
     protected float downPressedTime = -1f;
 
-    public virtual void OnStartCutScene(){}
-    public virtual void OnEndCutscene(){}//이거 오버라이딩해야함.
 
-    void OnEnable()
+    protected PlayableDirector m_PlayableDirector;
+
+
+    public virtual void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition) { }
+    public virtual void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition){}//이거 오버라이딩해야함.
+    protected virtual void Start()
     {
-        Signals.Cutscene.AddStart(OnStartCutScene);
-        Signals.Cutscene.AddEnd(OnEndCutscene);
+        if (gameObject.transform.position.z < 0.0f)
+        {
+            m_CourtPosition = IPlayerInfo.CourtPosition.COURT_RIGHT;
+        }
+        else
+        {
+            m_CourtPosition = IPlayerInfo.CourtPosition.COURT_LEFT;
+        }
+
+        Signals.Cutscene.AddStart((playerType, courtPosition) => OnStartCutScene(playerType, courtPosition));
+        Signals.Cutscene.AddEnd((playerType, courtPosition) => OnEndCutscene(playerType, courtPosition));
     }
     void OnDisable()
     {
-        Signals.Cutscene.RemoveStart(OnStartCutScene);
-        Signals.Cutscene.RemoveEnd(OnEndCutscene);
+        Signals.Cutscene.RemoveStart((playerType, courtPosition) => OnStartCutScene(playerType, courtPosition));
+        Signals.Cutscene.RemoveEnd((playerType, courtPosition) => OnEndCutscene(playerType, courtPosition));
+
     }
     protected void Awake()
     {
@@ -131,10 +145,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         }
     }
 
-    protected virtual void Start()
-    {
-        // 필요한 초기화 코드
-    }
+
 
     protected virtual void Update()
     {
