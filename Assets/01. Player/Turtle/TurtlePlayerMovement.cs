@@ -27,11 +27,29 @@ public class TurtlePlayerMovement : BasePlayerMovement
     [SerializeField] private GameObject waterDragonPrefab;
     private GameObject waterDragonInstance;
 
+    private Vector3 waterDragonPos = Vector3.zero;
+    private Quaternion waterDragonRot = Quaternion.identity;
+
+
+    private Vector3 waterDragonMoveBeforeAttack = new Vector3(0, 0, 15f); // 드래곤이 공격 전 위치를 이동하기 위한
+
+
+
+
     [SerializeField] private ParticleSystem waterDragonSplashPrefab;
     private ParticleSystem waterDragonSplashInstance;
 
+    private Vector3 waterDragonSplashPos = Vector3.zero;
+    private Quaternion waterDragonSplashRot = Quaternion.identity;
 
+    [SerializeField] private ParticleSystem waterTornadoPrefab;
+    private ParticleSystem waterTornadoInstance;
 
+    private Vector3 waterTornadoPos = Vector3.zero;
+    private Quaternion waterTornadoRot = Quaternion.identity;
+
+    [SerializeField] private ParticleSystem ultimateEffectPrefab;
+    private ParticleSystem ultimateEffectInstance;
 
 
 
@@ -71,6 +89,16 @@ public class TurtlePlayerMovement : BasePlayerMovement
 
             waterDropParticlePos = new Vector3(-0.019f, 0.202f, -10.842f);
             waterDropParticleRot = Quaternion.identity;
+
+            waterDragonPos = new Vector3(0.326f, 5.809f, -17.979f);
+            waterDragonRot = Quaternion.Euler(0, -90, 0f);
+
+            waterDragonSplashPos = new Vector3(0f, 0.2f, 5.5f);
+            waterDragonSplashRot = Quaternion.identity;
+
+            waterTornadoPos = new Vector3(0f, 0.2f, 5.5f);
+            waterTornadoRot = Quaternion.identity;
+
         }
         else // COURT_LEFT
         {
@@ -79,6 +107,15 @@ public class TurtlePlayerMovement : BasePlayerMovement
 
             waterDropParticlePos = new Vector3(0.019f, 0.202f, 10.842f);
             waterDropParticleRot = Quaternion.identity;
+
+            waterDragonPos = new Vector3(-0.326f, 5.809f, 17.979f);
+            waterDragonRot = Quaternion.Euler(0, 90, 0f);
+
+            waterDragonSplashPos = new Vector3(0f, 0.2f, -5.5f);
+            waterDragonSplashRot = Quaternion.identity;
+
+            waterTornadoPos = new Vector3(0f, 0.2f, -5.5f);
+            waterTornadoRot = Quaternion.identity;
         }
 
     }
@@ -170,24 +207,60 @@ public class TurtlePlayerMovement : BasePlayerMovement
     {
         if (waterDragonPrefab != null && waterDragonInstance == null)
         {
-            waterDragonInstance = Instantiate(waterDragonPrefab, transform.position, Quaternion.identity);
-            waterDragonInstance.transform.SetParent(transform);
-            waterDragonInstance.transform.localPosition = Vector3.zero;
+            waterDragonInstance = Instantiate(waterDragonPrefab, waterDragonPos, waterDragonRot);
+            // waterDragonInstance.transform.SetParent(transform);
+            // waterDragonInstance.transform.localPosition = Vector3.zero;
 
+            // waterDragonInstance.Play();
+
+            // Dragon 컴포넌트에 접근해서 MoveBeforeUltimateAttack 값 할당
+            var dragon = waterDragonInstance.GetComponent<Dragon>();
+            if (dragon != null)
+            {
+                // 오른쪽/왼쪽 코트에 따라 방향 다르게
+                dragon.MoveBeforeUltimateAttack = (m_CourtPosition == IPlayerInfo.CourtPosition.COURT_RIGHT) ? waterDragonMoveBeforeAttack : -waterDragonMoveBeforeAttack;
+            }
         }
     }
 
-    public void SummonWaterDragonSplash()
+    public void StartDrillDragon()
+    {
+        if (waterDragonInstance != null)
+        {
+            var dragon = waterDragonInstance.GetComponent<Dragon>();
+            if (dragon != null)
+            {
+                dragon.DragonRotate = waterDragonRot; // 현재 회전값 저장
+                dragon.StartDrill(); // drill 시작
+            }
+        }
+    }
+
+
+    public void SummonSplashAndTornado()
     {
         if (waterDragonSplashPrefab != null && waterDragonSplashInstance == null)
         {
-            waterDragonSplashInstance = Instantiate(waterDragonSplashPrefab, transform.position, Quaternion.identity);
-            waterDragonSplashInstance.transform.SetParent(transform);
-            waterDragonSplashInstance.transform.localPosition = Vector3.zero;
+            waterDragonSplashInstance = Instantiate(waterDragonSplashPrefab, waterDragonSplashPos, waterDragonSplashRot);
+            waterDragonSplashInstance.Play();
+        }
+
+        if (waterTornadoPrefab != null && waterTornadoInstance == null)
+        {
+            waterTornadoInstance = Instantiate(waterTornadoPrefab, waterTornadoPos, waterTornadoRot);
+            waterTornadoInstance.Play();
         }
     }
 
-
+    public void SummonUltimateEffect()
+    {
+        if (ultimateEffectPrefab != null && ultimateEffectInstance == null)
+        {
+            ultimateEffectInstance = Instantiate(ultimateEffectPrefab, transform.position, Quaternion.identity);
+            ultimateEffectInstance.transform.SetParent(transform);
+            ultimateEffectInstance.transform.localPosition = Vector3.zero;
+        }
+    }
 
     public override void OnStartCutScene()
     {
@@ -196,7 +269,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
     public override void OnEndCutscene()
     {
         // m_UltimateFlashGameObject.SetActive(false);
-    }//이거 오버라이딩해야함.
+    }
 
 
     protected override void FixedUpdate()
