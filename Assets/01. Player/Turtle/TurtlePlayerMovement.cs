@@ -80,7 +80,6 @@ public class TurtlePlayerMovement : BasePlayerMovement
         m_PlayableDirector = GetComponent<PlayableDirector>();
         m_PlayerType = IPlayerInfo.PlayerType.Turtle;
         m_PlayerDefaultColor = Color.skyBlue;
-        m_CourtPosition = IPlayerInfo.CourtPosition.COURT_RIGHT;
 
         if (m_CourtPosition == IPlayerInfo.CourtPosition.COURT_RIGHT)
         {
@@ -166,7 +165,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
             Vector3 OutPos = Vector3.zero;
             Quaternion OutRot = Quaternion.identity;
             bool bRetVal = GameManager.GetInstance().GetUltimatePos(m_PlayerType, m_CourtPosition, out OutPos, out OutRot);
-
+            Debug.Log($"Turtle Ultimate Skill: {bRetVal}, Position: {OutPos}, Rotation: {OutRot}");
             if (bRetVal)
             {
                 transform.position = OutPos;
