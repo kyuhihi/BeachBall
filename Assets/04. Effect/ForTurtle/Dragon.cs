@@ -1,8 +1,10 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEditor.ShaderKeywordFilter;
+
 
 [RequireComponent(typeof(MeshFilter))]
-public class MeshWaveWiggle : MonoBehaviour
+public class Dragon : MonoBehaviour
 {
     public float amplitude = 0.0005f;
     public float frequency = 5f;
@@ -11,17 +13,56 @@ public class MeshWaveWiggle : MonoBehaviour
 
     private float yCenter; // 전체 y 중앙값
 
+
+    [SerializeField] private ParticleSystem AroundDragonParticle;
+
+    [SerializeField] private ParticleSystem AroundDragonParticle2;
+    [SerializeField] private ParticleSystem AroundDragonParticle3;
+
+
     private Mesh mesh;
     private Vector3[] originalVertices;
     private Vector3[] displacedVertices;
     private List<List<int>> vertexGroups;
     private List<List<int>> vertexGroupsZMove;
 
+
+    private Vector3 startPos;
+    private bool isMovingToTarget = false;
+    private float moveDuration = 2f; // 이동에 걸리는 시간(초)
+
+    private Vector3 velocity = Vector3.zero;
+
+
+    private Vector3 moveBeforeUltimateAttack = Vector3.zero; // 드래곤이 공격 전 위치를 이동하기 위한
+
+    public Vector3 MoveBeforeUltimateAttack
+    {
+        get => moveBeforeUltimateAttack;
+        set => moveBeforeUltimateAttack = value;
+    }
+
+    private Quaternion dragonRotate = Quaternion.identity; // 플레이어에게 돌진 시 회전 값 유지시키기 위한
+
+    public Quaternion DragonRotate
+    {
+        get => dragonRotate;
+        set => dragonRotate = value;
+    }
+
+    private Vector3 drillDirection = Vector3.zero;
+
     private bool drillMode = false;
     private float drillStartTime = 0f;
+    private bool isWaitingForDrill = false;
+    private Transform enemyPlayerTransform;
 
     void Start()
     {
+        AroundDragonParticle.Stop();
+        AroundDragonParticle2.Stop();
+        AroundDragonParticle3.Stop();
+        
         mesh = GetComponent<MeshFilter>().mesh;
         mesh = Instantiate(mesh);
         GetComponent<MeshFilter>().mesh = mesh;
@@ -113,17 +154,15 @@ public class MeshWaveWiggle : MonoBehaviour
             i = j;
         }
 
+        startPos = transform.position;
+        isMovingToTarget = true; // 이동 시작
+
     }
 
     void Update()
     {
         float time = Time.time * frequency;
-        float transitionTime = 3f;
-        float t = 0f;
-        if (Time.time > transitionTime)
-            t = Mathf.Clamp01((Time.time - transitionTime) / 1.5f); // 1.5초 동안 서서히 중앙값으로
-
-        if (Time.time <= transitionTime)
+        if (!drillMode)
         {
             // 기존 y 웨이브
             for (int g = 0; g < vertexGroups.Count; g++)
@@ -139,23 +178,64 @@ public class MeshWaveWiggle : MonoBehaviour
                     displacedVertices[idx] = v;
                 }
             }
+
+            // 목표 위치로 빠르게 접근하다가 느려지며 도착
+            if (isMovingToTarget)
+            {
+                transform.position = Vector3.SmoothDamp(
+                    transform.position,
+                    startPos + moveBeforeUltimateAttack,
+                    ref velocity,
+                    moveDuration
+                );
+                // 목표 위치에 충분히 가까워지면 멈춤
+                if (Vector3.Distance(transform.position, startPos + moveBeforeUltimateAttack) < 0.01f)
+                {
+                    isMovingToTarget = false;
+                }
+            }
+            
         }
         else
         {
-            // 3초 후: 각 그룹마다 x축으로 일정한 속도로 회전, 그룹별로 각도 다르게
-            float drillSpeed = 5f; // 회전 속도 (라디안/초)
-            float baseAngle = (Time.time - transitionTime) * drillSpeed;
+            // drillMode에서
+            if (enemyPlayerTransform != null)
+            {
+                float drillMoveSpeed = 2f;
+                // 1. 이동 방향 계산 (한 번만 계산해서 저장)
+                if (drillDirection == Vector3.zero)
+                {
+                    drillDirection = (enemyPlayerTransform.position - transform.position).normalized;
+                    // 드래곤이 플레이어를 바라보게
+                    Vector3 lookTarget = transform.position + drillDirection;
+                    transform.LookAt(lookTarget);
+                    // 필요시 추가 회전
+                    transform.Rotate(0, dragonRotate.eulerAngles.y, 0); // 드래곤 모델의 앞 방향에 맞게 각도 조
+                }
+
+                // 2. 그 방향으로 계속 이동
+                transform.position += drillDirection * drillMoveSpeed * Time.deltaTime;
+            }
+
+            // drillMode에서
+            float drillSpeed = 1f; // 기본 회전 속도 (조절 가능)
+            float drillAccel = 1.2f; // 가속도 (조절 가능)
+            float drillElapsed = Time.time - drillStartTime;
+
+            // 회전 각도를 시간의 제곱에 비례해서 증가시킴 (t^2)
+            float baseAngle = drillSpeed * drillElapsed + drillAccel * drillElapsed * drillElapsed;
+
+            // 또는 더 빠른 가속감을 원하면 t^3도 가능
+            // float baseAngle = drillSpeed * drillElapsed + drillAccel * Mathf.Pow(drillElapsed, 3);
 
             for (int g = 0; g < vertexGroupsZMove.Count; g++)
             {
-                // 그룹별 위상차(g * 0.5f)
                 float groupAngle = baseAngle + g * 0.5f;
 
                 foreach (int idx in vertexGroupsZMove[g])
                 {
                     Vector3 orig = originalVertices[idx];
 
-                    // x축 회전 (y, z만 변형)
                     float radius = Mathf.Sqrt(orig.y * orig.y + orig.z * orig.z);
                     float origAngle = Mathf.Atan2(orig.z, orig.y);
                     float newAngle = origAngle + groupAngle;
@@ -163,7 +243,7 @@ public class MeshWaveWiggle : MonoBehaviour
                     Vector3 v = orig;
                     v.y = Mathf.Cos(newAngle) * radius;
                     v.z = Mathf.Sin(newAngle) * radius;
-                    v.x = orig.x; // x는 그대로
+                    v.x = orig.x;
 
                     displacedVertices[idx] = v;
                 }
@@ -171,59 +251,25 @@ public class MeshWaveWiggle : MonoBehaviour
         }
         mesh.vertices = displacedVertices;
         mesh.RecalculateNormals();
-
-        //     float time = Time.time * frequency;
-
-        // if (!drillMode)
-        // {
-        //     // 기존 y 웨이브
-        //     for (int g = 0; g < vertexGroups.Count; g++)
-        //     {
-        //         float groupX = originalVertices[vertexGroups[g][0]].x;
-        //         float phase = (groupX / waveLength) + time + g * 0.1f;
-        //         float offset = Mathf.Sin(phase) * amplitude;
-
-        //         foreach (int idx in vertexGroups[g])
-        //         {
-        //             Vector3 v = originalVertices[idx];
-        //             v.y = originalVertices[idx].y + offset;
-        //             displacedVertices[idx] = v;
-        //         }
-        //     }
-        // }
-        // else
-        // {
-        //     // 드릴 모드: 각 그룹마다 x축으로 일정한 속도로 회전, 그룹별로 각도 다르게
-        //     float drillSpeed = 5f;
-        //     float baseAngle = (Time.time - drillStartTime) * drillSpeed;
-
-        //     for (int g = 0; g < vertexGroupsZMove.Count; g++)
-        //     {
-        //         float groupAngle = baseAngle + g * 0.5f;
-
-        //         foreach (int idx in vertexGroupsZMove[g])
-        //         {
-        //             Vector3 orig = originalVertices[idx];
-        //             float radius = Mathf.Sqrt(orig.y * orig.y + orig.z * orig.z);
-        //             float origAngle = Mathf.Atan2(orig.z, orig.y);
-        //             float newAngle = origAngle + groupAngle;
-
-        //             Vector3 v = orig;
-        //             v.y = Mathf.Cos(newAngle) * radius;
-        //             v.z = Mathf.Sin(newAngle) * radius;
-        //             v.x = orig.x;
-
-        //             displacedVertices[idx] = v;
-        //         }
-        //     }
-        // }
-        // mesh.vertices = displacedVertices;
-        // mesh.RecalculateNormals();
     }
-    
+
     public void StartDrill()
     {
+        // 3. 상대 Player 찾기 (Player 태그, 자기 자신 제외)
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (var go in players)
+        {
+            if (go != this.gameObject)
+            {
+                enemyPlayerTransform = go.transform;
+                break;
+            }
+        }
+
         drillMode = true;
         drillStartTime = Time.time;
+        AroundDragonParticle.Play();
+        AroundDragonParticle2.Play();
+        AroundDragonParticle3.Play();
     }
 }

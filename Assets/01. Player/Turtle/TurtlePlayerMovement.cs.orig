@@ -175,6 +175,10 @@ public class TurtlePlayerMovement : BasePlayerMovement
             }
         }
     }
+
+<<<<<<< HEAD
+    public override void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
+=======
     public void SummonDropWaterFromWall()
     {
         if (dropWaterFromWallPrefab != null && dropWaterFromWallInstance == null)
@@ -261,7 +265,8 @@ public class TurtlePlayerMovement : BasePlayerMovement
         }
     }
 
-    public override void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
+    public override void OnStartCutScene()
+>>>>>>> Cho_Ultimate4
     {
         // m_UltimateFlashGameObject.SetActive(true);
     }

@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8679921383154817045, guid: 7785e6932d44b3b438b0713f39d7d5f8, type: 3}
       propertyPath: m_LocalScale.x
-      value: 1000
+      value: 1000.0005
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7785e6932d44b3b438b0713f39d7d5f8, type: 3}
       propertyPath: m_LocalScale.y
@@ -18,11 +18,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7785e6932d44b3b438b0713f39d7d5f8, type: 3}
       propertyPath: m_LocalScale.z
-      value: 1000
+      value: 1000.0005
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7785e6932d44b3b438b0713f39d7d5f8, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.26
+      value: -0.26000005
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7785e6932d44b3b438b0713f39d7d5f8, type: 3}
       propertyPath: m_LocalPosition.y
@@ -34,7 +34,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7785e6932d44b3b438b0713f39d7d5f8, type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.7071068
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7785e6932d44b3b438b0713f39d7d5f8, type: 3}
       propertyPath: m_LocalRotation.x
@@ -42,7 +42,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7785e6932d44b3b438b0713f39d7d5f8, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.7071068
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7785e6932d44b3b438b0713f39d7d5f8, type: 3}
       propertyPath: m_LocalRotation.z
@@ -54,7 +54,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7785e6932d44b3b438b0713f39d7d5f8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -90
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 7785e6932d44b3b438b0713f39d7d5f8, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
@@ -115,6 +115,9 @@ MonoBehaviour:
   frequency: 5
   waveLength: 2.5
   groupSize: 0.0001
+  AroundDragonParticle: {fileID: 4747485603189265642}
+  AroundDragonParticle2: {fileID: 3779234484095869018}
+  AroundDragonParticle3: {fileID: 1137807109023626313}
 --- !u!1001 &3002218593772549531
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -186,6 +189,10 @@ PrefabInstance:
     - target: {fileID: 7514380116403822961, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
       propertyPath: looping
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7514380116403822961, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
+      propertyPath: lengthInSec
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7514380116403822961, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
       propertyPath: ShapeModule.type
@@ -260,6 +267,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
+--- !u!198 &4747485603189265642 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 7514380116403822961, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
+  m_PrefabInstance: {fileID: 3002218593772549531}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8167882532557443014 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6408657474720037469, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
@@ -279,7 +291,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6183123905896617800, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
       propertyPath: m_Name
-      value: AroundDragonParticle (1)
+      value: AroundDragonParticle2
       objectReference: {fileID: 0}
     - target: {fileID: 6408657474720037469, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
       propertyPath: m_LocalScale.x
@@ -336,6 +348,10 @@ PrefabInstance:
     - target: {fileID: 7514380116403822961, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
       propertyPath: looping
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7514380116403822961, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
+      propertyPath: lengthInSec
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7514380116403822961, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
       propertyPath: ShapeModule.type
@@ -415,6 +431,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6408657474720037469, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
   m_PrefabInstance: {fileID: 6645898366606819627}
   m_PrefabAsset: {fileID: 0}
+--- !u!198 &3779234484095869018 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 7514380116403822961, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
+  m_PrefabInstance: {fileID: 6645898366606819627}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7458591478315898168
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -429,7 +450,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6183123905896617800, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
       propertyPath: m_Name
-      value: AroundDragonParticle (2)
+      value: AroundDragonParticle3
       objectReference: {fileID: 0}
     - target: {fileID: 6408657474720037469, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
       propertyPath: m_LocalScale.x
@@ -486,6 +507,10 @@ PrefabInstance:
     - target: {fileID: 7514380116403822961, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
       propertyPath: looping
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7514380116403822961, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
+      propertyPath: lengthInSec
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 7514380116403822961, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
       propertyPath: ShapeModule.type
@@ -560,6 +585,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
+--- !u!198 &1137807109023626313 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 7514380116403822961, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
+  m_PrefabInstance: {fileID: 7458591478315898168}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4571748914684800869 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6408657474720037469, guid: e9f42d0911d8d6f4286efb142e7ed730, type: 3}
