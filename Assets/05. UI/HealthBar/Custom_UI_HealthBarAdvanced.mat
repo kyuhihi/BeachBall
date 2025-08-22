@@ -1,0 +1,112 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Custom_UI_HealthBarAdvanced
+  m_Shader: {fileID: 4800000, guid: 4426c01c4b0d80a4ebaf94ffc10beb6a, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NoiseTex:
+        m_Texture: {fileID: 2800000, guid: 3af02e2d786423f4ba0c478bb0366d27, type: 3}
+        m_Scale: {x: 5, y: 10}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BarBrightness: 2.86
+    - _BorderPx: 2
+    - _BorderWidth: 1.73
+    - _Brightness: 1
+    - _ChipFadeSpeed: 5.56
+    - _ChipHealth: 1
+    - _DamageFadeSpeed: 3
+    - _EdgeAdd: 6
+    - _EdgeAddIntensity: 6
+    - _EdgeHighlightIntensity: 0.9
+    - _EdgeHighlightPixelWidth: 32
+    - _EdgeHighlightSharpness: 256
+    - _EdgeHighlightWidth: 0.044
+    - _EdgeHotSharpness: 128
+    - _EdgeHotWidthPx: 32
+    - _EdgeLerp: 0.35
+    - _EdgeSharpness: 1
+    - _EdgeWidthPx: 7.4
+    - _FlashSpeed: 8
+    - _FlashStrength: 0.6
+    - _GlowStrength: 0.23
+    - _HeadAdd: 2
+    - _HeadAddIntensity: 2
+    - _HeadHotWidthPx: 4
+    - _HeadLerp: 0.25
+    - _HeadSharpness: 3
+    - _HeadWidthPx: 0
+    - _Health: 1
+    - _HeightPx: 32
+    - _HighlightAdd: 20
+    - _HighlightBoost: 3.1
+    - _HighlightLerp: 0.288
+    - _HighlightSharpness: 8
+    - _HighlightWidthPx: 6
+    - _LowHPFlashSpeed: 8
+    - _LowHPFlashStrength: 0.6
+    - _LowHPThreshold: 0.25
+    - _LowHealthTh: 0.25
+    - _MinShrinkFactor: 1
+    - _NoiseBlendMode: 0
+    - _NoiseChannel: 0
+    - _NoiseContrast: 1.4
+    - _NoiseDebug: 0
+    - _NoiseIntensity: 1.28
+    - _NoiseProceduralMix: 0.465
+    - _NoisePulseSpeed: 7.6
+    - _NoiseScale: 3
+    - _NoiseSigned: 0
+    - _PrevHealth: 1
+    - _ResolutionX: 300
+    - _ResolutionY: 37.29
+    - _SecondaryMix: 0.279
+    - _SideGlow: 0.4
+    - _WidthPx: 300
+    m_Colors:
+    - _BackColor: {r: 0.06999998, g: 0.06999998, b: 0.06999998, a: 1}
+    - _BorderColor: {r: 1, g: 1, b: 1, a: 1}
+    - _DamageColor: {r: 1, g: 0.24999997, b: 0, a: 1}
+    - _EdgeColor: {r: 0, g: 1.1961437, b: 32.041885, a: 1}
+    - _EdgeHighlightColor: {r: 1, g: 0.003144443, b: 0.003144443, a: 1}
+    - _EdgeHotColor: {r: 2.0026178, g: 0, b: 0, a: 1}
+    - _FillColorA: {r: 0, g: 0.05333042, b: 1, a: 1}
+    - _FillColorB: {r: 0.0051276684, g: 1, b: 0, a: 1}
+    - _FillSecondary: {r: 1, g: 0.39999998, b: 0.09999997, a: 1}
+    - _FlashColor: {r: 1, g: 0, b: 0, a: 1}
+    - _GradientA: {r: 0.534459, g: 1, b: 0, a: 1}
+    - _GradientB: {r: 0.27520812, g: 0.07232696, b: 1, a: 1}
+    - _HeadColor: {r: 1.2, g: 0.9, b: 0.3, a: 1}
+    - _HeadHotColor: {r: 1.2, g: 0.9, b: 0.3, a: 1}
+    - _HighlightColor: {r: 1, g: 0, b: 0, a: 1}
+    - _InnerColorA: {r: 1, g: 0.54999995, b: 0.049999982, a: 1}
+    - _InnerColorB: {r: 1, g: 0.85, b: 0.24999997, a: 1}
+    - _LowHPFlashColor: {r: 1, g: 0.14999998, b: 0.14999998, a: 1}
+    - _NoiseScroll: {r: 1, g: 0, b: 0, a: 0}
+    - _SecondaryColor: {r: 1, g: 0.39999998, b: 0.09999997, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

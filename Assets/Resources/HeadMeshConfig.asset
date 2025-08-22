@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2d4260b20769997448efd822c27f6876, type: 3}
+  m_Name: HeadMeshConfig
+  m_EditorClassIdentifier: 
+  entries:
+  - playerType: 1
+    mesh: {fileID: 1360107307202970949, guid: 7f44e59b8da9aea42b6233728987a792, type: 3}
+    material: {fileID: 2100000, guid: 0043f2d2116afb14c843e20f8149b27f, type: 2}
+  - playerType: 2
+    mesh: {fileID: 1360107307202970949, guid: ad0a19fca0ba7344a99966ccc5feea19, type: 3}
+    material: {fileID: 2100000, guid: 8eba7996b41ca3447b0513933bace68e, type: 2}
+  - playerType: 3
+    mesh: {fileID: 0}
+    material: {fileID: 0}
