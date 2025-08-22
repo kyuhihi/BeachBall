@@ -36,6 +36,11 @@ public class FoxPlayerMovement : BasePlayerMovement
 
     public override void OnAttackSkill(InputValue value)
     {
+        if (!m_isMoveByInput)
+        {
+            return;
+        }
+
         if (value.isPressed)
         {
             m_Animator.SetTrigger("AttackSkill");
@@ -56,6 +61,11 @@ public class FoxPlayerMovement : BasePlayerMovement
 
     public override void OnDefenceSkill(InputValue value)
     {
+        if (!m_isMoveByInput && value.isPressed)
+        {
+            return;
+        }
+
         m_Animator.SetBool("DefenceSkill", value.isPressed);
 
 
@@ -63,6 +73,11 @@ public class FoxPlayerMovement : BasePlayerMovement
 
     public override void OnUltimateSkill(InputValue value)
     {
+        if (!m_isMoveByInput)
+        {
+            return;
+        }
+
         Vector3 OutPos = Vector3.zero;
         Quaternion OutRot = Quaternion.identity;
         bool bRetVal = GameManager.GetInstance().GetUltimatePos(m_PlayerType, m_CourtPosition, out OutPos, out OutRot);

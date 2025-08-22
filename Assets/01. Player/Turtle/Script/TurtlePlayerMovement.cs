@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 using UnityEngine.Playables;
+using NUnit.Framework;
+using System.Collections.Generic;
 public class TurtlePlayerMovement : BasePlayerMovement
 {
     [SerializeField] private ParticleSystem waterCannonParticlePrefab;
@@ -23,6 +25,13 @@ public class TurtlePlayerMovement : BasePlayerMovement
 
     private Vector3 waterDropParticlePos = Vector3.zero;
     private Quaternion waterDropParticleRot = Quaternion.identity;
+
+    [SerializeField] private GameObject ultimateWaterPrefab;
+    private GameObject ultimateWaterInstance;
+
+    private Vector3 ultimateWaterPos = Vector3.zero;
+    private Quaternion ultimateWaterRot = Quaternion.identity;
+
 
     [SerializeField] private GameObject waterDragonPrefab;
     private GameObject waterDragonInstance;
@@ -65,10 +74,23 @@ public class TurtlePlayerMovement : BasePlayerMovement
     private GameObject heldShell = null;
 
 
-    Vector3 ballPos = Vector3.zero;
+    // 물고기 프리팹(ultimatewater 안에 생성)
+    [SerializeField] private GameObject fishPrefab1;
+    [SerializeField] private GameObject fishPrefab2;
+    [SerializeField] private GameObject fishPrefab3;
+
+    // 각 종류별로 리스트로 관리
+    private List<GameObject> fishList1 = new List<GameObject>();
+    private List<GameObject> fishList2 = new List<GameObject>();
+    private List<GameObject> fishList3 = new List<GameObject>();
+
+    private int fishCount = 4; // 각 종류별로 생성할 물고기 개수
+
+    private Vector3 ballPos = Vector3.zero;
 
     private bool isWaterCannonActive = false;
     private bool isWaterCannonRotating = false;
+    private bool isUltimateSkillActiving = false;
     private float waterCannonTurnSpeed = 180f; // 초당 회전 각도
     private float waterCannonAngleThreshold = 5f; // 몇 도 이내면 "완료"로 간주
 
@@ -98,6 +120,9 @@ public class TurtlePlayerMovement : BasePlayerMovement
             waterTornadoPos = new Vector3(0f, 0.2f, 5.5f);
             waterTornadoRot = Quaternion.identity;
 
+            ultimateWaterPos = new Vector3(0f, -4f, 0f);
+            ultimateWaterRot = Quaternion.identity;
+
         }
         else // COURT_LEFT
         {
@@ -115,15 +140,22 @@ public class TurtlePlayerMovement : BasePlayerMovement
 
             waterTornadoPos = new Vector3(0f, 0.2f, -5.5f);
             waterTornadoRot = Quaternion.identity;
+
+            ultimateWaterPos = new Vector3(0f, -4f, 0f);
+            ultimateWaterRot = Quaternion.identity;
         }
 
     }
 
     public override void OnAttackSkill(InputValue value)
     {
+        if (!m_isMoveByInput)
+        {
+            return;
+        }
         if (value.isPressed)
         {
-            if (isShellThrowCannonActive || isWaterCannonActive || isWaterCannonRotating)
+            if (isShellThrowCannonActive || isWaterCannonActive || isWaterCannonRotating || isUltimateSkillActiving)
                 return;
             isShellThrowCannonActive = true;
             // Debug.Log("Turtle: 등껍질 돌진!");
@@ -148,10 +180,15 @@ public class TurtlePlayerMovement : BasePlayerMovement
 
     public override void OnDefenceSkill(InputValue value)
     {
+        if (!m_isMoveByInput)
+        {
+            return;
+        }
+
         if (value.isPressed)
         {
             // 이미 물대포가 진행 중이거나 회전 중이면 무시
-            if (isWaterCannonActive || isWaterCannonRotating || isShellThrowCannonActive)
+            if (isWaterCannonActive || isWaterCannonRotating || isShellThrowCannonActive || isUltimateSkillActiving)
                 return;
 
             isWaterCannonRotating = true;
@@ -160,17 +197,44 @@ public class TurtlePlayerMovement : BasePlayerMovement
     }
     public override void OnUltimateSkill(InputValue value)
     {
+        if (!m_isMoveByInput)
+        {
+            return;
+        }
+
         if (value.isPressed)
         {
+
+            if (isWaterCannonActive || isWaterCannonRotating || isShellThrowCannonActive || isUltimateSkillActiving)
+                return;
+
             Vector3 OutPos = Vector3.zero;
             Quaternion OutRot = Quaternion.identity;
             bool bRetVal = GameManager.GetInstance().GetUltimatePos(m_PlayerType, m_CourtPosition, out OutPos, out OutRot);
-            Debug.Log($"Turtle Ultimate Skill: {bRetVal}, Position: {OutPos}, Rotation: {OutRot}");
+            
+            // 1. Player 태그 가진 모든 오브젝트 찾기
+            GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+            foreach (var player in players)
+            {
+                // 2. 나 자신이 아니면
+                if (player != this.gameObject)
+                {
+                    var controller = player.GetComponent<BasePlayerMovement>();
+                    if (controller != null)
+                    {
+
+                        controller.transform.position = waterTornadoPos;
+                        controller.transform.rotation = waterTornadoRot;
+                    }
+                }
+            }
+
             if (bRetVal)
             {
                 transform.position = OutPos;
                 transform.rotation = OutRot;
                 m_PlayableDirector.Play();
+
             }
         }
     }
@@ -189,6 +253,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
         }
         
     }
+    
     public void SummonWaterDropParticle()
     {
         if (waterDropParticlePrefab != null && waterDropParticleInstance == null)
@@ -200,6 +265,35 @@ public class TurtlePlayerMovement : BasePlayerMovement
             waterDropParticleInstance.Play();
         }
     }
+
+    public void SummonUltimateWater()
+    {
+        if (ultimateWaterPrefab != null && ultimateWaterInstance == null)
+        {
+            ultimateWaterInstance = Instantiate(ultimateWaterPrefab, ultimateWaterPos, ultimateWaterRot);
+            var ultimateWater = ultimateWaterInstance.GetComponent<UltimateWater>();
+            if (ultimateWater != null)
+            {
+                ultimateWater.StartFillWater();
+            }
+        }
+    }
+
+    public void UltimateWaterSpeedUp()
+    {
+        if (ultimateWaterInstance != null)
+        {
+            var ultimateWater = ultimateWaterInstance.GetComponent<UltimateWater>();
+            if (ultimateWater != null)
+            {
+                ultimateWater.SpeedUpFill();
+            }
+
+        }
+        
+    }
+
+
 
     public void SummonWaterDragon()
     {
@@ -248,6 +342,44 @@ public class TurtlePlayerMovement : BasePlayerMovement
             waterTornadoInstance = Instantiate(waterTornadoPrefab, waterTornadoPos, waterTornadoRot);
             waterTornadoInstance.Play();
         }
+
+        // ScreenWaterPlane 오브젝트를 찾고 ExecuteWaterSplash() 호출
+        var screenWater = FindFirstObjectByType<ScreenWaterPlane>();
+        if (screenWater != null)
+        {
+            screenWater.ExecuteWaterSplash();
+        }
+    }
+
+    public void StopAndDestroySplashAndTornado()
+    {
+        if (waterDragonSplashInstance != null)
+        {
+            var main = waterDragonSplashInstance.main;
+            main.loop = false;
+            waterDragonSplashInstance.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+            StartCoroutine(DestroyParticleWhenDone(waterDragonSplashInstance));
+            waterDragonSplashInstance = null;
+        }
+        if (waterTornadoInstance != null)
+        {
+            var main = waterTornadoInstance.main;
+            main.loop = false;
+            waterTornadoInstance.Stop(false, ParticleSystemStopBehavior.StopEmitting);
+            StartCoroutine(DestroyParticleWhenDone(waterTornadoInstance));
+            waterTornadoInstance = null;
+        }
+        
+    }
+
+    private IEnumerator DestroyParticleWhenDone(ParticleSystem ps)
+    {
+        // 파티클이 모두 끝날 때까지 대기
+        while (ps != null && ps.IsAlive(true))
+            yield return null;
+
+        if (ps != null)
+            Destroy(ps.gameObject);
     }
 
     public void SummonUltimateEffect()
@@ -260,13 +392,100 @@ public class TurtlePlayerMovement : BasePlayerMovement
         }
     }
 
+    public void DestroyAllEffectAndSummonFish()
+    {
+        if (dropWaterFromWallInstance)
+            Destroy(dropWaterFromWallInstance);
+
+        if (waterDropParticleInstance)
+            Destroy(waterDropParticleInstance);
+
+        if (waterDragonInstance)
+            Destroy(waterDragonInstance);
+
+        if (ultimateEffectInstance)
+            Destroy(ultimateEffectInstance);
+
+        // UltimateWater 영역 정보 가져오기
+        if (ultimateWaterInstance != null)
+        {
+            Transform waterTr = ultimateWaterInstance.transform;
+            Vector3 scale = waterTr.localScale;
+
+            // 큐브 Mesh의 기본 크기가 1x1x1이므로, -0.5~+0.5에 스케일 곱하기
+            Vector3 areaMin = new Vector3(-0.5f * scale.x, 0f, -0.5f * scale.z);
+            Vector3 areaMax = new Vector3(0.5f * scale.x, scale.y, 0.5f * scale.z);
+
+            GameObject[] fishPrefabs = { fishPrefab1, fishPrefab2, fishPrefab3 };
+            List<GameObject>[] fishLists = { fishList1, fishList2, fishList3 };
+
+            for (int j = 0; j < fishPrefabs.Length; j++)
+            {
+                for (int i = 0; i < fishCount; i++)
+                {
+                    Vector3 localPos = new Vector3(
+                        Random.Range(areaMin.x, areaMax.x),
+                        Random.Range(areaMin.y, areaMax.y - 2f),
+                        Random.Range(areaMin.z, areaMax.z)
+                    );
+
+                    GameObject fish = Instantiate(fishPrefabs[j], localPos, Quaternion.identity);
+                    fishLists[j].Add(fish);
+                    if (j == 0)
+                    {
+                        var fishCtrl = fish.GetComponent<FishController>();
+                        if (fishCtrl != null)
+                            fishCtrl.Init(waterTr, areaMin, areaMax, 2f, 200f);
+                    }
+                    else
+                    {
+                        var fishCtrl = fish.GetComponent<FishController>();
+                        if (fishCtrl != null)
+                            fishCtrl.Init(waterTr, areaMin, areaMax, 2f, 0f);
+                    }
+
+                }
+            }
+        }
+    }
+
     public override void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
         // m_UltimateFlashGameObject.SetActive(true);
+        MoveByInput = false;
+        isUltimateSkillActiving = true;
     }
+
     public override void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
-        // m_UltimateFlashGameObject.SetActive(false);
+        MoveByInput = true;
+        isUltimateSkillActiving = false;
+
+        // 1. Player 태그 가진 모든 오브젝트 찾기
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        foreach (var player in players)
+        {
+            // 2. 나 자신이 아니면
+            if (player != this.gameObject)
+            {
+                var controller = player.GetComponent<BasePlayerMovement>();
+                if (controller != null)
+                {
+
+                    controller.Stun(10f); // 10초간 스턴
+                    controller.SetSwimModeAfterStun(0.5f); // 10초 후 수영모드, 속도 0.5배
+                }
+            }
+            else
+            {
+
+                SetSwimmingMode(2f); // 수영모드, 속도 2배
+            }
+            
+            var rb = player.GetComponent<Rigidbody>();
+                    if (rb != null)
+                        rb.useGravity = false;
+        }
     }
 
 

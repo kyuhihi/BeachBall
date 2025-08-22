@@ -54,7 +54,6 @@ public class Dragon : MonoBehaviour
 
     private bool drillMode = false;
     private float drillStartTime = 0f;
-    private bool isWaitingForDrill = false;
     private Transform enemyPlayerTransform;
 
     void Start()

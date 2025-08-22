@@ -12,12 +12,12 @@ public class ScreenWaterPlane : MonoBehaviour
     private const string m_WaterPlaneOpacityProperty = "_Opacity";
     private const string m_WaterPlaneLerpColorProperty = "_LerpColor";
 
-    private const string FeatureName = "FullScreenWater"; // Renderer Feature ÀÌ¸§
+    private const string FeatureName = "FullScreenWater"; // Renderer Feature ï¿½Ì¸ï¿½
     private Material m_FullScreenPassMaterial;
     private const string FullPassDistortionProperty = "_Distortion";
     private FullScreenPassRendererFeature fullScreenFeature;
 
-    // ¾Ö´Ï¸ÞÀÌ¼Ç ÆÄ¶ó¹ÌÅÍ
+    // ï¿½Ö´Ï¸ï¿½ï¿½Ì¼ï¿½ ï¿½Ä¶ï¿½ï¿½ï¿½ï¿½
     [SerializeField] private float distortionStart = 0.05f;
     [SerializeField] private float distortionFadeTime = 1.2f;
     [SerializeField] private float opacityFadeTime = 1.6f;
@@ -27,9 +27,9 @@ public class ScreenWaterPlane : MonoBehaviour
     [SerializeField] private AnimationCurve distortionEase = AnimationCurve.EaseInOut(0, 0, 1, 1);
     [SerializeField] private AnimationCurve opacityEase    = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-    // LerpColor ¼³Á¤(¾ËÆÄ´Â ÄÚ·çÆ¾¿¡¼­ Á¦¾î)
-    [SerializeField] private Color lerpBaseColor = new Color(0.2431f, 0.2784f, 1f, 1f); // RGB¸¸ »ç¿ë
-    [SerializeField] private float lerpAlphaMax = 0.35f; // ¼ÎÀÌ´õ°¡ 0~100 ½ºÄÉÀÏÀÌ¸é 35·Î ¼³Á¤
+    // LerpColor ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½Ä´ï¿½ ï¿½Ú·ï¿½Æ¾ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
+    [SerializeField] private Color lerpBaseColor = new Color(0.2431f, 0.2784f, 1f, 1f); // RGBï¿½ï¿½ ï¿½ï¿½ï¿½
+    [SerializeField] private float lerpAlphaMax = 0.35f; // ï¿½ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ 0~100 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ 35ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
     private Coroutine _running;
 
@@ -40,9 +40,9 @@ public class ScreenWaterPlane : MonoBehaviour
         m_WaterPlaneMaterial = GetComponent<Renderer>().material;
         if (!TryGetFullScreenPassMaterial(Camera.main, FeatureName, out m_FullScreenPassMaterial))
         {
-            Debug.LogWarning($"[ScreenWaterPlane] '{FeatureName}' ¸ÓÆ¼¸®¾óÀ» Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+            Debug.LogWarning($"[ScreenWaterPlane] '{FeatureName}' ï¿½ï¿½Æ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Ã£ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
         }
-        // ÃÊ±â°ª(¼±ÅÃ)
+        // ï¿½Ê±â°ª(ï¿½ï¿½ï¿½ï¿½)
         if (m_FullScreenPassMaterial != null && m_FullScreenPassMaterial.HasProperty(FullPassDistortionProperty))
             m_FullScreenPassMaterial.SetFloat(FullPassDistortionProperty, 0f);
         if (m_WaterPlaneMaterial != null && m_WaterPlaneMaterial.HasProperty(m_WaterPlaneOpacityProperty)){
@@ -95,7 +95,7 @@ public class ScreenWaterPlane : MonoBehaviour
 
                 var feature = (ScriptableRendererFeature)featObj;
 
-                // ÀÌ¸§ ¸ÅÄª
+                // ï¿½Ì¸ï¿½ ï¿½ï¿½Äª
                 if (feature.name.CompareTo(featureName) != 0)
                     continue;
                  fullScreenFeature = feature as FullScreenPassRendererFeature;
@@ -109,10 +109,10 @@ public class ScreenWaterPlane : MonoBehaviour
 
     private System.Collections.IEnumerator Co_Splash()
     {
-        // »çÀü Áö¿¬
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (preDelay > 0f) yield return new WaitForSeconds(preDelay);
 
-        // ÃÊ±â »óÅÂ ¼¼ÆÃ
+        // ï¿½Ê±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (m_FullScreenPassMaterial != null && m_FullScreenPassMaterial.HasProperty(FullPassDistortionProperty))
             m_FullScreenPassMaterial.SetFloat(FullPassDistortionProperty, distortionStart);
         if (m_WaterPlaneMaterial != null && m_WaterPlaneMaterial.HasProperty(m_WaterPlaneOpacityProperty))
@@ -120,7 +120,7 @@ public class ScreenWaterPlane : MonoBehaviour
         if (m_WaterPlaneMaterial != null && m_WaterPlaneMaterial.HasProperty(m_WaterPlaneLerpColorProperty))
             m_WaterPlaneMaterial.SetColor(m_WaterPlaneLerpColorProperty, new Color(lerpBaseColor.r, lerpBaseColor.g, lerpBaseColor.b, 0f));
 
-        // Æò¸é ¸ÓÆ¼¸®¾ó ºü¸¥ ÆäÀÌµå ÀÎ(ÆË ¹æÁö) + LerpColor ¾ËÆÄµµ ÇÔ²² »ó½Â
+        // ï¿½ï¿½ï¿½ ï¿½ï¿½Æ¼ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ìµï¿½ ï¿½ï¿½(ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½) + LerpColor ï¿½ï¿½ï¿½Äµï¿½ ï¿½Ô²ï¿½ ï¿½ï¿½ï¿½
         float tAttack = 0f;
         while (tAttack < opacityAttackTime)
         {
@@ -136,7 +136,7 @@ public class ScreenWaterPlane : MonoBehaviour
             yield return null;
         }
 
-        // ¸ÞÀÎ Å©·Î½ºÆäÀÌµå
+        // ï¿½ï¿½ï¿½ï¿½ Å©ï¿½Î½ï¿½ï¿½ï¿½ï¿½Ìµï¿½
         float t = 0f;
         float startOpacityFade = Mathf.Max(0f, distortionFadeTime - crossfadeTime);
         float total = Mathf.Max(distortionFadeTime, startOpacityFade + opacityFadeTime);
@@ -153,7 +153,7 @@ public class ScreenWaterPlane : MonoBehaviour
                 m_FullScreenPassMaterial.SetFloat(FullPassDistortionProperty, v);
             }
 
-            // Opacity: 1 -> 0 (startOpacityFade ½ÃÁ¡ºÎÅÍ)
+            // Opacity: 1 -> 0 (startOpacityFade ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
             if (m_WaterPlaneMaterial != null && m_WaterPlaneMaterial.HasProperty(m_WaterPlaneOpacityProperty))
             {
                 float ko = Mathf.Clamp01((t - startOpacityFade) / opacityFadeTime);
@@ -161,7 +161,7 @@ public class ScreenWaterPlane : MonoBehaviour
                 m_WaterPlaneMaterial.SetFloat(m_WaterPlaneOpacityProperty, v);
             }
 
-            // LerpColor ¾ËÆÄ: ÇÇÅ©(lerpAlphaMax) -> 0 (µ¿ÀÏ ½ÃÁ¡¿¡ ¸±¸®Áî)
+            // LerpColor ï¿½ï¿½ï¿½ï¿½: ï¿½ï¿½Å©(lerpAlphaMax) -> 0 (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
             if (m_WaterPlaneMaterial != null && m_WaterPlaneMaterial.HasProperty(m_WaterPlaneLerpColorProperty))
             {
                 float koA = Mathf.Clamp01((t - startOpacityFade) / opacityFadeTime);
@@ -172,7 +172,7 @@ public class ScreenWaterPlane : MonoBehaviour
             yield return null;
         }
 
-        // ÃÖÁ¾ º¸Á¤
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (m_FullScreenPassMaterial != null && m_FullScreenPassMaterial.HasProperty(FullPassDistortionProperty))
             m_FullScreenPassMaterial.SetFloat(FullPassDistortionProperty, 0f);
         if (m_WaterPlaneMaterial != null && m_WaterPlaneMaterial.HasProperty(m_WaterPlaneOpacityProperty))

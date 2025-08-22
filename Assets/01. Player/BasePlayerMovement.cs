@@ -22,6 +22,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
 
     protected Vector3 dashTargetPosition;
     protected bool isDashingToBall = false;
+    protected bool isSwimming = false;
     protected float dashArriveDistance = 0.5f; // 도착 판정 거리
 
     [SerializeField] protected float jumpForce = 10f;
@@ -59,6 +60,8 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     {
         Idle = 0,
         Walk = 2,
+
+        Swim = 3,
         // Run = 2
     }
     protected IdleWalkRunEnum m_eLocomotionState = IdleWalkRunEnum.Idle;
@@ -297,6 +300,11 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
 
     public void OnDash(InputValue value)
     {
+        
+        if (!m_isMoveByInput)
+            return;
+
+
         if (value.isPressed)
         {
             // Debug.Log("Dashing to ball...");
@@ -314,7 +322,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
                     // landSpotParticle을 원하는 대로 사용
                     ballTransform = landSpotParticle.transform;
                     dashTargetPosition = ballTransform.position;
-                }   
+                }
 
                 isDashingToBall = true;
                 m_TrailRenderer.enabled = true;
@@ -327,28 +335,59 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         }
     }
     public void OnSmash(InputValue value)
-    {//스매시, 다이빙 동시처리.
-        if (!m_isMoveByInput)
-            return;
-        if (!isGrounded)
-            m_Animator.SetTrigger("Smash");
-        else
-        {
+    {
 
-            m_Animator.SetTrigger("Diving");
+        // 막아야 하는가 마는가 고민
+        // if (!m_isMoveByInput)
+        //     return;
+
+        if (m_eLocomotionState == IdleWalkRunEnum.Swim)
+        {
+            isSwimSmashPressed = value.isPressed;
+            return;
         }
+
+
+
+        if (value.isPressed)
+        {
+            if (!isGrounded)
+                m_Animator.SetTrigger("Smash");
+            else
+            {
+
+                m_Animator.SetTrigger("Diving");
+            }
+        }
+
     }
+
+    // 1. 상태 변수 추가
+    private bool isSwimJumpPressed = false;
+    private bool isSwimSmashPressed = false;
 
     public void OnJump(InputValue value)
     {
         // Debug.Log("Jump Input: " + value.isPressed);
+        if (!m_isMoveByInput)
+        {
+            return;
+        }
+        
+        if (m_eLocomotionState == IdleWalkRunEnum.Swim)
+        {
+            isSwimJumpPressed = value.isPressed;
+            Debug.Log("Swim Jump Pressed: " + isSwimJumpPressed);
+            return;
+        }
 
-        if (m_isMoveByInput && value.isPressed && isGrounded)
+
+        if (value.isPressed && isGrounded)
         {
             OnJumpInput(value.isPressed);
             m_Rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
-        else if (value.isPressed && !m_IsDoubleJumping&& !isGrounded)
+        else if (value.isPressed && !m_IsDoubleJumping && !isGrounded)
         {
             OnDoubleJumpInput(value.isPressed);
 
@@ -534,6 +573,40 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
             footstepTimer = 0f;
         }
 
+        // *** Swim 상태에서 위/아래 이동 처리 ***
+        if (m_eLocomotionState == IdleWalkRunEnum.Swim)
+        {
+            Vector3 swimMove = m_Movement * currentSpeed * Time.fixedDeltaTime;
+
+            // 위로 이동
+            if (isSwimJumpPressed)
+                swimMove += Vector3.up * 2f * Time.fixedDeltaTime; // 상승 속도 조절
+
+            // 아래로 이동
+            if (isSwimSmashPressed)
+                swimMove += Vector3.down * 2f * Time.fixedDeltaTime; // 하강 속도 조절
+
+            m_Rigidbody.MovePosition(m_Rigidbody.position + swimMove);
+
+            // 회전 적용
+            if (hasReceivedInput)
+            {
+                // 기본적으로 이동 방향을 바라보게
+                Vector3 lookDir = swimMove.normalized;
+                if (lookDir.sqrMagnitude > 0.01f)
+                {
+                    Quaternion targetRot = Quaternion.LookRotation(lookDir, Vector3.up);
+                    m_Rigidbody.MoveRotation(Quaternion.Slerp(m_Rigidbody.rotation, targetRot, 0.2f));
+                }
+                else
+                {
+                    m_Rigidbody.MoveRotation(m_Rotation);
+                }
+            }
+
+            return;
+        }
+
         OnPlayerMove();
         SetAnimatorParameters(inputMagnitude);
     }
@@ -648,6 +721,11 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     protected void SetCurrentLocomotionState(float appliedSpeed)
     {
         // 입력과 달리기 상태를 직접 확인하는 방식으로 변경
+        if(m_eLocomotionState == IdleWalkRunEnum.Swim)
+        {
+            return;
+        }
+
         if (m_InputVector.magnitude < 0.01f)
         {
             m_eLocomotionState = IdleWalkRunEnum.Idle;
@@ -723,6 +801,28 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         // 기절 애니메이션 등 추가 가능
         yield return new WaitForSeconds(duration);
         MoveByInput = true;
+    }
+
+    public void SetSwimModeAfterStun(float speedMultiplier)
+    {
+        StartCoroutine(SwimModeAfterStunRoutine(speedMultiplier));
+    }
+
+    private IEnumerator SwimModeAfterStunRoutine(float speedMultiplier)
+    {
+        yield return new WaitForSeconds(10f);
+        SetSwimmingMode(speedMultiplier);
+    }
+
+    public void SetSwimmingMode(float speedMultiplier)
+    {
+        // Swimming 상태로 전환
+        // 예: isSwimming = true;
+        // 속도 조정
+        m_eLocomotionState = IdleWalkRunEnum.Swim;
+        walkSpeed = walkSpeed * speedMultiplier;
+        m_Animator.SetTrigger("Swimming");
+        // 애니메이션 등 추가
     }
 
     protected void OnDrawGizmosSelected()

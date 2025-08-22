@@ -46,7 +46,7 @@ public class CameraShakingManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Ä«¸Þ¶ó ½¦ÀÌÅ© ½ÇÇà (¿É¼Ç: Áö¼Ó½Ã°£, °­µµ)
+    /// Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½Å© ï¿½ï¿½ï¿½ï¿½ (ï¿½É¼ï¿½: ï¿½ï¿½ï¿½Ó½Ã°ï¿½, ï¿½ï¿½ï¿½ï¿½)
     /// </summary>
     public void DoShake(float duration = -1f, float magnitude = -1f)
     {
@@ -61,6 +61,27 @@ public class CameraShakingManager : MonoBehaviour
             else
             {
                 m_Cameras[i].Shake(duration, magnitude);
+            }
+        }
+
+
+    }
+
+
+    public void ReadyShake()
+    {
+
+        for (int i = 0; i < m_Cameras.Length; i++)
+        {
+            if (m_Cameras[i] == null)
+            {
+                Debug.LogError($"CameraShakingManager: Camera at index {i} is not initialized.");
+                return;
+            }
+            else
+            {
+                Debug.Log($"CameraShakingManager: ReadyShake called for camera at index {i}.");
+                m_Cameras[i].Shake(0.5f, 5f);
             }
         }
 
