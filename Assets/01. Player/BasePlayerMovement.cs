@@ -304,6 +304,10 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         if (!m_isMoveByInput)
             return;
 
+        if(m_eLocomotionState == IdleWalkRunEnum.Swim)
+        {
+            return;   // 수영 중 대시
+        }
 
         if (value.isPressed)
         {
@@ -480,6 +484,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         {
             // 도착!
             isDashingToBall = false;
+            Debug.Log("도착!");
 
             StartCoroutine(DisableTrailAfterDelay(m_TrailRenderer.time)); // 트레일이 자연스럽게 사라지게   
 

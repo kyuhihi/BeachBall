@@ -451,15 +451,26 @@ public class TurtlePlayerMovement : BasePlayerMovement
 
     public override void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
-        // m_UltimateFlashGameObject.SetActive(true);
         MoveByInput = false;
+        if (courtPosition != m_CourtPosition)
+        {
+            return;
+        }
         isUltimateSkillActiving = true;
     }
 
     public override void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
         MoveByInput = true;
+
+        if (courtPosition != m_CourtPosition)
+        {
+            return;
+        }
+
         isUltimateSkillActiving = false;
+
+        // 여기서 코드포지션이 같아야만 실행하도록 하기
 
         // 1. Player 태그 가진 모든 오브젝트 찾기
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");

@@ -1,5 +1,6 @@
 using Cinemachine;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class CameraShakingManager : MonoBehaviour
 {
@@ -42,6 +43,15 @@ public class CameraShakingManager : MonoBehaviour
                     }
                 }
             }
+        }
+    }
+
+    public void Update()
+    {
+        
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            ReadyShake();
         }
     }
 
