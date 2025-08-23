@@ -15,10 +15,10 @@ MonoBehaviour:
   entries:
   - playerType: 1
     mesh: {fileID: 1360107307202970949, guid: 7f44e59b8da9aea42b6233728987a792, type: 3}
-    material: {fileID: 2100000, guid: 0043f2d2116afb14c843e20f8149b27f, type: 2}
+    material: {fileID: 2100000, guid: f1d85fd1ca963074e9372db7e36c4aac, type: 2}
   - playerType: 2
     mesh: {fileID: 1360107307202970949, guid: ad0a19fca0ba7344a99966ccc5feea19, type: 3}
-    material: {fileID: 2100000, guid: 8eba7996b41ca3447b0513933bace68e, type: 2}
+    material: {fileID: 2100000, guid: d6622627f34c3ab48a69e2b97a8e5efb, type: 2}
   - playerType: 3
     mesh: {fileID: 0}
     material: {fileID: 0}

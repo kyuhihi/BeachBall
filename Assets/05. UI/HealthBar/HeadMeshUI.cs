@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 [RequireComponent(typeof(MeshRenderer), typeof(MeshFilter))]
 public class HeadMeshUI : MonoBehaviour
@@ -24,6 +25,7 @@ public class HeadMeshUI : MonoBehaviour
     [SerializeField] private bool keepOldMaterialIfNull = true;     // 설정에 material 비어있을 때 기존 유지
     [SerializeField] private bool useSharedMaterial = true;         // true=sharedMaterial, false=material(instance)
 
+    private TextMeshProUGUI textMeshPro;
     private void Awake()
     {
         if (autoAssignComponents)
@@ -46,6 +48,28 @@ public class HeadMeshUI : MonoBehaviour
     private void Start()
     {
         if (applyOnStart) Apply();
+
+        if (config.TryGet(playerType, out var entry))
+        {
+            textMeshPro = GetComponentInChildren<TextMeshProUGUI>();
+            switch (entry.playerType)
+            {
+                case IPlayerInfo.PlayerType.Fox:
+                    if (textMeshPro)
+                    {
+                        textMeshPro.text = "Fox";
+                    }
+                    // TypeA에 대한 설정
+                    break;
+                case IPlayerInfo.PlayerType.Turtle:
+                    if (textMeshPro)
+                    {
+                        textMeshPro.text = "Turtle";
+                    }
+                    // TypeB에 대한 설정
+                    break;
+            }
+        }
     }
 
     [ContextMenu("Apply Now")]
