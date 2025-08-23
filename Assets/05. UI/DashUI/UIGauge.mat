@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: UIGauge
+  m_Shader: {fileID: 4800000, guid: 7303b0699feff944e9343646e93f8dfa, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _NoiseTex:
+        m_Texture: {fileID: 2800000, guid: 606c30be903f8c14fa8ca4359030f41d, type: 3}
+        m_Scale: {x: 1, y: 2}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _Brightness: 1
+    - _CornerR: 12.7
+    - _EdgeGlow: 3
+    - _EdgeSoftPx: 1.2
+    - _GammaFix: 0.5
+    - _HeightPx: 48
+    - _InnerHighlight: 0.4
+    - _InnerPadPx: 4
+    - _LabelCornerR: 13.5
+    - _LabelWidthPx: 80
+    - _NoiseColorAmp: 0
+    - _NoiseDistortAmp: 0
+    - _NoiseMode: 0
+    - _NoiseScale: 120
+    - _NoiseSpeed: 0.2
+    - _SegmentCount: 3
+    - _SpacingPx: 0
+    - _Value: 0.532
+    - _WaterColShimmerAmp: 0.35
+    - _WaterColShimmerFreq: 5
+    - _WaterColShimmerSpeed: 3
+    - _WaterEdgeDarken: 0.58
+    - _WaterFoamWidthPx: 0
+    - _WaterMode: 1
+    - _WaterSequential: 1
+    - _WaterShimmerAmp: 0.25
+    - _WaterShimmerFreq: 4
+    - _WaterShimmerSpeed: 2
+    - _WaterSurfaceWidthPx: 4.71
+    - _WaveAmpPx: 7.2
+    - _WaveDir: 1
+    - _WaveLen: 0.71
+    - _WaveSpeed: -8.4
+    - _WidthPx: 400
+    m_Colors:
+    - _BackgroundCol: {r: 0, g: 0, b: 0, a: 0}
+    - _FillA: {r: 1, g: 0.6, b: 0.09999997, a: 1}
+    - _FillB: {r: 1, g: 0.85, b: 0.29999998, a: 1}
+    - _GlowColor: {r: 1, g: 0.8, b: 0.39999998, a: 1}
+    - _InactiveA: {r: 0.19999996, g: 0.19999996, b: 0.21999997, a: 1}
+    - _InactiveB: {r: 0.29999998, g: 0.29999998, b: 0.31999996, a: 1}
+    - _LabelColor: {r: 0.06999998, g: 0.06999998, b: 0.079999976, a: 1}
+    - _WaterBottomCol: {r: 0.9, g: 0.45, b: 0.049999982, a: 1}
+    - _WaterFoamCol: {r: 1, g: 1, b: 1, a: 1}
+    - _WaterSurfaceCol: {r: 1.2, g: 1.1, b: 0.9, a: 1}
+    - _WaterTopCol: {r: 1, g: 0.8, b: 0.29999998, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
