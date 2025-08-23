@@ -37,14 +37,16 @@ public class FoxTail : MonoBehaviour
     public enum TailState
     {
         Idle,
-        Defence
+        Defence,
+        Deco,
     }
 
     void Start()
     {
         m_IdleTailTransOriginQuat = gameObject.transform.localRotation;
         m_DefenceTailTransOriginQuat = m_IdleTailTransOriginQuat * Quaternion.Euler(-90f, 0f, 0f);
-        m_TrailMaterial = m_TailGameObject.GetComponent<Renderer>().material;
+        if(tailState != TailState.Deco)
+            m_TrailMaterial = m_TailGameObject.GetComponent<Renderer>().material;
 
         // 초기 컷오프 값 세팅(현재 상태에 맞춰)
         if (m_TrailMaterial != null && m_TrailMaterial.HasProperty(alphaCutoffProperty))
@@ -59,6 +61,7 @@ public class FoxTail : MonoBehaviour
         if (m_IsBlending) return; // 보간 중엔 틱 정지
         switch (tailState)
         {
+            case TailState.Deco:
             case TailState.Idle:
                 IdleTick();
                 break;

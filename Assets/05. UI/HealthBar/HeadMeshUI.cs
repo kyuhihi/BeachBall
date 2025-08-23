@@ -24,8 +24,11 @@ public class HeadMeshUI : MonoBehaviour
     [Header("Options")]
     [SerializeField] private bool keepOldMaterialIfNull = true;     // 설정에 material 비어있을 때 기존 유지
     [SerializeField] private bool useSharedMaterial = true;         // true=sharedMaterial, false=material(instance)
-
-    private TextMeshProUGUI textMeshPro;
+    private const string ChracterText = "ChracterText";
+    private const string DashText = "DashText";
+    private const string CharacterDeco = "CharacterDeco";
+    private TextMeshProUGUI ChracterTextMeshPro;
+    private TextMeshProUGUI DashTextMeshPro;
     private void Awake()
     {
         if (autoAssignComponents)
@@ -43,35 +46,72 @@ public class HeadMeshUI : MonoBehaviour
         }
 
         if (applyOnAwake) Apply();
+        SetInfoText();
+        SetDecoMesh();
+
     }
 
     private void Start()
     {
         if (applyOnStart) Apply();
+    }
 
+    private void SetInfoText()
+    {
         if (config.TryGet(playerType, out var entry))
         {
-            textMeshPro = GetComponentInChildren<TextMeshProUGUI>();
+            foreach (Transform child in transform)
+            {
+                if (child.gameObject.name == ChracterText)
+                {
+                    ChracterTextMeshPro = child.GetComponent<TextMeshProUGUI>();
+                    break;
+                }
+                else if(child.gameObject.name == DashText)
+                {
+                    DashTextMeshPro = child.GetComponent<TextMeshProUGUI>();
+                    break;
+                }
+            }
             switch (entry.playerType)
             {
                 case IPlayerInfo.PlayerType.Fox:
-                    if (textMeshPro)
+                    if (ChracterTextMeshPro)
                     {
-                        textMeshPro.text = "Fox";
+                        ChracterTextMeshPro.text = "Fox";
                     }
                     // TypeA에 대한 설정
                     break;
                 case IPlayerInfo.PlayerType.Turtle:
-                    if (textMeshPro)
+                    if (ChracterTextMeshPro)
                     {
-                        textMeshPro.text = "Turtle";
+                        ChracterTextMeshPro.text = "Turtle";
                     }
+
                     // TypeB에 대한 설정
                     break;
             }
         }
     }
 
+    private void SetDecoMesh()
+    {
+        if (config.TryGet(playerType, out var entry))
+        {
+            foreach (Transform child in transform)
+            {
+                if (child.gameObject.name == CharacterDeco)
+                {
+                    child.gameObject.transform.GetChild(0).GetComponent<MeshFilter>().sharedMesh = entry.DecoMesh;
+                    child.gameObject.transform.GetChild(0).GetComponent<MeshRenderer>().sharedMaterial = entry.DecoMeshMat;
+
+                    child.gameObject.transform.SetLocalPositionAndRotation(entry.DecoMeshOffsetPos, Quaternion.Euler(entry.DecoMeshOffsetRot));
+                }
+
+            }
+        }
+        
+    }
     [ContextMenu("Apply Now")]
     public void Apply()
     {

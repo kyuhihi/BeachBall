@@ -59,13 +59,17 @@ Shader "Custom/UIDashSegments"
         [HDR]_BackgroundCol ("Background Color", Color) = (0,0,0,0)
         _GammaFix       ("Gamma Adjust", Range(0.5,2)) = 1
         _Brightness     ("Brightness", Range(0,3)) = 1
+
+        
     }
     SubShader
     {
         Tags { "Queue"="Transparent" "RenderType"="Transparent" }
         Blend SrcAlpha OneMinusSrcAlpha
         Cull Off
-        ZWrite Off
+        ZWrite On
+        ZTest Always
+
 
         Pass
         {

@@ -9,6 +9,10 @@ public class HeadMeshConfig : ScriptableObject
         public IPlayerInfo.PlayerType playerType;
         public Mesh mesh;
         public Material material;          // 비우면 기존 머티리얼 유지
+        public Mesh DecoMesh;
+        public Material DecoMeshMat;
+        public Vector3 DecoMeshOffsetPos;
+        public Vector3 DecoMeshOffsetRot;
     }
 
     [SerializeField] private Entry[] entries;
