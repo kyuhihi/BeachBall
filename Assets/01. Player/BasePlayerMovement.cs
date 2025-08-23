@@ -15,6 +15,8 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     [Header("Movement Settings")]
     public float turnSpeed = 20f;
     protected float walkSpeed = 7f;
+    protected float swimMaxSpeed = 0f;
+
     // public float runSpeed = 5f;
     [SerializeField] protected float dashSpeed = 100f; // 대시 속도
     [SerializeField] protected string ballTag = "Ball"; // 볼 태그명
@@ -35,6 +37,9 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     [Header("ParticleSystem")]
     [SerializeField] protected ParticleSystem doubleJumpEffectPrefab;
     [SerializeField] protected ParticleSystem footstepCloudPrefab;
+    [SerializeField] protected ParticleSystem swimFootstepCloudPrefab;
+    [SerializeField] protected ParticleSystem bubbleMousePrefab;
+    [SerializeField] protected Transform bubbleMouseTransform;
     [SerializeField] protected Transform leftFootTransform;
     [SerializeField] protected Transform rightFootTransform;
 
@@ -89,6 +94,20 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     protected float downPressedTime = -1f;
 
 
+    protected float footstepTimer = 0f;
+    protected float footstepInterval = 0.3f; // 발자국 이펙트 간격   
+
+    protected float swimfootstepTimer = 0f;
+
+
+    protected float swimfootstepMinInterval = 0.1f; // 수영 중 발자국 이펙트 최소 간격
+    protected float swimfootstepMaxInterval = 1f; // 수영 중 발자국 이펙트 최대 간격
+
+    protected float swimfootstepInterval = 1f;
+
+    protected float bubblemouseTimer = 0f;
+    protected float bubblemouseInterval = 1f; // 수영 중 발자국 이펙트 간격
+
     protected PlayableDirector m_PlayableDirector;
 
 
@@ -118,6 +137,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     {
         jumpForce = 10f;
         dashSpeed = 100f; // 대시 속도
+        swimMaxSpeed = walkSpeed * 2f;
 
         if (m_TrailRenderer == null)
             m_TrailRenderer = GetComponent<TrailRenderer>();
@@ -184,7 +204,28 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         if (foot == null) return;
 
         ParticleSystem effect = Instantiate(footstepCloudPrefab, foot.position, Quaternion.identity);
+
+ 
         Destroy(effect.gameObject, 1f); // 1초 후 자동 삭제
+    }
+
+    protected void SpawnSwimstepEffect(bool isLeft)
+    {
+        if (swimFootstepCloudPrefab == null) return;
+
+        Transform foot = isLeft ? leftFootTransform : rightFootTransform;
+        if (foot == null) return;
+
+        ParticleSystem effect = Instantiate(swimFootstepCloudPrefab, foot.position, transform.rotation);
+
+        Destroy(effect.gameObject, 1f); // 1초 후 자동 삭제
+    }
+
+    protected void SpawnBubbleMouseEffect()
+    {
+        if (bubbleMousePrefab == null) return;
+        ParticleSystem effect = Instantiate(bubbleMousePrefab, bubbleMouseTransform.position, Quaternion.identity);
+        Destroy(effect.gameObject, 2f); // 2초 후 자동 삭제
     }
 
 
@@ -514,8 +555,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         SetCurrentLocomotionState(currentToDashSpeed);
         SetAnimatorParameters(1f);
     }
-    protected float footstepTimer = 0f;
-    protected float footstepInterval = 0.3f; // 발자국 이펙트 간격    
+ 
     protected virtual void FixedUpdate()
     {
 
@@ -563,7 +603,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
             m_Rotation = transform.rotation;
         }
 
-        if (m_InputVector.magnitude > 0.1f && isGrounded)
+        if (m_InputVector.magnitude > 0.1f && isGrounded && (m_eLocomotionState != IdleWalkRunEnum.Swim))
         {
             footstepTimer += Time.deltaTime;
             if (footstepTimer > footstepInterval)
@@ -607,6 +647,27 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
                 {
                     m_Rigidbody.MoveRotation(m_Rotation);
                 }
+            }
+
+            float speed = m_Movement.magnitude * currentSpeed;
+
+            swimfootstepInterval = Mathf.Lerp(swimfootstepMinInterval, swimfootstepMaxInterval, 1f - Mathf.InverseLerp(0f, swimMaxSpeed, speed));
+            swimfootstepTimer += Time.deltaTime;
+
+            // Debug.Log($"Swim Footstep Interval: {currentSpeed},  {speed} , {swimfootstepInterval}, Timer: {swimfootstepTimer}");
+
+            if (swimfootstepTimer > swimfootstepInterval)
+            {
+                // 왼발/오른발 번갈아가며
+                SpawnSwimstepEffect((int)(Time.time * 2) % 2 == 0);
+                swimfootstepTimer = 0f;
+            }
+
+            bubblemouseTimer += Time.deltaTime;
+            if (bubblemouseTimer > bubblemouseInterval)
+            {
+                SpawnBubbleMouseEffect();
+                bubblemouseTimer = 0f;
             }
 
             return;
