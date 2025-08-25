@@ -1,0 +1,55 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Hidden_NewImageEffectShader
+  m_Shader: {fileID: 4800000, guid: a720218e79d14dd49907295d74798215, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: f74fdac0a3d9cad43ad5a020ba515646, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _AlphaCutoff: 0
+    - _Ambient: 1
+    - _Binary: 1
+    - _DebugMode: 0
+    - _EdgeOnly: 0
+    - _EmbossDepth: 0
+    - _EmbossStrength: 0
+    - _LineCenter: 0
+    - _LineHalfWidth: 0.001
+    - _LineStrength: 3
+    - _LineWidth: 0.03
+    - _MultiplySrcAlpha: 0
+    - _OutlinePixels: 1.27
+    - _RHalfWidth: 0.02
+    - _RingThickness: 0.0091
+    - _ThicknessFactor: 2
+    - _Threshold: 0.5
+    - _UseAlphaMask: 1
+    - _UseRing: 1
+    m_Colors:
+    - _LightDir: {r: 0, g: 0, b: 0, a: 0}
+    - _LineColor: {r: 0.61006284, g: 0.61006284, b: 0.61006284, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

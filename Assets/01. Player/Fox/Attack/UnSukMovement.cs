@@ -10,6 +10,8 @@ public class UnSukMovement : MonoBehaviour
     [SerializeField] private GameObject m_FireEffect;
     [SerializeField] private GameObject m_ExplosionEffect;
 
+    private IPlayerInfo.CourtPosition m_OwnerCourtPosition = IPlayerInfo.CourtPosition.COURT_END;
+
     private static bool s_IsQuitting;
     private bool _exploded = false;
 
@@ -29,6 +31,10 @@ public class UnSukMovement : MonoBehaviour
 
         Destroy(gameObject);
     }
+    public void SetOwnerCourtPosition(IPlayerInfo.CourtPosition courtPosition)
+    {
+        m_OwnerCourtPosition = courtPosition;
+    }
 
     // Update is called once per frame
     void Update()
@@ -44,7 +50,30 @@ public class UnSukMovement : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!CheckTimingCollision(other)) return;
+        if (other.gameObject.tag == "Player")
+        {
+            if (other.GetComponent<IPlayerInfo>().m_CourtPosition != m_OwnerCourtPosition)
+            {
+                //enemy
+                Vector3 lookAtDir = Vector3.Normalize(transform.position - other.gameObject.transform.position);
+                lookAtDir.y = 0f;
+                other.gameObject.transform.rotation = Quaternion.LookRotation(lookAtDir);
+                other.gameObject.GetComponent<BasePlayerMovement>().Stun(2.0f);
+
+                Rigidbody playerRb = other.gameObject.GetComponent<Rigidbody>();
+                if (playerRb != null)
+                {
+                    playerRb.AddForce(-lookAtDir * 10f, ForceMode.Impulse);
+                }
+                other.gameObject.GetComponent<BasePlayerMovement>().Stun(2f);
+                ExplodeAndDestroy();
+            }
+            else
+            {
+                ExplodeAndDestroy();
+            }
+        }
+        else if (!CheckTimingCollision(other)) return;
 
         if (m_iEffectCnt > 0)
         {
@@ -65,8 +94,8 @@ public class UnSukMovement : MonoBehaviour
         if (other.gameObject.layer == LayerMask.NameToLayer(WallLayerName))
         {
             if (other.gameObject.name != "Ground")
-                    return false;
-        }
+                return false;
+        } 
 
         return true;
     }

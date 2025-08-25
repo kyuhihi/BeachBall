@@ -92,7 +92,8 @@ public class UnSukCreator : MonoBehaviour
                 ? Quaternion.FromToRotation(Vector3.forward, lookDir)
                 : transform.rotation;
 
-            Instantiate(unSukPrefab, pos, rot);
+            GameObject newUnSuk = Instantiate(unSukPrefab, pos, rot);
+            newUnSuk.GetComponent<UnSukMovement>().SetOwnerCourtPosition(GameManager.GetInstance().GetLastUltimateCourtPosition());
         }
     }
 

@@ -10,6 +10,7 @@ public class FireBallContainer : MonoBehaviour
         for (int i = 0; i < m_FireBallPool.Length; i++)
         {
             m_FireBallPool[i] = Instantiate(m_FireBallPrefab, transform);
+            m_FireBallPool[i].GetComponent<FireBall>().Start();
             m_FireBallPool[i].SetActive(false); 
         }
     }

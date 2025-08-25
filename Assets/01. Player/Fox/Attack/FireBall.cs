@@ -1,21 +1,25 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class FireBall : MonoBehaviour
 {
     [SerializeField] private float speed = 20f;
     [SerializeField] private float turnSpeedDegPerSec = 360f; // 초당 회전 속도(도)
+    [SerializeField] private GameObject HitEffectGameObjprefab;
+    private GameObject HitEffectGameObj;
 
     private float m_DisappearTime = 0.0f;
     
     private GameObject m_Target;
+    
     private List<GameObject> m_Players = new List<GameObject>();
 
     private void OnEnable()
     {
         m_DisappearTime = 3.0f;
     }
-    void Start()
+    public void Start()
     {
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         m_Players.AddRange(players);
@@ -64,11 +68,30 @@ public class FireBall : MonoBehaviour
 
     public void OnTriggerEnter(Collider other)
     {
-
         if (other.CompareTag("Player") && (other.gameObject == m_Target))
         {
-            // Handle damage to the enemy
-            gameObject.SetActive(false); // Deactivate the fireball on hit
+            Vector3 lookAtDir = Vector3.Normalize(transform.position - other.gameObject.transform.position);
+            lookAtDir.y = 0f;
+            other.gameObject.transform.rotation = Quaternion.LookRotation(lookAtDir);
+            other.gameObject.GetComponent<BasePlayerMovement>().Stun(2.0f);
+
+            Rigidbody playerRb = other.gameObject.GetComponent<Rigidbody>();
+            if (playerRb != null)
+            {
+                playerRb.AddForce(-lookAtDir * 10f, ForceMode.Impulse);
+            }
+
+            if (HitEffectGameObj == null)
+            {
+                HitEffectGameObj = Instantiate(HitEffectGameObjprefab, transform.position, Quaternion.identity);
+            }
+            else
+            {
+                HitEffectGameObj.transform.position = transform.position;
+                HitEffectGameObj.transform.rotation = Quaternion.identity;
+                HitEffectGameObj.GetComponent<ParticleSystem>().Play();
+            }
+            gameObject.SetActive(false);
         }
     }
 

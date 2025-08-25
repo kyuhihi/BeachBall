@@ -27,9 +27,9 @@ public class GameManager : MonoBehaviour
     private Coroutine _lightColorCo;
 
     private IPlayerInfo.CourtPosition m_eLastUltimateCourtPosition = IPlayerInfo.CourtPosition.COURT_END;
+    public IPlayerInfo.CourtPosition GetLastUltimateCourtPosition() => m_eLastUltimateCourtPosition;
     private IPlayerInfo.PlayerType m_eLastUltimatePlayerType = IPlayerInfo.PlayerType.Fox;
     //==============================CutSceneSetting==============================
-
 
     public enum GameState
     {

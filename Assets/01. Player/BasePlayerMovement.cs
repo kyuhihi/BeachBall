@@ -60,6 +60,9 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     protected bool m_IsDoubleJumping = false;
     protected bool isGrounded;
 
+    protected bool isStunned;
+    public bool IsStunned => isStunned;
+
 
     public enum IdleWalkRunEnum
     {
@@ -177,12 +180,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
 
         // 우선순위 기반 입력 계산 및 적용
         UpdatePriorityInput();
-
-        // // F1 키로 뒤로가기 토글 (임시)
-        // if (Keyboard.current.f1Key.wasPressedThisFrame)
-        // {
-        //     m_IsBackGo = !m_IsBackGo;
-        // }
+        //규현 대쉬막아라 진짜 
     }
 
     public void OnMoveInput(Vector2 moveInput)
@@ -348,6 +346,11 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         if(m_eLocomotionState == IdleWalkRunEnum.Swim)
         {
             return;   // 수영 중 대시
+        }
+        PlayerUIManager uIManagerInstance = PlayerUIManager.GetInstance();
+        if (!uIManagerInstance.UseAbility(IUIInfo.UIType.DashBar, m_CourtPosition))
+        {
+            return;
         }
 
         if (value.isPressed)
@@ -858,7 +861,9 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     {
         // 기절 처리(이동 불가, 애니메이션 등)
         // 예시:
+        m_Animator.SetTrigger("Stunned");
         MoveByInput = false;
+        isStunned = true;
         StartCoroutine(StunCoroutine(duration));
     }
 
@@ -867,6 +872,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         // 기절 애니메이션 등 추가 가능
         yield return new WaitForSeconds(duration);
         MoveByInput = true;
+        isStunned = false;
     }
 
     public void SetSwimModeAfterStun(float speedMultiplier)

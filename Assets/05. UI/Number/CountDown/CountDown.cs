@@ -1,62 +1,65 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class Countdown : MonoBehaviour
+public class Countdown : MonoBehaviour, IPauseable
 {
     [Header("Digit Meshes 0~9")]
     public Mesh[] digitMeshes = new Mesh[10];
 
     [Header("Digit Slots (Left->Right)")]
-    public MeshFilter[] slots;      // 2자리면 2개만 배치
+    public MeshFilter[] slots;          // 비우면 자동 수집
 
     [Header("Display")]
     public bool hideLeadingZeros = true;
 
     [Header("Count Settings (Down)")]
     public int startValue = 0;
-    public int endValue = 0;        // startValue > endValue 권장
+    public int endValue = 0;            // startValue > endValue 권장
     public float stepSeconds = 1f;
     public bool autoStart = false;
     public bool loop = false;
 
     [Header("Time / Pause")]
-    public bool paused = false;
     public bool useUnscaledTime = true;
 
     [Header("Material")]
-    public Material digitMaterial;  // MeltWaveClip_World 셰이더 머티리얼
+    public Material digitMaterial;      // 셰이더에 _MeltAmount 지원
+
+    // IPauseable -------------------------------------------------
+    private bool _paused;
+    public bool IsPaused => _paused;
+    public event System.Action<bool> PauseStateChanged;
+    public void Pause()  => SetPaused(true);
+    public void Resume() => SetPaused(false);
+    public void SetPaused(bool value)
+    {
+        if (_paused == value) return;
+        _paused = value;
+        PauseStateChanged?.Invoke(_paused);
+    }
+    // ------------------------------------------------------------
 
     int currentValue = -1;
     bool running;
-    float stepTimer;        // 0 ~ stepSeconds
-    float meltAmount;       // 0~1 (stepTimer / stepSeconds 재현)
+    float stepTimer;
+    float meltAmount;
 
-    // 캐시용
     readonly List<MeshRenderer> renderers = new();
     readonly List<MaterialPropertyBlock> pbs = new();
 
+    // ---------- Unity ----------
     void Awake()
     {
         EnsureSlots();
         CacheRenderers();
-        if (autoStart)
-            StartCountdown();
-        else
-            SetValueImmediate(startValue);
+        currentValue = startValue;
+        if (autoStart) StartCountdown();
+        else SetValueImmediate(startValue);
         ApplyGlobalMelt(0f);
     }
 
     void OnEnable()
     {
-        EnsureSlots();
-        CacheRenderers();
-        if (currentValue < 0) SetValueImmediate(startValue);
-        ApplyGlobalMelt(meltAmount);
-    }
-
-    void OnValidate()
-    {
-        if (stepSeconds < 0.01f) stepSeconds = 0.01f;
         EnsureSlots();
         CacheRenderers();
         if (currentValue < 0) currentValue = startValue;
@@ -66,21 +69,20 @@ public class Countdown : MonoBehaviour
 
     void Update()
     {
-        float dt = paused ? 0f :
-            (Application.isPlaying ? (useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime) : 0.016f);
+        float dt = _paused ? 0f :
+            (Application.isPlaying ? (useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime) : 0f);
 
-        if (running)
+        if (running && stepSeconds > 0f)
         {
             stepTimer += dt;
             float cycle = Mathf.Clamp01(stepTimer / stepSeconds);
             meltAmount = cycle;
 
-            // 숫자 바뀔 시점 (완전히 녹은 후 교체)
             if (cycle >= 1f)
             {
                 stepTimer -= stepSeconds;
-                StepDown();          // 값 감소 & 새 메쉬 설정
-                meltAmount = 0f;     // 다시 0에서 시작
+                StepDown();
+                meltAmount = 0f;
             }
         }
 
@@ -99,8 +101,6 @@ public class Countdown : MonoBehaviour
     }
 
     public void StopCountdown() => running = false;
-    public void Pause() => paused = true;
-    public void Resume() => paused = false;
 
     public void SetValueImmediate(int v)
     {
@@ -111,7 +111,16 @@ public class Countdown : MonoBehaviour
         ApplyGlobalMelt(0f);
     }
 
-    // ---------- Logic ----------
+    [ContextMenu("Refresh")]
+    public void Refresh()
+    {
+        EnsureSlots();
+        CacheRenderers();
+        UpdateDigits(Mathf.Max(0, currentValue < 0 ? startValue : currentValue));
+        ApplyGlobalMelt(meltAmount);
+    }
+
+    // ---------- Internal Logic ----------
     void StepDown()
     {
         currentValue--;
@@ -123,7 +132,6 @@ public class Countdown : MonoBehaviour
         UpdateDigits(currentValue);
     }
 
-    // ---------- Digits ----------
     void UpdateDigits(int value)
     {
         if (slots == null || slots.Length == 0) return;
@@ -150,21 +158,23 @@ public class Countdown : MonoBehaviour
             bool hide = hideLeadingZeros && leading && value < threshold && remaining > 0;
 
             if (!hide) leading = false;
-            slot.gameObject.SetActive(!hide);
+
+            if (slot.gameObject.activeSelf != !hide)
+                slot.gameObject.SetActive(!hide);
 
             if (!hide)
             {
                 int d = digits[i];
-                slot.sharedMesh = digitMeshes[d];
+                var mesh = digitMeshes[d];
+                if (slot.sharedMesh != mesh)
+                    slot.sharedMesh = mesh;
             }
         }
     }
 
-    // ---------- Melt (Global) ----------
     void ApplyGlobalMelt(float v)
     {
-        int count = renderers.Count;
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < renderers.Count; i++)
         {
             var r = renderers[i];
             if (!r) continue;
@@ -174,7 +184,6 @@ public class Countdown : MonoBehaviour
         }
     }
 
-    // ---------- Setup ----------
     void EnsureSlots()
     {
         if (slots != null && slots.Length > 0) return;
@@ -193,7 +202,7 @@ public class Countdown : MonoBehaviour
         if (slots == null) return;
         foreach (var mf in slots)
         {
-            if (!mf) { pbs.Add(null); renderers.Add(null); continue; }
+            if (!mf) { renderers.Add(null); pbs.Add(null); continue; }
             var r = mf.GetComponent<MeshRenderer>();
             if (!r) r = mf.gameObject.AddComponent<MeshRenderer>();
             if (digitMaterial && r.sharedMaterial != digitMaterial)

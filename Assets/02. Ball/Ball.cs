@@ -160,6 +160,19 @@ public class Ball : MonoBehaviour
             CameraShakingManager.Instance.DoShake(0.1f, 1f);
             HitStopManager.Instance.DoHitStop(0.1f, 0.1f);
             _currentSpeed = MaxSmashSpeed;
+            IPlayerInfo.CourtPosition courtPos = otherGO.GetComponent<IPlayerInfo>().m_CourtPosition;
+            
+
+        }
+        else
+        {
+            if (contactPoint.y < 0.0f)
+            {
+                IPlayerInfo.CourtPosition courtPos = contactPoint.z < 0.0f ?
+                    IPlayerInfo.CourtPosition.COURT_RIGHT : IPlayerInfo.CourtPosition.COURT_LEFT;
+
+                PlayerUIManager.GetInstance().UpScore(courtPos);
+            }
         }
 
         // 2) 히트 노멀 보정(없을 경우 추정)

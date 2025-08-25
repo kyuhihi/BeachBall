@@ -49,7 +49,7 @@ Material:
     - _SegmentCount: 3
     - _SpacingPx: 0
     - _SrcBlend: 5
-    - _Value: 0.532
+    - _Value: 0.429
     - _WaterColShimmerAmp: 0.35
     - _WaterColShimmerFreq: 5
     - _WaterColShimmerSpeed: 3

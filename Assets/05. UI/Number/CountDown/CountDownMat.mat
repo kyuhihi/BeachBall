@@ -20,7 +20,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: New Material
+  m_Name: CountDownMat
   m_Shader: {fileID: 4800000, guid: 423a997d3cafb3e46b441bb707c0fd4a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -145,8 +145,16 @@ Material:
     - _NoiseAmp: 0.15
     - _NoiseScale: 4
     - _OcclusionStrength: 1
+    - _OutlineAlpha: 1
+    - _OutlineClipWithMelt: 1
     - _OutlineEnabled: 1
+    - _OutlineIntensity: 2
     - _OutlineThickness: 0.01
+    - _OutlineUseScreenSpace: 0
+    - _OutlineUseVertexColor: 0
+    - _OutlineWidthPixels: 4
+    - _OutlineWidthWorld: 0.076
+    - _OutlineZOffset: 0
     - _Parallax: 0.005
     - _QueueOffset: 0
     - _ReceiveShadows: 1

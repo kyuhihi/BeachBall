@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Bar
+  m_Name: UltimateBar
   m_Shader: {fileID: 4800000, guid: 4426c01c4b0d80a4ebaf94ffc10beb6a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -38,7 +38,7 @@ Material:
     - _BorderWidth: 1.73
     - _Brightness: 1
     - _ChipFadeSpeed: 5.56
-    - _ChipHealth: 1
+    - _ChipHealth: 0
     - _DamageFadeSpeed: 3
     - _EdgeAdd: 6
     - _EdgeAddIntensity: 6
@@ -62,7 +62,7 @@ Material:
     - _HeadLerp: 0.25
     - _HeadSharpness: 3
     - _HeadWidthPx: 0
-    - _Health: 1
+    - _Health: 0
     - _HeightPx: 32
     - _HighlightAdd: 20
     - _HighlightBoost: 3.1
@@ -87,7 +87,7 @@ Material:
     - _NoiseSigned: 0
     - _OuterBorderPx: 0
     - _OuterBorderSoftPx: 1.25
-    - _PrevHealth: 1
+    - _PrevHealth: 0
     - _ResolutionX: 300
     - _ResolutionY: 37.29
     - _RightBottomTrim: 0.08
