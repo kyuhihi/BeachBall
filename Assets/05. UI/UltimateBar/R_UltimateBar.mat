@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: UltimateBar
+  m_Name: R_UltimateBar
   m_Shader: {fileID: 4800000, guid: 4426c01c4b0d80a4ebaf94ffc10beb6a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0

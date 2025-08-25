@@ -1790,7 +1790,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   courtPosition: 0
-  mat: {fileID: 2100000, guid: 355a3c1c958d17548a8eb8435f202809, type: 2}
+  mat: {fileID: 0}
   gauge: 0
   chipLerp: 0.5
   prevLerp: 1.5
@@ -1806,7 +1806,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Material: {fileID: 2100000, guid: 355a3c1c958d17548a8eb8435f202809, type: 2}
+  m_Material: {fileID: 2100000, guid: 0e909c3daa9dcac41b0457ff1797d439, type: 2}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
@@ -5411,7 +5411,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   courtPosition: 1
-  mat: {fileID: 2100000, guid: 355a3c1c958d17548a8eb8435f202809, type: 2}
+  mat: {fileID: 0}
   gauge: 0
   chipLerp: 0.5
   prevLerp: 1.5
@@ -22948,6 +22948,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Ground
       objectReference: {fileID: 0}
+    - target: {fileID: 1852000675062440887, guid: 88429e7aad295e04d8c16bcf44cfef0c, type: 3}
+      propertyPath: m_IsTrigger
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8397091283076759607, guid: 88429e7aad295e04d8c16bcf44cfef0c, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -23007,7 +23011,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3515125723976739998, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 4.08
+      value: 0.641
       objectReference: {fileID: 0}
     - target: {fileID: 3515125723976739998, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
       propertyPath: m_LocalPosition.z

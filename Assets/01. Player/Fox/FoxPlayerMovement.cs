@@ -77,6 +77,10 @@ public class FoxPlayerMovement : BasePlayerMovement
         {
             return;
         }
+        if(!PlayerUIManager.GetInstance().UseAbility(IUIInfo.UIType.UltimateBar, m_CourtPosition))
+        {
+            return;
+        }
 
         Vector3 OutPos = Vector3.zero;
         Quaternion OutRot = Quaternion.identity;

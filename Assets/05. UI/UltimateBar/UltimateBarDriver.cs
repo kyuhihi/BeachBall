@@ -1,4 +1,6 @@
+using Microsoft.Unity.VisualStudio.Editor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class UltimateBarDriver : UIInfoBase
 {
@@ -39,9 +41,14 @@ public class UltimateBarDriver : UIInfoBase
         chip = prev = gauge;
         PushToMaterial();
     }
+    void Start()
+    {
+        mat = GetComponent<UnityEngine.UI.Image>().materialForRendering;
+    }
 
     void Update()
     {
+
         prev = Mathf.MoveTowards(prev, gauge, Time.deltaTime * prevLerp);
         chip = Mathf.MoveTowards(chip, gauge, Time.deltaTime * chipLerp);
         PushToMaterial();
@@ -52,6 +59,7 @@ public class UltimateBarDriver : UIInfoBase
         float nv = Mathf.Clamp01(v);
         if (Mathf.Approximately(nv, gauge)) return;
         gauge = nv;
+        Debug.Log($"objName{gameObject.name}[UltimateBarDriver] SetGauge: {gauge}");
         if (chip < gauge) chip = gauge;
         if (prev < gauge) prev = gauge;
         PushToMaterial();

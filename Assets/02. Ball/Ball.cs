@@ -17,6 +17,7 @@ public class Ball : MonoBehaviour
 
     private float _currentSpeed = 0.0f;
     private const string PlayerTag = "Player";
+    private static readonly string[] ScoreTags = { "Ground", "Terrain" };
 
     public ParticleSystem LandSpotParticle => m_LandSpotParticle;
 
@@ -36,6 +37,10 @@ public class Ball : MonoBehaviour
     [Header("Y 포지션 구간 강제 하강")]
     [SerializeField] private float forceDownRangeMinY = 7.8f;
     [SerializeField] private float forceDownRangeMaxY = 8f;
+
+    [Header("Score Cooldown")]
+    [SerializeField] private float scoreInterval = 0.1f;  // 점수 최소 간격(초)
+    private float lastScoreTime = -999f;
 
     void Start()
     {
@@ -161,17 +166,21 @@ public class Ball : MonoBehaviour
             HitStopManager.Instance.DoHitStop(0.1f, 0.1f);
             _currentSpeed = MaxSmashSpeed;
             IPlayerInfo.CourtPosition courtPos = otherGO.GetComponent<IPlayerInfo>().m_CourtPosition;
-            
-
+            PlayerUIManager.GetInstance().UpUltimateBar(courtPos); // 궁극기 게이지 10 증가
         }
         else
         {
-            if (contactPoint.y < 0.0f)
+            // 땅/지형 접촉 → 점수 (쿨다운 적용)
+            if (otherGO != null && (otherGO.name == ScoreTags[0] || otherGO.name == ScoreTags[1]))
             {
-                IPlayerInfo.CourtPosition courtPos = contactPoint.z < 0.0f ?
-                    IPlayerInfo.CourtPosition.COURT_RIGHT : IPlayerInfo.CourtPosition.COURT_LEFT;
+                if (Time.time - lastScoreTime >= scoreInterval)
+                {
+                    IPlayerInfo.CourtPosition courtPos = contactPoint.z < 0.0f ?
+                        IPlayerInfo.CourtPosition.COURT_RIGHT : IPlayerInfo.CourtPosition.COURT_LEFT;
 
-                PlayerUIManager.GetInstance().UpScore(courtPos);
+                    PlayerUIManager.GetInstance().UpScore(courtPos);
+                    lastScoreTime = Time.time;
+                }
             }
         }
 
@@ -195,7 +204,6 @@ public class Ball : MonoBehaviour
             yLockCoroutine = StartCoroutine(LockYNegativeFor(yLockDuration));
             yFlipTimes.Clear();
             lastYSign = -1;
-            Debug.Log($"Y Flip Burst Detected! Locking Y for {yLockDuration} seconds.");
         }
         direction = newDir;
 

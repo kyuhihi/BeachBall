@@ -221,6 +221,6 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
         if (courtPosition == IPlayerInfo.CourtPosition.COURT_RIGHT)
             iLRIndex = 1;
 
-        PlayerUltimateBars[iLRIndex].DecreaseValueFloat(-5f);
+        PlayerUltimateBars[iLRIndex].DecreaseValueFloat(-0.1f);
     }
 }

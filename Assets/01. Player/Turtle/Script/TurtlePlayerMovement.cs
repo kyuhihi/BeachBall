@@ -201,6 +201,10 @@ public class TurtlePlayerMovement : BasePlayerMovement
         {
             return;
         }
+        if (!PlayerUIManager.GetInstance().UseAbility(IUIInfo.UIType.UltimateBar, m_CourtPosition))
+        {
+            return;
+        }
 
         if (value.isPressed)
         {
@@ -211,7 +215,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
             Vector3 OutPos = Vector3.zero;
             Quaternion OutRot = Quaternion.identity;
             bool bRetVal = GameManager.GetInstance().GetUltimatePos(m_PlayerType, m_CourtPosition, out OutPos, out OutRot);
-            
+
             // 1. Player 태그 가진 모든 오브젝트 찾기
             GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
             foreach (var player in players)
