@@ -34,3 +34,10 @@ MonoBehaviour:
     DecoMeshMat: {fileID: 0}
     DecoMeshOffsetPos: {x: 0, y: 0, z: 0}
     DecoMeshOffsetRot: {x: 0, y: 0, z: 0}
+  - playerType: 4
+    mesh: {fileID: 1360107307202970949, guid: 17e20059bda825d4281931ad576a1ed0, type: 3}
+    material: {fileID: 2100000, guid: 58a0d776ba41d1c448937741e1598166, type: 2}
+    DecoMesh: {fileID: 1360107307202970949, guid: 641f5bf8aefa7114bb1f449ac9989082, type: 3}
+    DecoMeshMat: {fileID: 2100000, guid: 0d81ff31d69ad824b9b00a5ef784268d, type: 2}
+    DecoMeshOffsetPos: {x: 0.0004, y: -0.0007, z: -0.00255}
+    DecoMeshOffsetRot: {x: 296.8493, y: 180.00006, z: 78.27057}

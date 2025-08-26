@@ -19,6 +19,8 @@ public class FoxPlayerMovement : BasePlayerMovement
         m_PlayableDirector = GetComponent<PlayableDirector>();
         m_PlayerType = IPlayerInfo.PlayerType.Fox;
         m_PlayerDefaultColor = Color.orange;
+        PlayerUIManager.GetInstance().SetPlayerInfoInUI(this);
+
 
         m_FireBallContainer = GameObject.FindFirstObjectByType<FireBallContainer>();
         int iChildCnt = transform.childCount;

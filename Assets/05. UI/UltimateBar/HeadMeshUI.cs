@@ -12,10 +12,6 @@ public class HeadMeshUI : MonoBehaviour
     [SerializeField] private bool loadFromResources = true;
     [SerializeField] private string resourcesPath = "HeadMeshConfig"; // Resources/Configs/HeadMeshConfig.asset
 
-    [Header("Apply Timing")]
-    [SerializeField] private bool applyOnAwake = true;
-    [SerializeField] private bool applyOnStart = false;
-
     [Header("Component (Auto)")]
     [SerializeField] private MeshFilter meshFilter;
     [SerializeField] private MeshRenderer meshRenderer;
@@ -45,16 +41,10 @@ public class HeadMeshUI : MonoBehaviour
 #endif
         }
 
-        if (applyOnAwake) Apply();
-        SetInfoText();
-        SetDecoMesh();
-
     }
 
-    private void Start()
-    {
-        if (applyOnStart) Apply();
-    }
+
+    
 
     private void SetInfoText()
     {
@@ -67,7 +57,7 @@ public class HeadMeshUI : MonoBehaviour
                     ChracterTextMeshPro = child.GetComponent<TextMeshProUGUI>();
                     break;
                 }
-                else if(child.gameObject.name == DashText)
+                else if (child.gameObject.name == DashText)
                 {
                     DashTextMeshPro = child.GetComponent<TextMeshProUGUI>();
                     break;
@@ -86,6 +76,12 @@ public class HeadMeshUI : MonoBehaviour
                     if (ChracterTextMeshPro)
                     {
                         ChracterTextMeshPro.text = "Turtle";
+                    }
+                    break;
+                case IPlayerInfo.PlayerType.Monkey:
+                    if (ChracterTextMeshPro)
+                    {
+                        ChracterTextMeshPro.text = "Monkey";
                     }
 
                     // TypeB에 대한 설정
@@ -113,7 +109,7 @@ public class HeadMeshUI : MonoBehaviour
         
     }
     [ContextMenu("Apply Now")]
-    public void Apply()
+    public void Apply( )
     {
         if (!config || !meshFilter || !meshRenderer) return;
 
@@ -134,12 +130,8 @@ public class HeadMeshUI : MonoBehaviour
                 else meshRenderer.material = null;
             }
         }
-#if UNITY_EDITOR
-        else
-        {
-            Debug.LogWarning($"[HeadMeshUI] Config에 {playerType} 항목 없음");
-        }
-#endif
+        SetInfoText();
+        SetDecoMesh();
     }
 
     public void SetPlayerType(IPlayerInfo.PlayerType newType, bool autoApply = true)

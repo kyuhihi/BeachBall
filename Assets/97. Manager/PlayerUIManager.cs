@@ -34,6 +34,8 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
 
     void Awake()
     {
+        SetInstance(this);
+
         SetUpCanvas(); // Cutscene 이벤트가 Start 전에 올 수도 있으니 미리 세팅
     }
 
@@ -69,7 +71,6 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
 
     void Start()
     {
-        SetInstance(this);
 
         if (!m_WorldUICanvas) SetUpCanvas();
         SetUpPlayers();
@@ -209,7 +210,7 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
     public void UpScore(IPlayerInfo.CourtPosition courtPosition)
     {
         int iLRIndex = 0;
-        if (courtPosition == IPlayerInfo.CourtPosition.COURT_RIGHT)
+        if (courtPosition != IPlayerInfo.CourtPosition.COURT_RIGHT)
             iLRIndex = 1;
 
         PlayerScoreCounts[iLRIndex].DecreaseValueInt(-1);
@@ -222,5 +223,25 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
             iLRIndex = 1;
 
         PlayerUltimateBars[iLRIndex].DecreaseValueFloat(-0.1f);
+    }
+
+
+    public void SetPlayerInfoInUI(IPlayerInfo playerInfo)
+    {
+        var headMeshUIs = FindObjectsByType<HeadMeshUI>(FindObjectsSortMode.None);
+        foreach (var headMeshUI in headMeshUIs)
+        {
+            if (headMeshUI.name[0] == 'L' && playerInfo.m_CourtPosition == IPlayerInfo.CourtPosition.COURT_LEFT)
+            {
+                headMeshUI.SetPlayerType(playerInfo.m_PlayerType);
+                break;
+            }
+            else if (headMeshUI.name[0] == 'R' && playerInfo.m_CourtPosition == IPlayerInfo.CourtPosition.COURT_RIGHT)
+            {
+                headMeshUI.SetPlayerType(playerInfo.m_PlayerType);
+                break;
+            }
+        }
+        // UI에 플레이어 정보를 설정하는 로직
     }
 }
