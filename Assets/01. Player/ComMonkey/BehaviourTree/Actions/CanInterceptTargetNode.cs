@@ -8,36 +8,41 @@ namespace Kyu_BT
     {
         readonly Transform _owner;
         readonly string _keyTarget;
-        readonly float _interceptXZDistance;
-        readonly string _writeDistanceKey; // 블랙보드에 실제 XZ 거리 기록(선택)
+        readonly IPlayerInfo _playerInfo;
+        IPlayerInfo.CourtPosition _MyCourtPosition = IPlayerInfo.CourtPosition.COURT_END;
 
         public CanInterceptTargetNode(
             Transform owner,
             string keyTarget,
-            float interceptXZDistance,
-            string writeDistanceKey = null)
+            IPlayerInfo info
+            )
         {
             _owner = owner;
             _keyTarget = keyTarget;
-            _interceptXZDistance = Mathf.Max(0f, interceptXZDistance);
-            _writeDistanceKey = writeDistanceKey;
+            _playerInfo = info;
         }
 
         protected override NodeState OnUpdate(Blackboard bb)
         {
+            if (_playerInfo.m_CourtPosition == IPlayerInfo.CourtPosition.COURT_END)
+            {
+                _MyCourtPosition = _playerInfo.m_CourtPosition;
+                return NodeState.Success;
+            }
+            
             var t = bb.Get<Transform>(_keyTarget);
-            if (!t) return NodeState.Failure;
+            if (!t) return NodeState.Success;
+            bool bSuccess = false;
 
-            Vector3 d = t.position - _owner.position;
+            if (_playerInfo.m_CourtPosition == IPlayerInfo.CourtPosition.COURT_RIGHT)
+            {
+                bSuccess = t.position.z < 0.0f;
+            }
+            else if (_playerInfo.m_CourtPosition == IPlayerInfo.CourtPosition.COURT_LEFT)
+            {
+                bSuccess = t.position.z > 0.0f;
+            }
 
-
-            float sqrXZ = d.x * d.x + d.z * d.z;
-            float thresholdSqr = _interceptXZDistance * _interceptXZDistance;
-
-            float distXZ = Mathf.Sqrt(sqrXZ);
-            if (!string.IsNullOrEmpty(_writeDistanceKey))
-                bb.Set(_writeDistanceKey, distXZ);
-            bool bSuccess = sqrXZ <= thresholdSqr;
             return bSuccess ? NodeState.Success : NodeState.Failure;
         }
     }
