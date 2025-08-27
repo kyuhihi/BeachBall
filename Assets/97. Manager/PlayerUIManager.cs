@@ -18,6 +18,7 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
     [SerializeField] private GameObject playerBottomUIprefab;
     [SerializeField] private GameObject playerStunPrefab;
     private List<PlayerUI> Players = new List<PlayerUI>();
+    public List<GameObject> GetPlayers() => Players.ConvertAll(playerUI => playerUI.PlayerObject);
     [SerializeField] private LayerMask groundMask = ~0;
     private float rayStartHeight = 0.0f;
     private float maxRayDistance = 100f;

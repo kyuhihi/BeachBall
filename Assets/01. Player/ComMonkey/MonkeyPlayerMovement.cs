@@ -5,7 +5,7 @@ using UnityEngine.Playables;
 
 
 public class MonkeyPlayerMovement : BasePlayerMovement
-{    
+{
     protected override void Start()
     {
         base.Start();
@@ -54,12 +54,12 @@ public class MonkeyPlayerMovement : BasePlayerMovement
         {
             return;
         }
-        if(!PlayerUIManager.GetInstance().UseAbility(IUIInfo.UIType.UltimateBar, m_CourtPosition))
+        if (!PlayerUIManager.GetInstance().UseAbility(IUIInfo.UIType.UltimateBar, m_CourtPosition))
         {
             return;
         }
 
-        
+
     }
     public override void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
@@ -77,10 +77,31 @@ public class MonkeyPlayerMovement : BasePlayerMovement
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
+    }
+    public bool IsGroundedForAI() => isGrounded;
 
+    public void AIJump(bool allowDouble = true)
+    {
+        if (!m_isMoveByInput) return;
+        if (m_eLocomotionState == IdleWalkRunEnum.Swim) return;
 
-        // 여우의 특수한 움직임이나 기능이 있다면 여기에 추가
-        // 예: 빠른 이동, 점프 등
+        // 1단 점프
+        if (isGrounded)
+        {
+            OnJumpInput(true);
+            m_Rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            return;
+        }
+
+        // 더블 점프
+        if (allowDouble && !m_IsDoubleJumping && !isGrounded)
+        {
+            OnDoubleJumpInput(true);
+            Vector3 vel = m_Rigidbody.linearVelocity;
+            vel.y = 0f;
+            m_Rigidbody.linearVelocity = vel;
+            m_Rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
     }
 
 }

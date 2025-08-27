@@ -2,6 +2,7 @@ using Cinemachine;
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using NUnit.Framework.Constraints;
 // using UnityEngine.Experimental.GlobalIllumination;
 
 public class GameManager : MonoBehaviour
@@ -30,7 +31,7 @@ public class GameManager : MonoBehaviour
     public IPlayerInfo.CourtPosition GetLastUltimateCourtPosition() => m_eLastUltimateCourtPosition;
     private IPlayerInfo.PlayerType m_eLastUltimatePlayerType = IPlayerInfo.PlayerType.Fox;
     //==============================CutSceneSetting==============================
-
+    List<GameObject> _players = new List<GameObject>();
     public enum GameState
     {
         GAME,
@@ -45,6 +46,26 @@ public class GameManager : MonoBehaviour
         InitializeCamera();
         m_DirectionalLight = FindFirstObjectByType<Light>();
         LoadScriptableObjects();
+    }
+
+    public void LateUpdate()
+    {
+        if (_players.Count <= 1 || _players == null)
+            _players = PlayerUIManager.GetInstance()?.GetPlayers();
+        foreach (var player in _players)
+        {
+            if (player == null) continue;
+            var playerMovement = player.GetComponent<BasePlayerMovement>();
+            if (playerMovement == null) continue;
+            if (playerMovement.m_CourtPosition == IPlayerInfo.CourtPosition.COURT_RIGHT)
+            {
+                player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, Mathf.Min(0, player.transform.position.z));
+            }
+            else
+            {
+                player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, Mathf.Max(0, player.transform.position.z));
+            }
+        }
 
     }
     private void LoadScriptableObjects()

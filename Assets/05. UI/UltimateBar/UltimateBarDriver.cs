@@ -59,7 +59,6 @@ public class UltimateBarDriver : UIInfoBase
         float nv = Mathf.Clamp01(v);
         if (Mathf.Approximately(nv, gauge)) return;
         gauge = nv;
-        Debug.Log($"objName{gameObject.name}[UltimateBarDriver] SetGauge: {gauge}");
         if (chip < gauge) chip = gauge;
         if (prev < gauge) prev = gauge;
         PushToMaterial();

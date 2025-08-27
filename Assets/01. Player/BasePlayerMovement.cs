@@ -563,10 +563,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
 
         float horizontal = m_InputVector.x;
         float vertical = m_InputVector.y;
-        if (IPlayerInfo.PlayerType.Monkey == m_PlayerType)
-        {
-            Debug.Log(m_InputVector);
-        }
+
         if (!m_isMoveByInput)
         {
             // 입력이 비활성화된 상태에서는 이동하지 않음
