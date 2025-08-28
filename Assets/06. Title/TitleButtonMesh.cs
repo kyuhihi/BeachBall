@@ -6,7 +6,7 @@ public class TitleButtonMesh : MonoBehaviour
 {
     private Renderer rend;
     private bool isMouseDownOnMe = false;
-    public InputAction mouseClickAction; // Inspector에서 할당
+    public InputAction mouseClickAction;
 
     private Color originalColor;
     [SerializeField] private Color ClickedColor = Color.red;
@@ -14,6 +14,8 @@ public class TitleButtonMesh : MonoBehaviour
     private bool isMouseOver = false;
     [SerializeField] private string buttonName;
     [SerializeField] private string buttonHaviorName;
+
+    [SerializeField] private GameObject keySettingPanel;
 
 
     private bool isRotating = false;
@@ -25,9 +27,6 @@ public class TitleButtonMesh : MonoBehaviour
 
 
     [SerializeField] private GameObject meshLabel; // 텍스트 오브젝트(자식으로 미리 만들어두기)
-    [SerializeField] private Vector3 labelOffset = new Vector3(0.5f, 0, 0); // 옆에 띄울 위치
-
-    
 
     private void Start()
     {
@@ -60,6 +59,9 @@ public class TitleButtonMesh : MonoBehaviour
 
     private void OnMouseAction(InputAction.CallbackContext ctx)
     {
+        if (keySettingPanel != null && keySettingPanel.activeSelf)
+                return;
+
         float value = ctx.ReadValue<float>();
         if (value > 0.5f)
         {
@@ -114,15 +116,27 @@ public class TitleButtonMesh : MonoBehaviour
                                 isFixed90 = false;
                             }
 
-                            // buttonHaviorName에 따라 Scene 이동
+                            // buttonHaviorName에 따라 Scene 이동 및 세팅 저장
                             if (buttonHaviorName == "1vs1")
                             {
+                                GameSettings.Instance.gameMode = "1vs1";
                                 SceneManager.LoadScene("1vs1");
                             }
                             else if (buttonHaviorName == "1vsCPU")
                             {
+                                GameSettings.Instance.gameMode = "1vsCPU";
                                 SceneManager.LoadScene("1vsCPU");
                             }
+                            else if (buttonHaviorName == "KeyMapping")
+                            {
+                                keySettingPanel.SetActive(true);
+                            }
+                        }
+
+                        // 예시: 캐릭터 선택 버튼이면
+                        if (buttonHaviorName == "Turtle" || buttonHaviorName == "Fox")
+                        {
+                            GameSettings.Instance.selectedCharacter = buttonHaviorName;
                         }
                         
                     }
@@ -137,9 +151,6 @@ public class TitleButtonMesh : MonoBehaviour
         if (meshLabel != null)
         {
             meshLabel.SetActive(true);
-            // meshLabel.transform.position = transform.position + labelOffset;
-            // 필요하다면 텍스트 내용도 변경 가능
-            // meshLabel.GetComponent<TextMeshPro>().text = "원하는 텍스트";
         }
     }
 
@@ -172,6 +183,7 @@ public class TitleButtonMesh : MonoBehaviour
 
     private void Update()
     {
+
         // 마우스 위치에서 Raycast
         Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
         RaycastHit hit;
