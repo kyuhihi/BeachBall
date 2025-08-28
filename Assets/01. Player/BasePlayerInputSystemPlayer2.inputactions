@@ -2,7 +2,7 @@
     "name": "BasePlayerInputSystemPlayer2",
     "maps": [
         {
-            "name": "Player",
+            "name": "Player2",
             "id": "9be38b51-f97b-44f3-8e84-92cc575152e9",
             "actions": [
                 {

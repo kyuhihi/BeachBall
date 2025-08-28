@@ -2,7 +2,7 @@
     "name": "BasePlayerInputSystem1vscpu",
     "maps": [
         {
-            "name": "Player",
+            "name": "PlayerCPU",
             "id": "9be38b51-f97b-44f3-8e84-92cc575152e9",
             "actions": [
                 {

@@ -2,15 +2,16 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
-using System.IO;
 
 [System.Serializable]
 public class KeyButtonInfo
 {
     public Button button;
     public Image keyImage;
-    public string actionName;
+    public string keyPath;      // 예: "<Keyboard>/c"
+    public string actionName;   // 예: "MoveRight"
     public int bindingIndex;
+    public int playerIndex;     // 1: Player1, 2: Player2, CPU: 1
 }
 
 public class KeySettingPanel : MonoBehaviour
@@ -22,9 +23,7 @@ public class KeySettingPanel : MonoBehaviour
     public InputActionAsset inputActions1vsCPU;
 
     private InputActionAsset[] currentInputActions;
-
-    public KeyButtonInfo[] keyButtonInfosP1;
-    public KeyButtonInfo[] keyButtonInfosP2;
+    public KeyButtonInfo[] keyButtonInfos1vs1;
     public KeyButtonInfo[] keyButtonInfosCPU;
 
     public Color player1Color = Color.blue;
@@ -32,254 +31,346 @@ public class KeySettingPanel : MonoBehaviour
     public Color cpuColor = Color.black;
     public Color normalColor = Color.white;
 
-    public Transform keyParentP1; // Player1 키보드 버튼 부모
-    public Transform keyParentP2; // Player2 키보드 버튼 부모
-    public Transform keyParentCPU; // 1vsCPU 키보드 버튼 부모
+    public Transform keyParentP1;
+    public Transform keyParentP2;
+    public Transform keyParentCPU;
 
-    public void OnSet1vs1Button()
+    private static string GetBindingPath(InputBinding b)
     {
-        Debug.Log("1vs1 모드 선택");
-        SetMode("1vs1");
+        return string.IsNullOrEmpty(b.effectivePath) ? b.path : b.effectivePath;
     }
 
-    public void OnSet1vsCPUButton()
-    {
-        Debug.Log("1vsCPU 모드 선택");
-        SetMode("1vsCPU");
-    }
+    public void OnSet1vs1Button() => SetMode("1vs1");
+    public void OnSet1vsCPUButton() => SetMode("1vsCPU");
 
     public void SetMode(string mode)
     {
         if (mode == "1vs1")
         {
             currentInputActions = new InputActionAsset[] { inputActions1vs1_Player1, inputActions1vs1_Player2 };
-            if (setting1vs1 != null) setting1vs1.SetActive(true);
-            if (setting1vsCPU != null) setting1vsCPU.SetActive(false);
+            if (setting1vs1) setting1vs1.SetActive(true);
+            if (setting1vsCPU) setting1vsCPU.SetActive(false);
+
+            // 에디터 자산도 슬롯으로 등록해 두어 오버라이드가 UI에도 반영되도록 함
+            GameSettings.Instance?.RegisterActionsForSlot("P1", inputActions1vs1_Player1);
+            GameSettings.Instance?.RegisterActionsForSlot("P2", inputActions1vs1_Player2);
         }
-        else if (mode == "1vsCPU")
+        else // 1vsCPU
         {
             currentInputActions = new InputActionAsset[] { inputActions1vsCPU };
-            if (setting1vs1 != null) setting1vs1.SetActive(false);
-            if (setting1vsCPU != null) setting1vsCPU.SetActive(true);
+            if (setting1vs1) setting1vs1.SetActive(false);
+            if (setting1vsCPU) setting1vsCPU.SetActive(true);
+
+            GameSettings.Instance?.RegisterActionsForSlot("CPU", inputActions1vsCPU);
         }
-        GameSettings.Instance.LoadKeyBindings();
+
+        GameSettings.Instance?.LoadKeyBindings();
+        MatchKeyInfosWithBindings();
         UpdateKeyColors();
+        EnableAllActions();
     }
 
     void Start()
     {
-        // Player1
-        if (keyParentP1 != null)
-        {
-            var buttons = keyParentP1.GetComponentsInChildren<Button>(true);
-            keyButtonInfosP1 = new KeyButtonInfo[buttons.Length];
-            for (int i = 0; i < buttons.Length; i++)
-            {
-                keyButtonInfosP1[i] = new KeyButtonInfo
-                {
-                    button = buttons[i],
-                    keyImage = buttons[i].GetComponentInChildren<Image>(),
-                    actionName = "", // Inspector에서 직접 입력하거나, 자동 매칭 로직 추가 가능
-                    bindingIndex = 0
-                };
-            }
-        }
-        // Player2
-        if (keyParentP2 != null)
-        {
-            var buttons = keyParentP2.GetComponentsInChildren<Button>(true);
-            keyButtonInfosP2 = new KeyButtonInfo[buttons.Length];
-            for (int i = 0; i < buttons.Length; i++)
-            {
-                keyButtonInfosP2[i] = new KeyButtonInfo
-                {
-                    button = buttons[i],
-                    keyImage = buttons[i].GetComponentInChildren<Image>(),
-                    actionName = "",
-                    bindingIndex = 0
-                };
-            }
-        }
-        // CPU
-        if (keyParentCPU != null)
-        {
-            var buttons = keyParentCPU.GetComponentsInChildren<Button>(true);
-            keyButtonInfosCPU = new KeyButtonInfo[buttons.Length];
-            for (int i = 0; i < buttons.Length; i++)
-            {
-                keyButtonInfosCPU[i] = new KeyButtonInfo
-                {
-                    button = buttons[i],
-                    keyImage = buttons[i].GetComponentInChildren<Image>(),
-                    actionName = "",
-                    bindingIndex = 0
-                };
-            }
-        }
-
-        // 기존 Start() 코드 이어서...
         SetMode("1vs1");
 
-        for (int i = 0; i < keyButtonInfosP1.Length; i++)
+        for (int i = 0; i < keyButtonInfos1vs1.Length; i++)
         {
             int idx = i;
-            keyButtonInfosP1[i].button.onClick.AddListener(() => OnKeyButtonClicked(idx, 0));
-        }
-        for (int i = 0; i < keyButtonInfosP2.Length; i++)
-        {
-            int idx = i;
-            keyButtonInfosP2[i].button.onClick.AddListener(() => OnKeyButtonClicked(idx, 1));
+            keyButtonInfos1vs1[i].button.onClick.AddListener(() => OnKeyButtonClicked(idx));
         }
         for (int i = 0; i < keyButtonInfosCPU.Length; i++)
         {
             int idx = i;
-            keyButtonInfosCPU[i].button.onClick.AddListener(() => OnKeyButtonClicked(idx, 0));
+            keyButtonInfosCPU[i].button.onClick.AddListener(() => OnKeyButtonClickedCPU(idx));
         }
 
-        GameSettings.Instance.LoadKeyBindings();
+        GameSettings.Instance?.LoadKeyBindings();
+        MatchKeyInfosWithBindings();
         UpdateKeyColors();
+        EnableAllActions();
+    }
 
-        DebugPrintActionMap(currentInputActions[0], "Player1");
-        if (currentInputActions.Length > 1)
-            DebugPrintActionMap(currentInputActions[1], "Player2");
+    private void EnableAllActions()
+    {
+        if (currentInputActions == null) return;
+        foreach (var asset in currentInputActions)
+        {
+            if (asset == null) continue;
+            foreach (var action in asset) action.Enable();
+        }
+    }
+
+    // UI 표시에 사용할 에디터 자산 기준 매칭 (effectivePath)
+    void MatchKeyInfosWithBindings()
+    {
+        if (currentInputActions == null) return;
+
+        if (currentInputActions.Length == 2)
+        {
+            for (int p = 0; p < 2; p++)
+            {
+                var actionMap = currentInputActions[p];
+                foreach (var action in actionMap)
+                {
+                    for (int i = 0; i < action.bindings.Count; i++)
+                    {
+                        var binding = action.bindings[i];
+                        string path = GetBindingPath(binding);
+                        foreach (var info in keyButtonInfos1vs1)
+                        {
+                            if (info.keyPath == path)
+                            {
+                                info.actionName = action.name;
+                                info.bindingIndex = i;
+                                info.playerIndex = p + 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        else if (currentInputActions.Length == 1)
+        {
+            var actionMap = currentInputActions[0];
+            foreach (var action in actionMap)
+            {
+                for (int i = 0; i < action.bindings.Count; i++)
+                {
+                    var binding = action.bindings[i];
+                    string path = GetBindingPath(binding);
+                    foreach (var info in keyButtonInfosCPU)
+                    {
+                        if (info.keyPath == path)
+                        {
+                            info.actionName = action.name;
+                            info.bindingIndex = i;
+                            info.playerIndex = 1;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     void UpdateKeyColors()
     {
-        // Player1
-        if (currentInputActions.Length > 0)
+        if (currentInputActions == null) return;
+
+        if (currentInputActions.Length == 2)
         {
-            var actionMap = currentInputActions[0];
-
-
-            foreach (var info in keyButtonInfosP1)
+            foreach (var info in keyButtonInfos1vs1)
             {
-                var action = actionMap.FindAction(info.actionName);
-                if (action != null && action.bindings.Count > info.bindingIndex)
+                int matchedPlayer = -1;
+                string display = "-";
+                string matchedAction = "";
+                int matchedBindingIndex = 0;
+
+                for (int p = 0; p < 2; p++)
                 {
-                    var binding = action.bindings[info.bindingIndex];
-                    var keyLabel = info.button.GetComponentInChildren<TMP_Text>();
-                    if (keyLabel != null)
-                        keyLabel.text = binding.ToDisplayString();
-                    if (info.keyImage != null)
-                        info.keyImage.color = player1Color;
+                    var actionMap = currentInputActions[p];
+                    foreach (var action in actionMap)
+                    {
+                        for (int i = 0; i < action.bindings.Count; i++)
+                        {
+                            var binding = action.bindings[i];
+                            if (GetBindingPath(binding) == info.keyPath)
+                            {
+                                matchedPlayer = p;
+                                matchedAction = action.name;
+                                matchedBindingIndex = i;
+                                display = binding.ToDisplayString();
+                                break;
+                            }
+                        }
+                        if (matchedPlayer != -1) break;
+                    }
+                    if (matchedPlayer != -1) break;
                 }
-                else
+
+                info.playerIndex = matchedPlayer != -1 ? matchedPlayer + 1 : 0;
+                info.actionName = matchedAction;
+                info.bindingIndex = matchedBindingIndex;
+
+                var keyLabel = info.button.GetComponentInChildren<TMP_Text>();
+                if (keyLabel) keyLabel.text = display;
+
+                if (info.keyImage)
                 {
-                    var keyLabel = info.button.GetComponentInChildren<TMP_Text>();
-                    if (keyLabel != null)
-                        keyLabel.text = "-";
-                    if (info.keyImage != null)
-                        info.keyImage.color = normalColor;
+                    if (matchedPlayer == 0) info.keyImage.color = player1Color;
+                    else if (matchedPlayer == 1) info.keyImage.color = player2Color;
+                    else info.keyImage.color = normalColor;
                 }
             }
         }
-        // Player2
-        if (currentInputActions.Length > 1)
-        {
-            var actionMap = currentInputActions[1];
-            foreach (var info in keyButtonInfosP2)
-            {
-                var action = actionMap.FindAction(info.actionName);
-                if (action != null && action.bindings.Count > info.bindingIndex)
-                {
-                    var binding = action.bindings[info.bindingIndex];
-                    var keyLabel = info.button.GetComponentInChildren<TMP_Text>();
-                    if (keyLabel != null)
-                        keyLabel.text = binding.ToDisplayString();
-                    if (info.keyImage != null)
-                        info.keyImage.color = player2Color;
-                }
-                else
-                {
-                    var keyLabel = info.button.GetComponentInChildren<TMP_Text>();
-                    if (keyLabel != null)
-                        keyLabel.text = "-";
-                    if (info.keyImage != null)
-                        info.keyImage.color = normalColor;
-                }
-            }
-        }
-        // CPU
+
         if (currentInputActions.Length == 1)
         {
             var actionMap = currentInputActions[0];
             foreach (var info in keyButtonInfosCPU)
             {
-                var action = actionMap.FindAction(info.actionName);
-                if (action != null && action.bindings.Count > info.bindingIndex)
+                bool isMatched = false;
+                string display = "-";
+                string matchedAction = "";
+                int matchedBindingIndex = 0;
+
+                foreach (var action in actionMap)
                 {
-                    var binding = action.bindings[info.bindingIndex];
-                    var keyLabel = info.button.GetComponentInChildren<TMP_Text>();
-                    if (keyLabel != null)
-                        keyLabel.text = binding.ToDisplayString();
-                    if (info.keyImage != null)
-                        info.keyImage.color = cpuColor;
+                    for (int i = 0; i < action.bindings.Count; i++)
+                    {
+                        var binding = action.bindings[i];
+                        if (GetBindingPath(binding) == info.keyPath)
+                        {
+                            isMatched = true;
+                            matchedAction = action.name;
+                            matchedBindingIndex = i;
+                            display = binding.ToDisplayString();
+                            break;
+                        }
+                    }
+                    if (isMatched) break;
                 }
-                else
-                {
-                    var keyLabel = info.button.GetComponentInChildren<TMP_Text>();
-                    if (keyLabel != null)
-                        keyLabel.text = "-";
-                    if (info.keyImage != null)
-                        info.keyImage.color = normalColor;
-                }
+
+                info.playerIndex = isMatched ? 1 : 0;
+                info.actionName = matchedAction;
+                info.bindingIndex = matchedBindingIndex;
+
+                var keyLabel = info.button.GetComponentInChildren<TMP_Text>();
+                if (keyLabel) keyLabel.text = display;
+
+                if (info.keyImage) info.keyImage.color = isMatched ? cpuColor : normalColor;
             }
         }
     }
 
-    void OnKeyButtonClicked(int idx, int playerIndex)
+    // 해당 KeyButtonInfo가 가리키는 슬롯의 '런타임' 에셋 가져오기 (없으면 에디터 자산 fallback)
+    private InputActionAsset GetRuntimeAssetForInfo(KeyButtonInfo info)
     {
-        KeyButtonInfo[] infos = null;
-        if (playerIndex == 0)
-            infos = keyButtonInfosP1;
-        else if (playerIndex == 1)
-            infos = keyButtonInfosP2;
+        string slot;
+        if (currentInputActions != null && currentInputActions.Length == 1)
+            slot = "CPU";
         else
-            infos = keyButtonInfosCPU;
+            slot = info.playerIndex == 1 ? "P1" : info.playerIndex == 2 ? "P2" : null;
 
-        var info = infos[idx];
-        var action = currentInputActions[playerIndex].FindAction(info.actionName);
+        var runtime = GameSettings.Instance?.GetFirstAssetInSlot(slot);
+        if (runtime != null) return runtime;
 
-        Debug.Log($"리바인딩 시도: idx={idx}, playerIndex={playerIndex}, actionName={info.actionName}, bindingIndex={info.bindingIndex}");
+        // fallback: 에디터 자산
+        int idx = Mathf.Clamp(info.playerIndex - 1, 0, (currentInputActions?.Length ?? 1) - 1);
+        return (currentInputActions != null && currentInputActions.Length > idx) ? currentInputActions[idx] : null;
+    }
+
+    // 런타임 에셋 기준으로 액션/바인딩 인덱스 찾기
+    private bool ResolveRuntimeActionForInfo(KeyButtonInfo info, out InputAction action, out int bindingIndex)
+    {
+        action = null;
+        bindingIndex = -1;
+
+        var asset = GetRuntimeAssetForInfo(info);
+        if (asset == null) return false;
+
+        if (!string.IsNullOrEmpty(info.actionName))
+            action = asset.FindAction(info.actionName);
 
         if (action != null)
         {
-            Debug.Log("어떤 키로 바꾸시겠습니까?");
-            action.PerformInteractiveRebinding(info.bindingIndex)
-                .WithCancelingThrough("<Mouse>/rightButton")
-                .OnComplete(op =>
-                {
-                    Debug.Log("리바인딩 완료: " + action.bindings[info.bindingIndex].ToDisplayString());
-                    op.Dispose();
-                    GameSettings.Instance.SaveKeyBindings(); // 리바인딩 후 저장
-                    UpdateKeyColors(); // UI 갱신
-                })
-                .Start();
-        }
-        else
-        {
-            Debug.LogWarning("해당 액션을 찾을 수 없습니다: " + info.actionName);
-        }
-    }
-
-
-    void DebugPrintActionMap(InputActionAsset actionMap, string tag = "")
-    {
-        if (actionMap == null)
-        {
-            Debug.Log($"{tag} actionMap is null");
-            return;
-        }
-        foreach (var action in actionMap)
-        {
-            Debug.Log($"{tag} 액션: {action.name}");
+            // keyPath로 해당 바인딩 인덱스 재계산
             for (int i = 0; i < action.bindings.Count; i++)
             {
-                var binding = action.bindings[i];
-                Debug.Log($"{tag}   바인딩[{i}]: {binding.path} ({binding.ToDisplayString()})");
+                if (GetBindingPath(action.bindings[i]) == info.keyPath)
+                {
+                    bindingIndex = i;
+                    return true;
+                }
+            }
+            // 실패 시 기존 인덱스 fallback
+            if (info.bindingIndex >= 0 && info.bindingIndex < action.bindings.Count)
+            {
+                bindingIndex = info.bindingIndex;
+                return true;
+            }
+            return true; // 액션만 찾았음
+        }
+
+        // 액션 이름이 없으면 에셋 전체에서 keyPath로 역탐색
+        foreach (var act in asset)
+        {
+            for (int i = 0; i < act.bindings.Count; i++)
+            {
+                if (GetBindingPath(act.bindings[i]) == info.keyPath)
+                {
+                    action = act;
+                    bindingIndex = i;
+                    return true;
+                }
             }
         }
+        return false;
     }
 
+    void OnKeyButtonClicked(int idx)
+    {
+        var info = keyButtonInfos1vs1[idx];
+
+        if (!ResolveRuntimeActionForInfo(info, out var action, out var bindIndex))
+        {
+            Debug.LogWarning($"리바인딩 실패: 런타임 액션을 찾을 수 없음. keyPath={info.keyPath}, actionName={info.actionName}, playerIndex={info.playerIndex}");
+            return;
+        }
+
+        action.Disable();
+        action.PerformInteractiveRebinding()
+              .WithTargetBinding(bindIndex)
+              .WithCancelingThrough("<Mouse>/rightButton")
+              .OnCancel(op =>
+              {
+                  action.Enable();
+                  op.Dispose();
+              })
+              .OnComplete(op =>
+              {
+                  op.Dispose();
+                  action.Enable();
+
+                  var asset = action.actionMap?.asset;
+                  GameSettings.Instance?.SaveAndBroadcastOverrides(asset); // 같은 슬롯만 적용
+
+                  MatchKeyInfosWithBindings();
+                  UpdateKeyColors();
+              })
+              .Start();
+    }
+
+    void OnKeyButtonClickedCPU(int idx)
+    {
+        var info = keyButtonInfosCPU[idx];
+
+        if (!ResolveRuntimeActionForInfo(info, out var action, out var bindIndex))
+        {
+            Debug.LogWarning($"리바인딩 실패(CPU): 런타임 액션을 찾을 수 없음. keyPath={info.keyPath}, actionName={info.actionName}");
+            return;
+        }
+
+        action.Disable();
+        action.PerformInteractiveRebinding()
+              .WithTargetBinding(bindIndex)
+              .WithCancelingThrough("<Mouse>/rightButton")
+              .OnCancel(op =>
+              {
+                  action.Enable();
+                  op.Dispose();
+              })
+              .OnComplete(op =>
+              {
+                  op.Dispose();
+                  action.Enable();
+
+                  var asset = action.actionMap?.asset;
+                  GameSettings.Instance?.SaveAndBroadcastOverrides(asset);
+
+                  MatchKeyInfosWithBindings();
+                  UpdateKeyColors();
+              })
+              .Start();
+    }
 }
