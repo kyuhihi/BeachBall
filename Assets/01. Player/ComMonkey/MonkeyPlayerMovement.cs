@@ -3,6 +3,10 @@ using UnityEngine.InputSystem;
 using System.Collections;
 using UnityEngine.Playables;
 using System;
+using NUnit.Framework.Internal;
+using UnityEngine.WSA;
+using UnityEngine.Animations.Rigging;
+using Kyu_BT;
 
 public class MonkeyPlayerMovement : BasePlayerMovement
 {
@@ -16,13 +20,18 @@ public class MonkeyPlayerMovement : BasePlayerMovement
     float shrinkAnimTime = 1f;    // 줄어드는 시간
     [SerializeField] AnimationCurve stretchCurve = AnimationCurve.EaseInOut(0, 0, 1, 1); // 늘어날 때 커브
     [SerializeField] AnimationCurve shrinkCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);  // 줄어들 때 커브
-    [SerializeField] Key stretchKey = Key.Q;
+    [SerializeField] GameObject[] _BoneHands = new GameObject[2];
+
+    [SerializeField] Rig _armRig;
     Vector3 stretchOffset = new Vector3(0, 0, 90);
     GameObject[,] spawnedStretchObjs;
+    [SerializeField] private GameObject LastHandPrefab;
+    Transform m_BananaSpawnPoint;
+    public Vector3 GetBananaPoint() { return m_BananaSpawnPoint.position; }
     float stretchAnimT = 0f;
     float stretchAnimDir = 0f; // 1: 늘리기, -1: 줄이기, 0: 정지
-    bool isStretched = false;
-    public bool IsFullyStretched => stretchAnimT >= 1f && stretchAnimDir == 0f;
+    private bool isStretched = false;
+    public bool IsStretching() => isStretched;
 
     protected override void Start()
     {
@@ -32,6 +41,8 @@ public class MonkeyPlayerMovement : BasePlayerMovement
         m_PlayerDefaultColor = Color.black;
         PlayerUIManager.GetInstance().SetPlayerInfoInUI(this);
         MakeArm();
+
+        m_BananaSpawnPoint = transform.Find("BananaSpawnPoint");
     }
 
     private void MakeArm()
@@ -39,7 +50,7 @@ public class MonkeyPlayerMovement : BasePlayerMovement
         if (stretchPrefab && Arm2s != null && Arm2s.Length > 0 && stretchCount > 0)
         {
             GameObject ArmParent = new GameObject("ArmParent");
-            spawnedStretchObjs = new GameObject[Arm2s.Length, stretchCount];
+            spawnedStretchObjs = new GameObject[Arm2s.Length, stretchCount + 1];
             for (int armIdx = 0; armIdx < Arm2s.Length; armIdx++)
             {
                 var arm = Arm2s[armIdx];
@@ -48,9 +59,21 @@ public class MonkeyPlayerMovement : BasePlayerMovement
                 {
                     GameObject obj = Instantiate(stretchPrefab, ArmParent.transform);
                     spawnedStretchObjs[armIdx, i] = obj;
+
+                    if (i == stretchCount - 1)
+                    {
+                        GameObject Hand = Instantiate(LastHandPrefab, ArmParent.transform);
+                        spawnedStretchObjs[armIdx, i + 1] = Hand;
+                    }
                 }
             }
+            foreach (var obj in spawnedStretchObjs)
+            {
+                if (obj)
+                    obj.SetActive(false);
+            }
         }
+
     }
 
     public override void OnAttackSkill(InputValue value)
@@ -62,18 +85,44 @@ public class MonkeyPlayerMovement : BasePlayerMovement
 
 
     }
-
-
     protected override void Update()
     {
         base.Update();
     }
-
-
     public void LateUpdate()
     {
         ArmRoutine();
         StretchArm();
+
+        if (isStretched)
+        {
+            if (_BoneHands[0].activeSelf)
+            {
+                _BoneHands[0].SetActive(false);
+                _BoneHands[1].SetActive(false);
+                foreach (var obj in spawnedStretchObjs)
+                {
+                    if (obj)
+                        obj.SetActive(true);
+                }
+                _armRig.weight = 1.0f;
+            }
+
+        }
+        else
+        {
+            if (!_BoneHands[0].activeSelf)
+            {
+                _BoneHands[0].SetActive(true);
+                _BoneHands[1].SetActive(true);
+                foreach (var obj in spawnedStretchObjs)
+                {
+                    if (obj)
+                        obj.SetActive(false);
+                }
+                _armRig.weight = 0.0f;
+            }
+        }
     }
 
     private void ArmRoutine()
@@ -89,7 +138,6 @@ public class MonkeyPlayerMovement : BasePlayerMovement
             {
                 stretchAnimT = 1f;
                 stretchAnimDir = -1f;
-                Debug.Log("Auto Shrink");
                 return;
             }
             else if (stretchAnimT <= 0f)
@@ -118,7 +166,7 @@ public class MonkeyPlayerMovement : BasePlayerMovement
             float targetDistance = targetDir.magnitude;
             float FinalStretch = 0.0f;
 
-            for (int i = 0; i < stretchCount; i++)
+            for (int i = 0; i < stretchCount + 1; i++)
             {
                 var obj = spawnedStretchObjs[armIdx, i];
                 if (!obj) continue;
@@ -126,7 +174,7 @@ public class MonkeyPlayerMovement : BasePlayerMovement
                 // 커브 적용
                 float t = stretchAnimT;
                 float curveT = stretchAnimDir >= 0 ? stretchCurve.Evaluate(t) : shrinkCurve.Evaluate(t);
-                float spread = Mathf.Lerp(0, Mathf.Min(i * stretchSpacing, targetDistance), curveT);
+                float spread = Mathf.MoveTowards(0, Mathf.Min(i * stretchSpacing, targetDistance), curveT * Mathf.Min(i * stretchSpacing, targetDistance));
                 Vector3 localOffset = new Vector3(-spread, 0, 0);
 
                 Vector3 worldPos = arm.TransformPoint(localOffset);
@@ -142,8 +190,7 @@ public class MonkeyPlayerMovement : BasePlayerMovement
             
             if (stretchAnimDir > 0 && (stretchAnimT >=1.0f && FinalStretch < targetDistance))
             {
-                Debug.Log($"팔 {armIdx}의 최종 늘어남: {FinalStretch} < {targetDistance}");
-                allArmsFullyStretched = true; // 모든 팔이 목표 위치까지 도달하지 못함
+                allArmsFullyStretched = true; 
             }
 
         }
@@ -151,11 +198,9 @@ public class MonkeyPlayerMovement : BasePlayerMovement
         // 모든 팔이 목표 위치까지 도달했다면
         if (allArmsFullyStretched )
         {
-            Debug.Log("모든 팔이 목표 위치까지 뻗었습니다!");
-            stretchAnimDir = -1f; // 자동으로 줄이기 시작
+            stretchAnimDir = -1f; 
         }
     }
-
     public void DefenceByArm(bool bStretch)
     {
         Vector3 lookDir = target.transform.position - transform.position;
@@ -171,13 +216,11 @@ public class MonkeyPlayerMovement : BasePlayerMovement
         }
         if (m_isMoveByInput && bStretch)
             {
-                Debug.Log("StretchCall");
                 stretchAnimDir = 1f;
                 isStretched = true;
             }
             else
             {
-                Debug.Log("ShrinkCall");
 
                 stretchAnimDir = -1f;
             }
@@ -210,7 +253,13 @@ public class MonkeyPlayerMovement : BasePlayerMovement
         m_isMoveByInput = true;
     }//이거 오버라이딩해야함.
 
-
+    public void ThrowBanana(Transform OtherPlayer)
+    {
+        if (OtherPlayer == null) return;
+        Quaternion lookRot = Quaternion.LookRotation(OtherPlayer.position - transform.position, Vector3.up);
+        transform.rotation = lookRot;
+        m_Animator.SetTrigger("Smash");
+    }
     protected override void FixedUpdate()
     {
         base.FixedUpdate();

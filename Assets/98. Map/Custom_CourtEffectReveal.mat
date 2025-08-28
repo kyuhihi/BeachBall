@@ -65,7 +65,7 @@ Material:
     - _Loop: 1
     - _MaxRadius: 4
     - _Metallic: 0
-    - _MinAlpha: 0.15
+    - _MinAlpha: 1
     - _NoiseAmp: 1
     - _NoiseContrast: 100
     - _NoiseOctaves: 5
@@ -82,15 +82,18 @@ Material:
     - _RingThickness: 0.8
     - _RingWidth: 0.5
     - _Speed: 6
-    - _TangentialRatio: 0.037
+    - _TangentialRatio: 0
     - _Thickness: 5
     - _UseLocal: 0
+    - _VertexAmplitude: 0.2
+    - _VertexEnable: 0
+    - _VertexRadialRatio: 0.483
     - _WaveSpeed: 2
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EdgeColor: {r: 0.6, g: 0.85, b: 1, a: 1}
     - _EmissionColor: {r: 0.8, g: 0.9, b: 1, a: 1}
-    - _ImpactPos: {r: 0, g: 3, b: 0, a: 0}
+    - _ImpactPos: {r: 0, g: 3.99, b: 0, a: 0}
     - _NoiseDir: {r: 1, g: 1, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

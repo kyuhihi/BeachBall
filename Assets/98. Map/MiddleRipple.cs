@@ -1,4 +1,4 @@
-// filepath: c:\Users\Lenovo\BeachBall\Assets\98. [MiddleRipple.cs](http://_vscodecontentref_/0)
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MiddleRipple : MonoBehaviour
@@ -11,28 +11,30 @@ public class MiddleRipple : MonoBehaviour
     [Tooltip("리플 머티리얼이 붙은 Quad/Plane 의 Renderer")]
     [SerializeField] Renderer rippleRenderer;
 
-    [Header("Trigger Settings")]
-    [Tooltip("연속 튐 방지 최소 시간")]
-    [SerializeField] float triggerCooldown = 0.15f;
-    [Tooltip("Plane 에 거의 붙어 있을 때 발생하는 노이즈 억제(거리)")]
-    [SerializeField] float dotDeadZone = 0.002f;
-    [Tooltip("이동량이 너무 작으면 무시")]
-    [SerializeField] float minTravelForTrigger = 0.02f;
-
-    [Header("Ripple Reset")]
+    [Header("Ripple Config")]
     [SerializeField] float startRadius = 0f;
     [SerializeField] float maxRadius = 15f;
+    [SerializeField] float expandSpeed = 5f;       // 반경 증가 속도
+    [SerializeField] float alphaStart = 0.85f;     // 시작 알파
+    [SerializeField] float alphaFadeSpeed = 0.3f;  // 알파 감소 속도
 
-    // Shader property names
-    static readonly int PropImpactPos     = Shader.PropertyToID("_ImpactPos");
+    // Shader property IDs
+    static readonly int PropImpactPos = Shader.PropertyToID("_ImpactPos");
     static readonly int PropCurrentRadius = Shader.PropertyToID("_CurrentRadius");
-    static readonly int PropMaxRadius     = Shader.PropertyToID("_MaxRadius");
+    static readonly int PropMaxRadius = Shader.PropertyToID("_MaxRadius");
+    static readonly int PropAlpha = Shader.PropertyToID("_Alpha");
 
     MaterialPropertyBlock mpb;
     float lastDot;
     bool hasLast;
     float lastTriggerTime;
     Vector3 lastBallPos;
+
+    // 현재 리플 상태
+    float currentRadius;
+    float currentAlpha;
+    bool isRippleActive;
+    Vector3 currentImpactPos;
 
     void Awake()
     {
@@ -46,63 +48,74 @@ public class MiddleRipple : MonoBehaviour
         if (go) ball = go.transform;
         if (ball) lastBallPos = ball.position;
 
-        // 초기 MaxRadius 셋팅
-        rippleRenderer.GetPropertyBlock(mpb);
-        mpb.SetFloat(PropMaxRadius, maxRadius);
-        rippleRenderer.SetPropertyBlock(mpb);
+        // 초기값 (리플이 보이지 않도록 설정)
+        ResetRipple();
     }
 
     void Update()
     {
         if (!ball || !rippleRenderer) return;
 
-        // Plane 기준점/Normal (Quad가 XY 평면이면 forward, XZ면 up)
-        Vector3 planePoint  = transform.position;
-        Vector3 planeNormal = transform.forward.normalized;
+        DetectTrigger();
+        UpdateRipple();
+    }
 
-        Vector3 toBall = ball.position - planePoint;
-        float dot = Vector3.Dot(toBall, planeNormal);
+    void DetectTrigger()
+    {
 
-        float moved = (ball.position - lastBallPos).magnitude;
+        TriggerRipple(ball.position);
 
-        if (!hasLast)
-        {
-            hasLast = true;
-            lastDot = dot;
-            lastBallPos = ball.position;
-            return;
-        }
-
-        if (Mathf.Abs(dot) < dotDeadZone && Mathf.Abs(lastDot) < dotDeadZone)
-        {
-            lastDot = dot;
-            lastBallPos = ball.position;
-            return;
-        }
-
-        bool prevPos = lastDot > 0f;
-        bool nowPos  = dot > 0f;
-        bool crossed = prevPos != nowPos;
-
-        if (crossed && moved >= minTravelForTrigger && Time.time - lastTriggerTime >= triggerCooldown)
-        {
-            TriggerRipple(ball.position);
-            lastTriggerTime = Time.time;
-        }
-
-        lastDot = dot;
         lastBallPos = ball.position;
+        return;
+
     }
 
     void TriggerRipple(Vector3 worldPos)
     {
+        if ((lastBallPos.z < 0.0f && worldPos.z < 0.0f) || (lastBallPos.z > 0.0f && worldPos.z > 0.0f))
+            return;
+        // 항상 새로 시작
+            currentImpactPos = worldPos;
+        currentRadius = startRadius;
+        currentAlpha = alphaStart;
+        isRippleActive = true;
+
         rippleRenderer.GetPropertyBlock(mpb);
-
-        // 쉐이더 PlaneMode와 일치하게 좌표 전달 (기본: XY 평면, worldPos.x/y)
         mpb.SetVector(PropImpactPos, new Vector4(worldPos.x, worldPos.y, worldPos.z, 0f));
-        mpb.SetFloat(PropCurrentRadius, startRadius);
+        mpb.SetFloat(PropCurrentRadius, currentRadius);
+        mpb.SetFloat(PropAlpha, currentAlpha);
         mpb.SetFloat(PropMaxRadius, maxRadius);
+        rippleRenderer.SetPropertyBlock(mpb);
+    }
 
+    void UpdateRipple()
+    {
+        if (!isRippleActive) return;
+
+        currentRadius += expandSpeed * Time.deltaTime;
+        currentAlpha -= alphaFadeSpeed * Time.deltaTime;
+
+        rippleRenderer.GetPropertyBlock(mpb);
+        mpb.SetFloat(PropCurrentRadius, currentRadius);
+        mpb.SetFloat(PropAlpha, Mathf.Max(0, currentAlpha));
+        rippleRenderer.SetPropertyBlock(mpb);
+
+        if (currentRadius >= maxRadius || currentAlpha <= 0.01f)
+        {
+            ResetRipple(); // 끝나면 초기화
+        }
+    }
+
+    void ResetRipple()
+    {
+        isRippleActive = false;
+        currentRadius = 0f;
+        currentAlpha = 0f;
+
+        rippleRenderer.GetPropertyBlock(mpb);
+        mpb.SetFloat(PropCurrentRadius, currentRadius);
+        mpb.SetFloat(PropAlpha, currentAlpha);
+        mpb.SetFloat(PropMaxRadius, maxRadius);
         rippleRenderer.SetPropertyBlock(mpb);
     }
 }
