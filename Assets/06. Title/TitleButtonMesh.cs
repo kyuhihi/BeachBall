@@ -60,7 +60,7 @@ public class TitleButtonMesh : MonoBehaviour
     private void OnMouseAction(InputAction.CallbackContext ctx)
     {
         if (keySettingPanel != null && keySettingPanel.activeSelf)
-                return;
+            return;
 
         float value = ctx.ReadValue<float>();
         if (value > 0.5f)
@@ -138,14 +138,14 @@ public class TitleButtonMesh : MonoBehaviour
                         {
                             GameSettings.Instance.selectedCharacter = buttonHaviorName;
                         }
-                        
+
                     }
                 }
                 isMouseDownOnMe = false;
             }
         }
     }
-    
+
     private void ShowLabel()
     {
         if (meshLabel != null)
@@ -298,6 +298,13 @@ public class TitleButtonMesh : MonoBehaviour
         }
         isMouseOver = nowOver;
 
+    }
+
+    public void OnClickKeySettingEscButton()
+    {
+        isBeforeClicked = !isBeforeClicked;
+        isRotating = !isRotating;
+        isFixed90 = !isFixed90;
     }
 
     
