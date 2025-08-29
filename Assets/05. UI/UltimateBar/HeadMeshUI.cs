@@ -23,6 +23,7 @@ public class HeadMeshUI : MonoBehaviour
     private const string ChracterText = "ChracterText";
     private const string DashText = "DashText";
     private const string CharacterDeco = "CharacterDeco";
+    private const string UltimateTimingEff = "UltimateTimingEff";
     private TextMeshProUGUI ChracterTextMeshPro;
     private TextMeshProUGUI DashTextMeshPro;
     private void Awake()
@@ -108,8 +109,28 @@ public class HeadMeshUI : MonoBehaviour
         }
         
     }
+
+    private void SetUpToCheckUltimateEffect()
+    {
+        if (config.TryGet(playerType, out var entry))
+        {
+            foreach (Transform child in transform)
+            {
+                if (child.gameObject.name == UltimateTimingEff)
+                {
+                    CheckUltimateSkillTiming pEffect = child.gameObject.GetComponent<CheckUltimateSkillTiming>();
+                    pEffect.SetPlayerInfo(entry.playerType);
+                    pEffect.Initialize();
+                }
+
+            }
+            
+        }
+    }
+
+
     [ContextMenu("Apply Now")]
-    public void Apply( )
+    public void Apply()
     {
         if (!config || !meshFilter || !meshRenderer) return;
 
@@ -132,6 +153,7 @@ public class HeadMeshUI : MonoBehaviour
         }
         SetInfoText();
         SetDecoMesh();
+        SetUpToCheckUltimateEffect();
     }
 
     public void SetPlayerType(IPlayerInfo.PlayerType newType, bool autoApply = true)

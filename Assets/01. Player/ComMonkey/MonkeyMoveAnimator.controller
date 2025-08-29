@@ -1025,7 +1025,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 1b9db807c0d651e4e97e804b11ea6b8f, type: 2}
+  m_Motion: {fileID: 7400000, guid: 9f5d7263adfab5d4583f7650984aa1d9, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -2074,6 +2074,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b73dc328d64d3b40a91627531f04138, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ThrowForce: 1
+  ThrowDirectionY: 1
 --- !u!1107 &4199062980665387681
 AnimatorStateMachine:
   serializedVersion: 6

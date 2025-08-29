@@ -13,6 +13,7 @@ public class UltimateBarDriver : UIInfoBase
     private float chip;
     private float prev;
     const float FullThreshold = 0.9999f;
+    public float GetGauge() { return gauge; }
 
     public override IUIInfo.UIType GetUIType() => IUIInfo.UIType.UltimateBar;
     public override IPlayerInfo.CourtPosition GetCourtPosition => courtPosition;

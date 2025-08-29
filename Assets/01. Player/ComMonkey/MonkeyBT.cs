@@ -43,9 +43,18 @@ public class MonkeyBT : MonoBehaviour
 
     private void FindOtherPlayer()
     {
-        var found = GameObject.FindWithTag("Player");
-        if (found && found.transform != transform)
-            OtherPlayer = found.transform;
+        var found = GameObject.FindGameObjectsWithTag("Player");
+        if (found.Length > 0)
+        {
+            foreach (var player in found)
+            {
+                if (player.transform != transform)
+                {
+                    OtherPlayer = player.transform;
+                    break;
+                }
+            }
+        }
 
         if (OtherPlayer == null)
         {

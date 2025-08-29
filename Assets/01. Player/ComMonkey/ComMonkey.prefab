@@ -774,6 +774,7 @@ Transform:
   - {fileID: 615239210773638874}
   - {fileID: 6100954222471511608}
   - {fileID: 8907405071745888796}
+  - {fileID: 1258495758483093406}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &7279804012378803755
@@ -1044,8 +1045,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 631f4c9de4d4f3546a6927a7f96d5853, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  target: {fileID: 0}
-  targetTag: Player
   stopDistance: 1.5
   cameraRelative: 1
 --- !u!1 &1576948986969828365
@@ -2450,6 +2449,37 @@ Transform:
   m_Children:
   - {fileID: 3853327497521586824}
   m_Father: {fileID: 3151262364936109884}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &4253640268577516428
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1258495758483093406}
+  m_Layer: 9
+  m_Name: BananaSpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1258495758483093406
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4253640268577516428}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.971, z: 0.708}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1203553755638375646}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &4336950853192348974
 GameObject:

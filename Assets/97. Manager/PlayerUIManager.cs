@@ -13,10 +13,12 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
         public BasePlayerMovement PlayerMovement;
         public GameObject BottomUI;
         public GameObject StunUI;
+        public GameObject CanUltimateWorldEffect;
     }
 
     [SerializeField] private GameObject playerBottomUIprefab;
     [SerializeField] private GameObject playerStunPrefab;
+    [SerializeField] private GameObject playerCanUltimateWorldEffectPrefab;
     private List<PlayerUI> Players = new List<PlayerUI>();
     public List<GameObject> GetPlayers() => Players.ConvertAll(playerUI => playerUI.PlayerObject);
     [SerializeField] private LayerMask groundMask = ~0;
@@ -27,6 +29,8 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
     private GameObject m_WorldUICanvas;
     private const string CanvasObjName = "WorldUICanvas";
     private const float StunUIYOffset = 1.66f;
+    private const float CanUltimateUIYOffset = 0.6f;
+
 
     [SerializeField] private UIInfoBase[] PlayerUltimateBars = new UIInfoBase[2];//L R
     [SerializeField] private UIInfoBase[] PlayerDashBars = new UIInfoBase[2];//L R
@@ -101,8 +105,10 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
                 PlayerObject = player,
                 BottomUI = Instantiate(playerBottomUIprefab),
                 StunUI = Instantiate(playerStunPrefab),
+                CanUltimateWorldEffect = Instantiate(playerCanUltimateWorldEffectPrefab),
                 PlayerMovement = player.GetComponent<BasePlayerMovement>()
             };
+            playerUI.CanUltimateWorldEffect.SetActive(false);
             Players.Add(playerUI);
         }
     }
@@ -117,13 +123,13 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
         foreach (var playerUI in Players)
         {
             if (!playerUI.PlayerObject || !playerUI.BottomUI) continue;
-            var p = playerUI.PlayerObject.transform.position;
-            var origin = p + Vector3.up * rayStartHeight;
+            var pos = playerUI.PlayerObject.transform.position;
+            var origin = pos + Vector3.up * rayStartHeight;
             Vector3 targetPos;
             if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, maxRayDistance, groundMask, QueryTriggerInteraction.Ignore))
                 targetPos = hit.point + Vector3.up * hoverHeight;
             else
-                targetPos = p;
+                targetPos = pos;
 
             playerUI.BottomUI.transform.position = targetPos;
             playerUI.BottomUI.transform.rotation = Quaternion.identity;
@@ -133,18 +139,26 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
             var rend = playerUI.BottomUI.GetComponent<Renderer>();
             if (rend && rend.material.HasProperty("_Color"))
                 rend.material.SetColor("_Color", info.m_PlayerDefaultColor);
-
+            //=====================================================================================
             if (playerUI.PlayerMovement.IsStunned)
             {
                 playerUI.StunUI.gameObject.SetActive(true);
-                p.y += StunUIYOffset;
-                playerUI.StunUI.transform.position = p;
+                pos.y += StunUIYOffset;
+                playerUI.StunUI.transform.position = pos;
                 playerUI.BottomUI.transform.rotation = Quaternion.identity;
             }
             else
             {
                 playerUI.StunUI.gameObject.SetActive(false);
             }
+            //=====================================================================================
+            if (playerUI.CanUltimateWorldEffect.activeSelf)
+            {
+                var CanUltimateWorldEffect = pos;
+                CanUltimateWorldEffect.y += CanUltimateUIYOffset;
+                playerUI.CanUltimateWorldEffect.transform.position = CanUltimateWorldEffect;
+            }
+            //=====================================================================================
         }
     }
 
@@ -224,9 +238,25 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
             iLRIndex = 1;
 
         PlayerUltimateBars[iLRIndex].DecreaseValueFloat(-0.1f);
+
+        foreach (var playerUI in Players)
+        {
+            var info = playerUI.PlayerObject.GetComponent<IPlayerInfo>();
+            if (info.m_CourtPosition != courtPosition)
+                continue;
+            var ultimateBar = PlayerUltimateBars[iLRIndex];
+            if (ultimateBar.GetComponent<UltimateBarDriver>().GetGauge() >= 0.999f)
+            {
+                playerUI.CanUltimateWorldEffect.SetActive(true);
+                var particleMain = playerUI.CanUltimateWorldEffect.GetComponent<ParticleSystem>().main;
+                particleMain.startColor = info.m_PlayerDefaultColor;
+            }
+            else
+            {
+                playerUI.CanUltimateWorldEffect.SetActive(false);
+            }
+        }
     }
-
-
     public void SetPlayerInfoInUI(IPlayerInfo playerInfo)
     {
         var headMeshUIs = FindObjectsByType<HeadMeshUI>(FindObjectsSortMode.None);

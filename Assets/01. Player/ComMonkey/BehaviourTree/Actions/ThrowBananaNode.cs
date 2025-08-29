@@ -8,7 +8,7 @@ namespace Kyu_BT
         readonly Transform _owner;
 
         readonly System.Action<Vector2> _setMoveInput;
-        readonly bool _cameraRelative;
+        bool _cameraRelative = true;
 
         public ThrowBananaNode(System.Action<Vector2> setMoveInput,
                  string OtherPlayerKey, MonkeyPlayerMovement movement, Transform owner)
