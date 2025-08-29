@@ -7,6 +7,7 @@ using NUnit.Framework.Internal;
 using UnityEngine.WSA;
 using UnityEngine.Animations.Rigging;
 using Kyu_BT;
+using System.Collections.Generic;
 
 public class MonkeyPlayerMovement : BasePlayerMovement
 {
@@ -33,18 +34,48 @@ public class MonkeyPlayerMovement : BasePlayerMovement
     private bool isStretched = false;
     public bool IsStretching() => isStretched;
 
+    private int MaxBananaCount = 10;
+    private List<GameObject> BananaInstances = new List<GameObject>();
+    private GameObject BananaParent;
+    const string BananaPrefabPath = "Banana";
+    
+    private GameObject BananaPrefab;
+    [SerializeField] private MonkeyType m_eMonkeyType = MonkeyType.MONKEY_PLAYER;
+
+    public enum MonkeyType { MONKEY_PLAYER, MONKEY_ULTIMATE }
     protected override void Start()
     {
         base.Start();
+        if(m_eMonkeyType == MonkeyType.MONKEY_ULTIMATE)
+        {
+            return;
+        }
         m_PlayableDirector = GetComponent<PlayableDirector>();
         m_PlayerType = IPlayerInfo.PlayerType.Monkey;
         m_PlayerDefaultColor = Color.black;
         PlayerUIManager.GetInstance().SetPlayerInfoInUI(this);
-        MakeArm();
-
         m_BananaSpawnPoint = transform.Find("BananaSpawnPoint");
+        MakeArm();
+        MakeBanana();
     }
-
+    private void MakeBanana()
+    {
+        if (BananaPrefab == null)
+        {
+            BananaPrefab = Resources.Load<GameObject>(BananaPrefabPath);
+        }
+        BananaParent = new GameObject("BananaParent");
+        BananaParent.transform.position = Vector3.up * 100f;
+        BananaParent.transform.rotation = Quaternion.identity;
+        for (int i = 0; i < MaxBananaCount; ++i)
+        {
+            GameObject banana = Instantiate(BananaPrefab, GetBananaPoint(), Quaternion.identity);
+            banana.SetActive(false);
+            banana.transform.SetParent(BananaParent.transform);
+            banana.GetComponent<Banana>().BananaParent = BananaParent;
+            BananaInstances.Add(banana);
+        }
+    }
     private void MakeArm()
     {
         if (stretchPrefab && Arm2s != null && Arm2s.Length > 0 && stretchCount > 0)
@@ -256,9 +287,22 @@ public class MonkeyPlayerMovement : BasePlayerMovement
     public void ThrowBanana(Transform OtherPlayer)
     {
         if (OtherPlayer == null) return;
+        if (GetAvailableBanana() == null) return;
+
         Quaternion lookRot = Quaternion.LookRotation(OtherPlayer.position - transform.position, Vector3.up);
         transform.rotation = lookRot;
         m_Animator.SetTrigger("Smash");
+    }
+    public GameObject GetAvailableBanana()
+    {
+        foreach (var banana in BananaInstances)
+        {
+            if (!banana.activeSelf)
+            {
+                return banana;
+            }
+        }
+        return null;
     }
     protected override void FixedUpdate()
     {

@@ -28,7 +28,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     protected float dashArriveDistance = 0.5f; // 도착 판정 거리
 
     [SerializeField] protected float jumpForce = 10f;
-    [SerializeField] protected float groundCheckDistance = 0.1f;
+    protected float groundCheckDistance = 0.5f;
 
     [Header("Ground Check")]
     [SerializeField] protected LayerMask groundLayer = 1;
@@ -429,7 +429,6 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
             return;
         }
 
-
         if (value.isPressed && isGrounded)
         {
             OnJumpInput(value.isPressed);
@@ -527,9 +526,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         if (distance < dashArriveDistance)
         {
             // 도착!
-            isDashingToBall = false;
-
-            StartCoroutine(DisableTrailAfterDelay(m_TrailRenderer.time)); // 트레일이 자연스럽게 사라지게   
+            EndDashCall();
 
             return;
         }
@@ -557,7 +554,14 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         SetCurrentLocomotionState(currentToDashSpeed);
         SetAnimatorParameters(1f);
     }
- 
+
+    public void EndDashCall()
+    {
+        isDashingToBall = false;
+
+        StartCoroutine(DisableTrailAfterDelay(m_TrailRenderer.time)); // 트레일이 자연스럽게 사라지게   
+    }
+
     protected virtual void FixedUpdate()
     {
 

@@ -728,6 +728,32 @@ AnimatorStateTransition:
   m_InterruptionSource: 0
   m_OrderedInterruption: 1
   m_CanTransitionToSelf: 1
+--- !u!1102 &-5486631060789655306
+AnimatorState:
+  serializedVersion: 6
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Swing in to stage
+  m_Speed: 1
+  m_CycleOffset: 0
+  m_Transitions: []
+  m_StateMachineBehaviours: []
+  m_Position: {x: 50, y: 50, z: 0}
+  m_IKOnFeet: 0
+  m_WriteDefaultValues: 1
+  m_Mirror: 0
+  m_SpeedParameterActive: 0
+  m_MirrorParameterActive: 0
+  m_CycleOffsetParameterActive: 0
+  m_TimeParameterActive: 0
+  m_Motion: {fileID: 7400000, guid: 4d94dddc2d72e384cba1de433ffbf553, type: 2}
+  m_Tag: 
+  m_SpeedParameter: 
+  m_MirrorParameter: 
+  m_CycleOffsetParameter: 
+  m_TimeParameter: 
 --- !u!1102 &-5399834324573413817
 AnimatorState:
   serializedVersion: 6
@@ -920,6 +946,9 @@ AnimatorStateMachine:
   - serializedVersion: 1
     m_State: {fileID: -1628109057769066242}
     m_Position: {x: 280, y: -20, z: 0}
+  - serializedVersion: 1
+    m_State: {fileID: -5486631060789655306}
+    m_Position: {x: -438.37842, y: 356.98022, z: 0}
   m_ChildStateMachines:
   - serializedVersion: 1
     m_StateMachine: {fileID: 4199062980665387681}
@@ -2074,8 +2103,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b73dc328d64d3b40a91627531f04138, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ThrowForce: 1
-  ThrowDirectionY: 1
 --- !u!1107 &4199062980665387681
 AnimatorStateMachine:
   serializedVersion: 6

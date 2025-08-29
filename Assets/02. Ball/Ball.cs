@@ -88,7 +88,7 @@ public class Ball : MonoBehaviour
             m_Rigidbody.WakeUp();
         }
         Movement();
-
+        GameManager.GetInstance().ConfineObjectPosition(this.gameObject);
     }
 
     private void Movement()

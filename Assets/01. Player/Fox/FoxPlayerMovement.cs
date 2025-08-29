@@ -8,7 +8,7 @@ public class FoxPlayerMovement : BasePlayerMovement
 {
     [SerializeField] private Transform m_FireBallSpawnPoint;
     private FireBallContainer m_FireBallContainer;
-    
+
     [Header("Ultimate Setting")]
     const string m_UltimateFlashGameObjName = "UltimateMesh";
     private GameObject m_UltimateFlashGameObject;
@@ -58,7 +58,11 @@ public class FoxPlayerMovement : BasePlayerMovement
     protected override void Update()
     {
         base.Update();
-        m_UltimateFlashMaterial.SetFloat("_LocalYClipOffset",transform.position.y);
+        m_UltimateFlashMaterial.SetFloat("_LocalYClipOffset", transform.position.y);
+
+        
+
+
     }
 
     public override void OnDefenceSkill(InputValue value)
@@ -79,7 +83,7 @@ public class FoxPlayerMovement : BasePlayerMovement
         {
             return;
         }
-        if(!PlayerUIManager.GetInstance().UseAbility(IUIInfo.UIType.UltimateBar, m_CourtPosition))
+        if (!PlayerUIManager.GetInstance().UseAbility(IUIInfo.UIType.UltimateBar, m_CourtPosition))
         {
             return;
         }

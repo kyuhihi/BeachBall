@@ -20,6 +20,9 @@ public class GameManager : MonoBehaviour
     private CinemachineVirtualCamera m_CutSceneVirtualCam;
     private const int OnVirtualCameraPriority = 50;
     private const int OffVirtualCameraPriority = 10;
+    private const float MapOutZDistance = 11.2f;
+    private const float MapOutYDistance = 6.82f;
+
     private UltimateSetting m_FoxUltimateSetting;   //Include Environment, CutsceneTransform
     private UltimateSetting m_TurtleUltimateSetting;    //Include Environment, CutsceneTransform
     private EnvironmentConfig m_OriginEnvironmentConfig;
@@ -50,6 +53,26 @@ public class GameManager : MonoBehaviour
 
     public void LateUpdate()
     {
+
+        ConfinePlayersPosition();
+
+    }
+    public void ConfineObjectPosition(GameObject obj)
+    {
+        float zFixedPos;
+        bool zClamped;
+        zClamped = IsClamped(obj.transform.position.z, -MapOutZDistance, MapOutZDistance, out zFixedPos);
+        // 적용
+        obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, zFixedPos);
+        // Y Position 고정 체크
+        float yFixedPos;
+        bool yClamped = IsClamped(obj.transform.position.y, float.MinValue, MapOutYDistance + 0.3f, out yFixedPos);
+        // 적용
+        obj.transform.position = new Vector3(obj.transform.position.x, yFixedPos, obj.transform.position.z);
+
+    }
+    private void ConfinePlayersPosition()
+    {
         if (_players.Count <= 1 || _players == null)
             _players = PlayerUIManager.GetInstance()?.GetPlayers();
         foreach (var player in _players)
@@ -57,16 +80,39 @@ public class GameManager : MonoBehaviour
             if (player == null) continue;
             var playerMovement = player.GetComponent<BasePlayerMovement>();
             if (playerMovement == null) continue;
+            // Z Position 고정 체크
+            float zFixedPos;
+            bool zClamped;
             if (playerMovement.m_CourtPosition == IPlayerInfo.CourtPosition.COURT_RIGHT)
             {
-                player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, Mathf.Min(0, player.transform.position.z));
+                zClamped = IsClamped(player.transform.position.z, -MapOutZDistance, 0, out zFixedPos);
             }
             else
             {
-                player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, Mathf.Max(0, player.transform.position.z));
+                zClamped = IsClamped(player.transform.position.z, 0, MapOutZDistance, out zFixedPos);
+            }
+
+            // 적용
+            player.transform.position = new Vector3(player.transform.position.x, player.transform.position.y, zFixedPos);
+
+            // Y Position 고정 체크
+            float yFixedPos;
+            bool yClamped = IsClamped(player.transform.position.y, float.MinValue, MapOutYDistance, out yFixedPos);
+
+            // 적용
+            player.transform.position = new Vector3(player.transform.position.x, yFixedPos, player.transform.position.z);
+
+            // 결과 확인
+            if (zClamped || yClamped)
+            {
+                player.GetComponent<BasePlayerMovement>().EndDashCall();
             }
         }
-
+    }
+    private bool IsClamped(float original, float min, float max, out float clampedValue)
+    {
+        clampedValue = Mathf.Clamp(original, min, max);
+        return !Mathf.Approximately(original, clampedValue);
     }
     private void LoadScriptableObjects()
     {
@@ -77,7 +123,6 @@ public class GameManager : MonoBehaviour
         if (m_OriginEnvironmentConfig == null)
             m_OriginEnvironmentConfig = UltimateConfigLoader.LoadOriginEnv();
     }
-
     private void InitializeCamera()
     {
         GameObject[] Cams = GameObject.FindGameObjectsWithTag("MainCamera");
@@ -95,7 +140,6 @@ public class GameManager : MonoBehaviour
         }
 
     }
-
     public void StartCutScene()
     {
         if (m_DirectionalLight != null)
