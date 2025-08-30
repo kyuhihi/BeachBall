@@ -91,6 +91,14 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         set => m_isMoveByInput = value;
     }
 
+    private bool m_hurtTurtleUltimateSkillStun = false;
+
+    public bool HurtTurtleUltimateSkillStun
+    {
+        get => m_hurtTurtleUltimateSkillStun;
+        set => m_hurtTurtleUltimateSkillStun = value;
+    }
+
     protected float leftPressedTime = -1f;
     protected float rightPressedTime = -1f;
     protected float upPressedTime = -1f;
@@ -113,6 +121,8 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
 
     protected PlayableDirector m_PlayableDirector;
 
+    private bool _cutsceneSubscribed = false;
+
 
     public virtual void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition) { }
     public virtual void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition){}//이거 오버라이딩해야함.
@@ -127,15 +137,33 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
             m_CourtPosition = IPlayerInfo.CourtPosition.COURT_LEFT;
         }
 
-        Signals.Cutscene.AddStart((playerType, courtPosition) => OnStartCutScene(playerType, courtPosition));
-        Signals.Cutscene.AddEnd((playerType, courtPosition) => OnEndCutscene(playerType, courtPosition));
+        // Signals.Cutscene.AddStart((playerType, courtPosition) => OnStartCutScene(playerType, courtPosition));
+        // Signals.Cutscene.AddEnd((playerType, courtPosition) => OnEndCutscene(playerType, courtPosition));
     }
-    void OnDisable()
-    {
-        Signals.Cutscene.RemoveStart((playerType, courtPosition) => OnStartCutScene(playerType, courtPosition));
-        Signals.Cutscene.RemoveEnd((playerType, courtPosition) => OnEndCutscene(playerType, courtPosition));
 
+    private void OnEnable()
+    {
+        // 명명된 핸들러로 구독
+        if (!_cutsceneSubscribed)
+        {
+            Signals.Cutscene.AddStart(OnStartCutScene);
+            Signals.Cutscene.AddEnd(OnEndCutscene);
+            _cutsceneSubscribed = true;
+        }
     }
+
+    private void OnDisable()
+    {
+        // 명명된 핸들러로 해제(람다 쓰지 말 것)
+        if (_cutsceneSubscribed)
+        {
+            Signals.Cutscene.RemoveStart(OnStartCutScene);
+            Signals.Cutscene.RemoveEnd(OnEndCutscene);
+            _cutsceneSubscribed = false;
+        }
+    }
+
+ 
     protected void Awake()
     {
         jumpForce = 10f;

@@ -150,7 +150,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
 
     public override void OnAttackSkill(InputValue value)
     {
-        if (!m_isMoveByInput)
+        if (!m_isMoveByInput || m_eLocomotionState == IdleWalkRunEnum.Swim)
         {
             return;
         }
@@ -181,7 +181,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
 
     public override void OnDefenceSkill(InputValue value)
     {
-        if (!m_isMoveByInput)
+        if (!m_isMoveByInput || m_eLocomotionState == IdleWalkRunEnum.Swim)
         {
             return;
         }
@@ -198,7 +198,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
     }
     public override void OnUltimateSkill(InputValue value)
     {
-        if (!m_isMoveByInput)
+        if (!m_isMoveByInput || m_eLocomotionState == IdleWalkRunEnum.Swim)
         {
             return;
         }
@@ -328,7 +328,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
             if (dragon != null)
             {
                 dragon.DragonRotate = waterDragonRot; // 현재 회전값 저장
-                dragon.StartDrill(); // drill 시작
+                dragon.StartDrill(this.gameObject); // drill 시작
             }
         }
     }
@@ -466,7 +466,17 @@ public class TurtlePlayerMovement : BasePlayerMovement
 
     public override void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
-        MoveByInput = true;
+        if (!this || gameObject == null || !isActiveAndEnabled) return;
+
+        if (HurtTurtleUltimateSkillStun)
+        {
+            HurtTurtleUltimateSkillStun = false;
+        }
+        else
+        {
+            MoveByInput = true;
+        }
+        
 
         if (courtPosition != m_CourtPosition)
         {
@@ -489,6 +499,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
                 {
 
                     controller.Stun(10f); // 10초간 스턴
+                    controller.HurtTurtleUltimateSkillStun = true;
                     controller.SetSwimModeAfterStun(0.5f); // 10초 후 수영모드, 속도 0.5배
                 }
             }

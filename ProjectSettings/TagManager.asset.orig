@@ -9,8 +9,11 @@ TagManager:
   - UICamera
   - Ball
   - Cloud
+<<<<<<< HEAD
   - SubPlayer
+=======
   - ButtonMesh
+>>>>>>> Cho_TitleScene
   layers:
   - Default
   - TransparentFX

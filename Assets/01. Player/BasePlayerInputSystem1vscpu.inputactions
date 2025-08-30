@@ -1,8 +1,8 @@
 {
-    "name": "Base2PlayerInputSystem",
+    "name": "BasePlayerInputSystem1vscpu",
     "maps": [
         {
-            "name": "Player",
+            "name": "PlayerCPU",
             "id": "9be38b51-f97b-44f3-8e84-92cc575152e9",
             "actions": [
                 {
@@ -20,7 +20,7 @@
                     "id": "c5cdac0c-f787-425a-a107-4a2196b0f873",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "Press(behavior=2)",
+                    "interactions": "",
                     "initialStateCheck": false
                 },
                 {
@@ -62,16 +62,16 @@
                 {
                     "name": "Smash",
                     "type": "Button",
-                    "id": "42480817-b6f8-473c-a345-8db337387fc9",
+                    "id": "e32443cc-4b99-4723-8f8d-8f26d9444930",
                     "expectedControlType": "",
                     "processors": "",
-                    "interactions": "Press(behavior=2)",
+                    "interactions": "",
                     "initialStateCheck": false
                 },
                 {
                     "name": "AttackSkill",
                     "type": "Button",
-                    "id": "1b1e0b7f-68ff-4d8a-8ff6-33f663c37db2",
+                    "id": "53ccc790-0cd2-4394-81fa-92f553819987",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -80,7 +80,7 @@
                 {
                     "name": "DefenceSkill",
                     "type": "Button",
-                    "id": "58cc7cc0-bfc8-4cf9-a477-8dedcc1a8e68",
+                    "id": "f8d37c60-72b5-4252-80ce-50ea1cab4c51",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "Press(behavior=2)",
@@ -89,7 +89,7 @@
                 {
                     "name": "UltimateSkill",
                     "type": "Button",
-                    "id": "45abc4de-b770-4827-9759-e282735fb4f6",
+                    "id": "1121e684-e3ca-4cb8-af39-22553e0e871d",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -100,7 +100,7 @@
                 {
                     "name": "",
                     "id": "4fd4d0cd-f53f-41ce-91c6-b32f9386b0da",
-                    "path": "<Keyboard>/y",
+                    "path": "<Keyboard>/p",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -111,7 +111,7 @@
                 {
                     "name": "",
                     "id": "f852ab0e-a98d-47c3-89f5-537ffbc316aa",
-                    "path": "<Keyboard>/t",
+                    "path": "<Keyboard>/o",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -122,7 +122,7 @@
                 {
                     "name": "",
                     "id": "9cf9d665-aa9f-491c-a900-6c6b773060b3",
-                    "path": "<Keyboard>/s",
+                    "path": "<Keyboard>/w",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -133,7 +133,7 @@
                 {
                     "name": "",
                     "id": "2efa890f-ca85-4dcb-8752-c00f244e6982",
-                    "path": "<Keyboard>/x",
+                    "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -144,7 +144,7 @@
                 {
                     "name": "",
                     "id": "9031bbbf-a2b6-44b5-bc75-ab26c13f616d",
-                    "path": "<Keyboard>/z",
+                    "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -155,7 +155,7 @@
                 {
                     "name": "",
                     "id": "12a8d849-6759-4a45-99d5-862dce985e35",
-                    "path": "<Keyboard>/c",
+                    "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -165,8 +165,8 @@
                 },
                 {
                     "name": "",
-                    "id": "ca67aa22-ee8b-4571-8690-5adfb768f2c0",
-                    "path": "<Keyboard>/r",
+                    "id": "84e783c0-ea68-4917-a420-85bcad55b832",
+                    "path": "<Keyboard>/i",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -176,8 +176,8 @@
                 },
                 {
                     "name": "",
-                    "id": "c43a86e0-19d0-40bd-818d-ae963cbeb107",
-                    "path": "<Keyboard>/f",
+                    "id": "25b3aa7f-4c2d-4272-b188-d329a11b5bc8",
+                    "path": "<Keyboard>/k",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -187,8 +187,8 @@
                 },
                 {
                     "name": "",
-                    "id": "f1cb1068-9fa2-4cfe-9fbe-7a33538712e3",
-                    "path": "<Keyboard>/g",
+                    "id": "31455b4a-b3c1-4dbd-987d-7980ea9074e5",
+                    "path": "<Keyboard>/l",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -198,8 +198,8 @@
                 },
                 {
                     "name": "",
-                    "id": "749b4031-f97e-4316-9e54-c36fe0493046",
-                    "path": "<Keyboard>/h",
+                    "id": "bfada627-fa89-4fb9-aa26-02b8740523cf",
+                    "path": "<Keyboard>/semicolon",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

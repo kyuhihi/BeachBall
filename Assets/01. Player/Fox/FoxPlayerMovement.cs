@@ -38,7 +38,7 @@ public class FoxPlayerMovement : BasePlayerMovement
 
     public override void OnAttackSkill(InputValue value)
     {
-        if (!m_isMoveByInput)
+        if (!m_isMoveByInput || m_eLocomotionState == IdleWalkRunEnum.Swim)
         {
             return;
         }
@@ -67,7 +67,7 @@ public class FoxPlayerMovement : BasePlayerMovement
 
     public override void OnDefenceSkill(InputValue value)
     {
-        if (!m_isMoveByInput && value.isPressed)
+        if (!m_isMoveByInput && value.isPressed || m_eLocomotionState == IdleWalkRunEnum.Swim)
         {
             return;
         }
@@ -79,7 +79,7 @@ public class FoxPlayerMovement : BasePlayerMovement
 
     public override void OnUltimateSkill(InputValue value)
     {
-        if (!m_isMoveByInput)
+        if (!m_isMoveByInput || m_eLocomotionState == IdleWalkRunEnum.Swim)
         {
             return;
         }
@@ -109,9 +109,19 @@ public class FoxPlayerMovement : BasePlayerMovement
     }
     public override void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
+        if (!this || gameObject == null || !isActiveAndEnabled) return;
+
         if (playerType == m_PlayerType && courtPosition == m_CourtPosition)
             m_UltimateFlashGameObject.SetActive(false);
-        m_isMoveByInput = true;
+
+        if (HurtTurtleUltimateSkillStun)
+        {
+            HurtTurtleUltimateSkillStun = false;
+        }
+        else
+        {
+            m_isMoveByInput = true;
+        }
     }//이거 오버라이딩해야함.
 
 
