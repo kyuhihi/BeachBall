@@ -33,7 +33,6 @@ public class Banana : MonoBehaviour
     {
         if (_CantTouchTime > 0)
             return;
-        Debug.Log("other name:  " + other.gameObject.tag);
         if (!other.gameObject.CompareTag("Player") && !other.gameObject.CompareTag("SubPlayer"))
         {
             return;
