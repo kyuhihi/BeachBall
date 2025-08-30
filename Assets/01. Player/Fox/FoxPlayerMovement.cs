@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
 using UnityEngine.Playables;
-
+using UnityEngine.SceneManagement;
 
 public class FoxPlayerMovement : BasePlayerMovement
 {
@@ -19,7 +19,12 @@ public class FoxPlayerMovement : BasePlayerMovement
         m_PlayableDirector = GetComponent<PlayableDirector>();
         m_PlayerType = IPlayerInfo.PlayerType.Fox;
         m_PlayerDefaultColor = Color.orange;
-        PlayerUIManager.GetInstance().SetPlayerInfoInUI(this);
+
+    var active = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        if (active == "TitleScene")
+        {
+            PlayerUIManager.GetInstance().SetPlayerInfoInUI(this);
+        }
 
 
         m_FireBallContainer = GameObject.FindFirstObjectByType<FireBallContainer>();

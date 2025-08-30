@@ -4,6 +4,8 @@ using System.Collections;
 using UnityEngine.Playables;
 using NUnit.Framework;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
+
 public class TurtlePlayerMovement : BasePlayerMovement
 {
     [SerializeField] private ParticleSystem waterCannonParticlePrefab;
@@ -102,7 +104,12 @@ public class TurtlePlayerMovement : BasePlayerMovement
         m_PlayableDirector = GetComponent<PlayableDirector>();
         m_PlayerType = IPlayerInfo.PlayerType.Turtle;
         m_PlayerDefaultColor = Color.skyBlue;
-        PlayerUIManager.GetInstance().SetPlayerInfoInUI(this);
+
+    var active = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        if (active == "TitleScene")
+        {
+            PlayerUIManager.GetInstance().SetPlayerInfoInUI(this);
+        }
 
         if (m_CourtPosition == IPlayerInfo.CourtPosition.COURT_RIGHT)
         {
