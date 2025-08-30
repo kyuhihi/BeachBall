@@ -15,18 +15,36 @@ public class GameSettings : MonoBehaviour
     private readonly HashSet<InputActionAsset> registeredAssets = new HashSet<InputActionAsset>();
     private readonly Dictionary<InputActionAsset, string> assetToSlot = new Dictionary<InputActionAsset, string>();
 
-    private string ProjectRootPath => Directory.GetCurrentDirectory();
-    private string GetOverridesPathForSlot(string slot) => Path.Combine(ProjectRootPath, $"keybinds_{slot}.json");
+    // 슬롯별 마지막 오버라이드 JSON 캐시(씬 전환 후 즉시 적용용)
+    private readonly Dictionary<string, string> _slotLastOverrideJson = new Dictionary<string, string>();
+
+    private string GetOverridesPathForSlot(string slot)
+    {
+        var file = $"keybinds_{slot}.json";
+        var primary = Path.Combine(Directory.GetCurrentDirectory(), file);
+        if (File.Exists(primary)) return primary;
+
+        var legacy = Path.Combine(Directory.GetCurrentDirectory(), file);
+        return File.Exists(legacy) ? legacy : primary;
+    }
 
     private readonly Dictionary<string, string> _slotToCharacter = new Dictionary<string, string>();
     public bool forbidDuplicateChars = true;
 
-    private string _currentSelectSlot;  public string CurrentSelectSlot => _currentSelectSlot;
+    private string _currentSelectSlot; public string CurrentSelectSlot => _currentSelectSlot;
 
     public event Action SelectionChanged;
 
-    // 슬롯별 독립 리바인딩을 위해 플레이어마다 에셋 복제 여부
-    [SerializeField] private bool cloneActionsPerPlayer = true;
+
+    public enum Side { Left, Right }
+
+    [Serializable]
+    public struct SpawnSpec
+    {
+        public string slot;        // "P1","P2","CPU"
+        public string characterId; // 선택된 캐릭터 ID
+        public bool isHuman;       // 사람이 조작하는지
+    }
 
     void Awake()
     {
@@ -41,47 +59,14 @@ public class GameSettings : MonoBehaviour
     {
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
-    private static string SlotFromPlayerIndex(int playerIndex)
-    {
-        // 1→P1, 2→P2, 3→CPU
-        if (playerIndex == 1) return "P1";
-        if (playerIndex == 2) return "P2";
-        if (playerIndex == 3) return "CPU";
-        return $"P{playerIndex}";
-    }
+
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 씬에 존재하는 PlayerInput들을 자동 등록
-        var roots = scene.GetRootGameObjects();
-        foreach (var root in roots)
-        {
-            var inputs = root.GetComponentsInChildren<PlayerInput>(true);
-            foreach (var pi in inputs)
-            {
-                if (pi == null || pi.actions == null) continue;
-
-                var slot = SlotFromPlayerIndex(pi.playerIndex);
-
-                // 각 PlayerInput마다 에셋을 복제해 슬롯별로 분리
-                var actions = pi.actions;
-                if (cloneActionsPerPlayer)
-                {
-                    var cloned = ScriptableObject.Instantiate(actions);
-                    cloned.name = $"{actions.name}_{slot}_Runtime";
-                    pi.actions = cloned;     // PlayerInput에 복제본 할당
-                    actions = cloned;
-                }
-
-                // 슬롯에 등록 + 저장된 오버라이드 적용
-                RegisterActionsForSlot(slot, actions);
-            }
-        }
-
-        // 등록된 자산에 슬롯 파일 적용(안되어 있던 것 보강)
-        foreach (var a in registeredAssets)
-            LoadForAsset(a);
+        // 씬 로드 후, 이미 등록된 에셋에 대해 저장본을 재적용(보강)
+        LoadKeyBindings();
     }
 
+    // 슬롯에 에셋 등록 + 저장된 오버라이드 즉시 적용
     public void RegisterActionsForSlot(string slot, params InputActionAsset[] assets)
     {
         if (string.IsNullOrEmpty(slot) || assets == null) return;
@@ -89,10 +74,20 @@ public class GameSettings : MonoBehaviour
         foreach (var a in assets)
         {
             if (a == null) continue;
-            registeredAssets.Add(a);
-            assetToSlot[a] = slot; // 강제 지정(잘못된 매핑 덮어쓰기)
 
-            LoadForAsset(a); // 슬롯 파일 즉시 적용
+            registeredAssets.Add(a);
+            assetToSlot[a] = slot;
+
+            // 1) 메모리 캐시 우선 적용
+            if (_slotLastOverrideJson.TryGetValue(slot, out var cachedJson) && !string.IsNullOrEmpty(cachedJson))
+            {
+                a.LoadBindingOverridesFromJson(cachedJson);
+            }
+            else
+            {
+                // 2) 파일에서 로드
+                LoadForAsset(a);
+            }
         }
     }
 
@@ -114,6 +109,7 @@ public class GameSettings : MonoBehaviour
         {
             var json = File.ReadAllText(path);
             asset.LoadBindingOverridesFromJson(json);
+            _slotLastOverrideJson[slot] = json; // 캐시 갱신
         }
     }
 
@@ -129,7 +125,11 @@ public class GameSettings : MonoBehaviour
         }
 
         string json = source.SaveBindingOverridesAsJson();
-        File.WriteAllText(GetOverridesPathForSlot(slot), json);
+
+        var path = GetOverridesPathForSlot(slot);
+        Directory.CreateDirectory(Path.GetDirectoryName(path) ?? Application.persistentDataPath);
+        File.WriteAllText(path, json);
+        _slotLastOverrideJson[slot] = json;
 
         foreach (var a in registeredAssets)
         {
@@ -142,6 +142,7 @@ public class GameSettings : MonoBehaviour
 
     public void SaveKeyBindings()
     {
+        // 각 슬롯 대표 에셋 하나를 골라 저장
         var slotToAsset = new Dictionary<string, InputActionAsset>();
         foreach (var kv in assetToSlot)
             slotToAsset[kv.Value] = kv.Key;
@@ -149,7 +150,10 @@ public class GameSettings : MonoBehaviour
         foreach (var kv in slotToAsset)
         {
             var json = kv.Value.SaveBindingOverridesAsJson();
-            File.WriteAllText(GetOverridesPathForSlot(kv.Key), json);
+            var path = GetOverridesPathForSlot(kv.Key);
+            Directory.CreateDirectory(Path.GetDirectoryName(path) ?? Application.persistentDataPath);
+            File.WriteAllText(path, json);
+            _slotLastOverrideJson[kv.Key] = json;
         }
     }
 
@@ -166,7 +170,7 @@ public class GameSettings : MonoBehaviour
         gameMode = mode;
         forbidDuplicateChars = forbidDuplicate;
         if (clearExisting) ClearAllSelectedCharacters();
-        _currentSelectSlot = (mode == "1vs1") ? "P1" : "CPU";
+        _currentSelectSlot = (mode == "1vs1") ? "P1" : "P1"; // 1vsCPU도 P1에 기록(플레이어 한 명)
         SelectionChanged?.Invoke();
     }
 
@@ -226,5 +230,35 @@ public class GameSettings : MonoBehaviour
         foreach (var kv in _slotToCharacter)
             if (kv.Key != currentSlot && kv.Value == characterId) return true;
         return false;
+    }
+
+    // 현재 선택 상태로부터 매치 스펙 만들기
+    public List<SpawnSpec> BuildSpawnSpecs()
+    {
+        var list = new List<SpawnSpec>();
+
+        if (gameMode == "1vs1")
+        {
+            var p1 = GetCharacterForSlot("P1");
+            var p2 = GetCharacterForSlot("P2");
+
+            if (!string.IsNullOrEmpty(p1))
+                list.Add(new SpawnSpec { slot = "P1", characterId = p1, isHuman = true });
+            if (!string.IsNullOrEmpty(p2))
+                list.Add(new SpawnSpec { slot = "P2", characterId = p2, isHuman = true });
+        }
+        else // 1vsCPU
+        {
+            var playerChar = GetCharacterForSlot("P1");
+            var cpuChar = GetCharacterForSlot("CPU");
+            if (string.IsNullOrEmpty(cpuChar)) cpuChar = playerChar;
+
+            if (!string.IsNullOrEmpty(playerChar))
+                list.Add(new SpawnSpec { slot = "P1",  characterId = playerChar, isHuman = true });
+            if (!string.IsNullOrEmpty(cpuChar))
+                list.Add(new SpawnSpec { slot = "CPU", characterId = cpuChar, isHuman = false });
+        }
+
+        return list;
     }
 }

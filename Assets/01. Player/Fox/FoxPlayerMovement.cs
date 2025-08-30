@@ -99,6 +99,8 @@ public class FoxPlayerMovement : BasePlayerMovement
     }
     public override void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
+        if (!this || gameObject == null || !isActiveAndEnabled) return;
+
         if (playerType == m_PlayerType && courtPosition == m_CourtPosition)
             m_UltimateFlashGameObject.SetActive(false);
 

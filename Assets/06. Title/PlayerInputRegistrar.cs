@@ -6,6 +6,10 @@ using UnityEngine.Serialization;
 [RequireComponent(typeof(PlayerInput))]
 public class PlayerInputRegistrar : MonoBehaviour
 {
+
+    public string id;
+
+    public string slot;
     public enum SlotMode
     {
         AutoFromPlayerIndex, // PlayerInput.playerIndex → P1/P2/...

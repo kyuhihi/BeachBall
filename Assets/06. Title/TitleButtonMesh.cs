@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-
+using TMPro;
 public class TitleButtonMesh : MonoBehaviour
 {
     private Renderer rend;
@@ -39,6 +39,10 @@ public class TitleButtonMesh : MonoBehaviour
     [SerializeField] private GameObject meshLabel;
     [SerializeField] private GameObject characterSelectRoot; // 캐릭터 선택용 그룹(패널/오브젝트)
 
+    [SerializeField] private TMP_Text selectionPromptText;   // 추가: 선택 안내 문구(TMP 텍스트)
+
+    [SerializeField] private bool clearSelectionOnClose = true; // 추가: 닫을 때 선택 초기화할지
+
     private void Start()
     {
         rend = GetComponent<Renderer>();
@@ -50,6 +54,7 @@ public class TitleButtonMesh : MonoBehaviour
 
         // 시작 시 선택 상태 반영
         UpdateVisualBySelection();
+        UpdateSelectionPrompt();
     }
 
     private void OnEnable()
@@ -75,23 +80,65 @@ public class TitleButtonMesh : MonoBehaviour
         if (GameSettings.Instance != null)
             GameSettings.Instance.SelectionChanged -= OnSelectionChanged;
 
-    
+
+        CloseCharacterSelectIfOpen();
+
+    }
+
+
+    private void CloseCharacterSelectIfOpen()
+    {
         if (characterSelectRoot != null && characterSelectRoot.activeSelf)
         {
             characterSelectRoot.SetActive(false);
-        }
 
+            if (clearSelectionOnClose && GameSettings.Instance != null)
+            {
+                GameSettings.Instance.ClearAllSelectedCharacters(); // P1/P2/CPU 선택 초기화
+                if (selectionPromptText) selectionPromptText.text = ""; // 안내 문구 정리
+            }
+        }
     }
 
     private void OnSelectionChanged()
     {
         UpdateVisualBySelection();
+        UpdateSelectionPrompt();
     }
 
-    // 캐릭터 선택 상태 기반으로 색/콜라이더 갱신
+    // 추가: 모든 캐릭터 버튼 UI 강제 새로고침
+    private static void RefreshAllTitleButtonsUI()
+    {
+        GameObject[] all = GameObject.FindGameObjectsWithTag("ButtonMesh");
+        foreach (var b in all)
+        {
+            TitleButtonMesh buttonMesh = b.GetComponent<TitleButtonMesh>();
+            if (buttonMesh != null)
+                buttonMesh.ForceRefreshUI();
+        }
+    }
+
+    // 추가: 이 컴포넌트의 UI만 새로고침
+    public void ForceRefreshUI()
+    {
+        UpdateVisualBySelection();
+        UpdateSelectionPrompt();
+        if (selectionPromptText != null)
+        {
+            selectionPromptText.gameObject.SetActive(true);
+        }
+        if (meshLabel != null)
+        {
+            meshLabel.gameObject.SetActive(true);
+            TMP_Text buttonMesh = meshLabel.GetComponent<TMP_Text>();
+            buttonMesh.text = ""; // 초기화
+        }
+    }
+
+    // 캐릭터 선택 상태 기반으로 색/콜라이더 + 라벨(P1/P2) 갱신
     private void UpdateVisualBySelection()
     {
-        if (!isCharacterButton || rend == null) return;
+        if (!isCharacterButton) return;
 
         var gs = GameSettings.Instance;
         string id = string.IsNullOrEmpty(characterId) ? buttonHaviorName : characterId;
@@ -106,13 +153,50 @@ public class TitleButtonMesh : MonoBehaviour
                 gs.GetCharacterForSlot(gs.CurrentSelectSlot) != id
             );
 
+        // P1/P2 라벨 출력
+        var label = meshLabel ? meshLabel.GetComponentInChildren<TMP_Text>(true) : null;
+        bool isP1 = gs != null && gs.GetCharacterForSlot("P1") == id;
+        bool isP2 = gs != null && gs.GetCharacterForSlot("P2") == id;
+        bool isCPU = gs != null && gs.GetCharacterForSlot("CPU") == id;
+
+        if (label != null)
+        {
+            if (isP1) { label.text = "P1"; label.gameObject.SetActive(true); }
+            else if (isP2) { label.text = "P2"; label.gameObject.SetActive(true); }
+            else if (isCPU) { label.text = "P1"; label.gameObject.SetActive(true); }
+            else { label.gameObject.SetActive(false); }
+        }
+
         // 콜라이더 잠금(중복 금지 시 이미 선택된 캐릭터는 클릭 불가)
         var col = GetComponent<Collider>();
         if (col) col.enabled = !disable;
 
-        // 시각 표시
-        if (disable) rend.material.color = TakenColor;
-        else rend.material.color = originalColor;
+        // 시각 표시(선택 불가 회색 처리)
+        if (rend != null)
+        {
+            if (disable) rend.material.color = TakenColor;
+            else rend.material.color = originalColor;
+        }
+    }
+
+    // 선택 안내 문구: P1 선택 전/후에 맞춰 갱신
+    private void UpdateSelectionPrompt()
+    {
+        if (selectionPromptText == null) return;
+
+        var gs = GameSettings.Instance;
+        var slot = gs != null ? gs.CurrentSelectSlot : null;
+
+        if (string.IsNullOrEmpty(slot))
+        {
+            selectionPromptText.text = ""; // 완료되었거나 선택 단계 아님
+            return;
+        }
+
+        if (slot == "P1") selectionPromptText.text = "Player1을 선택해주세요";
+        else if (slot == "P2") selectionPromptText.text = "Player2를 선택해주세요";
+        else if (slot == "CPU") selectionPromptText.text = "Player1을 선택해주세요";
+        else selectionPromptText.text = "";
     }
 
     private void OnMouseAction(InputAction.CallbackContext ctx)
@@ -159,43 +243,61 @@ public class TitleButtonMesh : MonoBehaviour
                         if (!isBeforeClicked) DestroyChildButtons();
                         else SpawnChildButtons();
 
-                        // 특정 버튼 연출 + 동작
                         if (buttonName == "TurtleTitle" || buttonName == "FoxTitle" || buttonName == "QuitTitle")
                         {
                             if (isBeforeClicked) { isRotating = false; isFixed90 = true; }
                             else { isRotating = true; isFixed90 = false; }
 
-                            // 모드 버튼: 선택 패널 토글 + 선택 플로우 시작
                             if (buttonHaviorName == "1vs1")
                             {
                                 if (characterSelectRoot != null && characterSelectRoot.activeSelf)
                                 {
-                                    // 이미 열려있으면 닫기만
-                                    characterSelectRoot.SetActive(false);
+                                    // 이미 열려있으면 닫으면서 선택 초기화
+                                    CloseCharacterSelectIfOpen();
                                 }
                                 else
                                 {
-                                    // 닫혀 있으면 열고 선택 플로우 시작
+                                    // 이전 선택 초기화 + P1부터 선택 시작
                                     GameSettings.Instance.StartCharacterSelection("1vs1", forbidDuplicate: true, clearExisting: true);
-                                    if (characterSelectRoot != null) characterSelectRoot.SetActive(true);
+
+                                    if (characterSelectRoot != null)
+                                        characterSelectRoot.SetActive(true);
+
+                                    // 안내 문구/라벨 즉시 반영
+                                    UpdateSelectionPrompt();
+                                    if (selectionPromptText) selectionPromptText.gameObject.SetActive(true);
+                                    RefreshAllTitleButtonsUI();
                                 }
                             }
                             else if (buttonHaviorName == "1vsCPU")
                             {
                                 if (characterSelectRoot != null && characterSelectRoot.activeSelf)
                                 {
-                                    characterSelectRoot.SetActive(false);
+                                    CloseCharacterSelectIfOpen();
                                 }
                                 else
                                 {
+                                    // 이전 선택 초기화 + P1부터 선택 시작(1vsCPU 한 번만)
                                     GameSettings.Instance.StartCharacterSelection("1vsCPU", forbidDuplicate: true, clearExisting: true);
-                                    if (characterSelectRoot != null) characterSelectRoot.SetActive(true);
+
+                                    if (characterSelectRoot != null)
+                                        characterSelectRoot.SetActive(true);
+
+                                    // 안내 문구/라벨 즉시 반영
+                                    UpdateSelectionPrompt();
+                                    if (selectionPromptText) selectionPromptText.gameObject.SetActive(true);
+                                    RefreshAllTitleButtonsUI();
                                 }
                             }
                             else if (buttonHaviorName == "KeyMapping")
                             {
                                 if (keySettingPanel != null) keySettingPanel.SetActive(true);
                             }
+                            else if (buttonHaviorName == "Bye")
+                            {
+                                QuitGame();
+                            }
+
                         }
                     }
                 }
@@ -226,6 +328,7 @@ public class TitleButtonMesh : MonoBehaviour
         if (gs.TrySelectCurrent(id, out var completed, out var err))
         {
             UpdateVisualBySelection(); // 내 버튼 갱신
+            UpdateSelectionPrompt();   // 안내 문구 갱신
 
             // 완료 시 자동 씬 진입
             if (completed && autoLoadOnComplete)
@@ -332,7 +435,8 @@ public class TitleButtonMesh : MonoBehaviour
                 if (!isCharacterButton)
                     rend.material.color = isBeforeClicked ? ClickedColor : originalColor;
             }
-            HideLabel();
+            if (!isCharacterButton)
+                HideLabel();
             // 캐릭터 버튼은 선택 상태 색을 다시 반영
             UpdateVisualBySelection();
         }
@@ -344,6 +448,15 @@ public class TitleButtonMesh : MonoBehaviour
         isBeforeClicked = !isBeforeClicked;
         isRotating = !isRotating;
         isFixed90 = !isFixed90;
+    }
+    
+    private static void QuitGame()
+    {
+    #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false; // 에디터에선 재생 종료
+    #else
+        Application.Quit(); // 빌드본 종료
+    #endif
     }
     
  

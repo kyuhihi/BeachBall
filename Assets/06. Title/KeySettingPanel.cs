@@ -56,7 +56,28 @@ public class KeySettingPanel : MonoBehaviour
     public Transform keyParentP2;
     public Transform keyParentCPU;
 
+    [Header("Action Summary (밑에 표시)")]
+    public TMP_Text actionsSummaryLeft;   // P1 또는 CPU 요약 표시용
+    public TMP_Text actionsSummaryRight;  // P2 요약 표시용
+    [Tooltip("{key} : {action} 형식 지정")]
+    public string actionLineFormat = "{key} : {action}";
+    [Tooltip("줄 구분자")]
+    public string actionLineSeparator = "\n";
+    [Tooltip("한 줄에 표시할 항목 수")]
+    [Min(1)] public int actionsPerRow = 3;
+    [Tooltip("같은 줄에서 항목 사이 구분자")]
+    public string columnSeparator = "    ";
 
+    [SerializeField]
+    private string[] summaryOrder = new[]
+    {
+        "MoveLeft","MoveUp","MoveDown","MoveRight", // 이동
+        "Smash","Jump","Dash",                      // 이동계 스킬
+        "AttackSkill","DefenceSkill","UltimateSkill"// 공격/방어/궁극기
+    };
+
+    [SerializeField] private string summaryHeaderLeft = "P1";
+    [SerializeField] private string summaryHeaderRight = "P2";
 
     private bool IsBlockedKey(string layoutPath, out string msg)
     {
@@ -229,7 +250,7 @@ public class KeySettingPanel : MonoBehaviour
         msg = null;
         return false;
     }
-     private string GetActiveSlotForInfo(KeyButtonInfo info)
+    private string GetActiveSlotForInfo(KeyButtonInfo info)
     {
         if (currentInputActions == null) return null;
 
@@ -323,6 +344,7 @@ public class KeySettingPanel : MonoBehaviour
         MatchKeyInfosWithBindings();
         UpdateKeyColors();
         EnableAllActions();
+        UpdateActionLists();
     }
 
     void Start()
@@ -344,6 +366,7 @@ public class KeySettingPanel : MonoBehaviour
         MatchKeyInfosWithBindings();
         UpdateKeyColors();
         EnableAllActions();
+        UpdateActionLists();
     }
 
     // 닫기 버튼에서 호출
@@ -676,6 +699,7 @@ public class KeySettingPanel : MonoBehaviour
 
                 SetAllKeyButtonsInteractable(true);
                 UpdateKeyColors();
+                UpdateActionLists(); // 추가
             })
             .OnComplete(p =>
             {
@@ -689,13 +713,15 @@ public class KeySettingPanel : MonoBehaviour
                 SetAllKeyButtonsInteractable(true);
                 MatchKeyInfosWithBindings();
                 UpdateKeyColors();
+                UpdateActionLists(); // 추가
             });
         _currentRebindOp = op;
         op.Start();
+
     }
 
 
- 
+
     void OnKeyButtonClickedCPU(int idx)
     {
         var info = keyButtonInfosCPU[idx];
@@ -748,6 +774,7 @@ public class KeySettingPanel : MonoBehaviour
 
                 SetAllKeyButtonsInteractable(true);
                 UpdateKeyColors();
+                UpdateActionLists(); // 추가
             })
             .OnComplete(p =>
             {
@@ -761,6 +788,7 @@ public class KeySettingPanel : MonoBehaviour
                 SetAllKeyButtonsInteractable(true);
                 MatchKeyInfosWithBindings();
                 UpdateKeyColors();
+                UpdateActionLists(); // 추가
             });
         _currentRebindOp = op;
         op.Start();
@@ -785,5 +813,147 @@ public class KeySettingPanel : MonoBehaviour
         if (failurePopup) failurePopup.SetActive(false);
     }
 
+    private void UpdateActionLists()
+    {
+        if (actionsSummaryLeft == null && actionsSummaryRight == null) return;
+        if (currentInputActions == null) { ClearActionLists(); return; }
+
+        var rowSep = NormalizeSeparator(actionLineSeparator);
+        string headerLeft = summaryHeaderLeft;
+        string headerRight = summaryHeaderRight;
+
+        if (currentInputActions.Length == 2)
+        {
+            // 1vs1: 왼쪽=P1, 오른쪽=P2
+            var leftBody = BuildSummaryFor1v1Player(1);
+            var rightBody = BuildSummaryFor1v1Player(2);
+
+            if (actionsSummaryLeft)
+                actionsSummaryLeft.text = string.IsNullOrEmpty(leftBody) ? headerLeft : $"{headerLeft}{rowSep}{leftBody}";
+
+            if (actionsSummaryRight)
+            {
+                actionsSummaryRight.gameObject.SetActive(true);
+                actionsSummaryRight.text = string.IsNullOrEmpty(rightBody) ? headerRight : $"{headerRight}{rowSep}{rightBody}";
+            }
+        }
+        else
+        {
+            // 1vsCPU: 왼쪽만 표시(헤더는 P1로 유지)
+            var cpuBody = BuildSummaryForCPU();
+
+            if (actionsSummaryLeft)
+                actionsSummaryLeft.text = string.IsNullOrEmpty(cpuBody) ? headerLeft : $"{headerLeft}{rowSep}{cpuBody}";
+
+            if (actionsSummaryRight)
+            {
+                actionsSummaryRight.text = "";
+                actionsSummaryRight.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    private void ClearActionLists()
+    {
+        if (actionsSummaryLeft) actionsSummaryLeft.text = "";
+        if (actionsSummaryRight) actionsSummaryRight.text = "";
+    }
+
+    private string BuildSummaryFor1v1Player(int playerIndex) // 1 or 2
+    {
+        if (keyButtonInfos1vs1 == null || keyButtonInfos1vs1.Length == 0) return "";
+
+        // 액션명 -> "표시 문자열" 맵 (대소문자 무시)
+        var map = new System.Collections.Generic.Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var info in keyButtonInfos1vs1)
+        {
+            if (info == null || info.playerIndex != playerIndex) continue;
+
+            if (ResolveRuntimeActionForInfo(info, out var action, out var bindIndex) &&
+                action != null && bindIndex >= 0 && bindIndex < action.bindings.Count)
+            {
+                var binding = action.bindings[bindIndex];
+                var key = binding.ToDisplayString();
+                var actionLabel = string.IsNullOrEmpty(info.actionName) ? action.name : info.actionName;
+
+                var line = actionLineFormat
+                    .Replace("{key}", string.IsNullOrEmpty(key) ? "-" : key)
+                    .Replace("{action}", actionLabel);
+
+                map[actionLabel] = line; // 같은 액션 중복 시 마지막만 사용
+            }
+        }
+
+        // 고정 순서대로 수집
+        var lines = new System.Collections.Generic.List<string>();
+        foreach (var name in summaryOrder)
+            if (map.TryGetValue(name, out var line)) lines.Add(line);
+
+        return JoinInColumns(lines, actionsPerRow, columnSeparator, actionLineSeparator);
+    }
+
+    private string BuildSummaryForCPU()
+    {
+        if (keyButtonInfosCPU == null || keyButtonInfosCPU.Length == 0) return "";
+
+        var map = new System.Collections.Generic.Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var info in keyButtonInfosCPU)
+        {
+            if (info == null) continue;
+
+            if (ResolveRuntimeActionForInfo(info, out var action, out var bindIndex) &&
+                action != null && bindIndex >= 0 && bindIndex < action.bindings.Count)
+            {
+                var binding = action.bindings[bindIndex];
+                var key = binding.ToDisplayString();
+                var actionLabel = string.IsNullOrEmpty(info.actionName) ? action.name : info.actionName;
+
+                var line = actionLineFormat
+                    .Replace("{key}", string.IsNullOrEmpty(key) ? "-" : key)
+                    .Replace("{action}", actionLabel);
+
+                map[actionLabel] = line;
+            }
+        }
+
+        var lines = new System.Collections.Generic.List<string>();
+        foreach (var name in summaryOrder)
+            if (map.TryGetValue(name, out var line)) lines.Add(line);
+
+        return JoinInColumns(lines, actionsPerRow, columnSeparator, actionLineSeparator);
+    }
+    
+    private static string NormalizeSeparator(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return "";
+        return s.Replace("\\n", "\n").Replace("\\t", "\t");
+    }
+
+    private string JoinInColumns(System.Collections.Generic.List<string> items, int perRow, string colSep, string rowSep)
+    {
+        if (items == null || items.Count == 0) return "";
+        perRow = Mathf.Max(1, perRow);
+
+        // 추가: 구분자 정규화
+        colSep = NormalizeSeparator(colSep);
+        rowSep = NormalizeSeparator(rowSep);
+
+        if (perRow == 1) return string.Join(rowSep, items);
+
+        var sb = new System.Text.StringBuilder();
+        for (int i = 0; i < items.Count; i++)
+        {
+            sb.Append(items[i]);
+
+            bool endOfRow = ((i + 1) % perRow) == 0;
+            bool isLast = i == items.Count - 1;
+
+            if (!endOfRow && !isLast) sb.Append(colSep);
+            if (endOfRow && !isLast) sb.Append(rowSep);
+        }
+        return sb.ToString();
+    }
 
 }

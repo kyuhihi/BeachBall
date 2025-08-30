@@ -461,6 +461,8 @@ public class TurtlePlayerMovement : BasePlayerMovement
 
     public override void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
+        if (!this || gameObject == null || !isActiveAndEnabled) return;
+
         if (HurtTurtleUltimateSkillStun)
         {
             HurtTurtleUltimateSkillStun = false;
