@@ -11,7 +11,9 @@ public interface IPlayerInfo
         Fox = 1,
         Turtle = 2,
         Penguin = 3,
-        Monkey = 4
+        Monkey = 4,
+        End = 5
+
     }
 
     public enum CourtPosition

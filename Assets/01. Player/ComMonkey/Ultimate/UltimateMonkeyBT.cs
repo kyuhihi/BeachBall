@@ -3,11 +3,11 @@ using Kyu_BT;
 using Unity.Burst.Intrinsics;
 using UnityEngine.InputSystem;
 
-public class MonkeyBT : MonoBehaviour
+public class UltimateMonkeyBT : MonoBehaviour
 {
     BehaviorTreeRunner _runner;
     Blackboard _bb;
-    MonkeyPlayerMovement _movement;
+    UltimateMonkeyPlayerMovement _movement;
 
     [Header("Target")]
     Transform Ball;
@@ -29,7 +29,7 @@ public class MonkeyBT : MonoBehaviour
     const string KEY_DISTANCE = "Distance";         // 기존 추적 거리 (3D)
     void Start()
     {
-        _movement = GetComponent<MonkeyPlayerMovement>();
+        _movement = GetComponent<UltimateMonkeyPlayerMovement>();
 
         if (!Ball && !string.IsNullOrEmpty(targetTag))
         {
@@ -37,7 +37,6 @@ public class MonkeyBT : MonoBehaviour
             if (found && found.transform != transform)
                 Ball = found.transform;
         }
-        FindOtherPlayer();
         InitBT();
     }
 
@@ -58,14 +57,13 @@ public class MonkeyBT : MonoBehaviour
 
         if (OtherPlayer == null)
         {
-            Debug.LogAssertion("MonkeyBT: 다른 플레이어를 찾지 못했습니다!");
+            Debug.LogAssertion("UltimateMonkeyBT: 다른 플레이어를 찾지 못했습니다!");
         }
    }
     void InitBT()
     {
         _bb = new Blackboard();
         _bb.Set(KEY_TARGET, Ball);
-        _bb.Set(KEY_OTHER_PLAYER, OtherPlayer);
         _bb.Set(KEY_DISTANCE, Mathf.Infinity);
 
 
@@ -92,38 +90,7 @@ public class MonkeyBT : MonoBehaviour
 
         Node chaseJumpSequence = new Sequence(chaseNode, jumpNode);
 
-        // 2) 수비 노드 (간단: 멈춤 유지)
-        DefenseHoldNode defenseNode = new DefenseHoldNode(
-            v => moveBuffer = v,
-            bStretch => _movement.DefenceByArm(bStretch),
-            _movement.IsStretching,
-            KEY_TARGET,
-            _movement
-        );
-
-        // 3) 인터셉트 가능 여부 판단 노드
-        var canInterceptNode = new CanInterceptTargetNode(
-            transform,
-            KEY_TARGET,
-            _movement
-        );
-
-        var throwBananaNode = new ThrowBananaNode(
-            v => moveBuffer = v,
-            KEY_OTHER_PLAYER,
-            _movement,
-            this.transform
-        );  
-
-        //4)바나나던지기 노드
-
-        // 5) 최상위 선택:
-        //    Sequence(인터셉트 가능? -> 공격) 실패하면 Selector 가 defenseNode 실행
-        //    즉, 성공/진행 중이면 공격 유지, 실패면 수비 유지
-        Node root = new Selector(
-            new Sequence(canInterceptNode, chaseJumpSequence),
-            defenseNode, throwBananaNode
-        );
+        Node root = chaseJumpSequence;
 
         _runner = new BehaviorTreeRunner(root, _bb);
 
@@ -137,24 +104,18 @@ public class MonkeyBT : MonoBehaviour
 
     void Update()
     {
-        if (Keyboard.current.leftAltKey.wasPressedThisFrame)
-        {
-            PlayerUIManager.GetInstance().UpUltimateBar(_movement.m_CourtPosition);
-        }
-
+        
     }
 
     void LateUpdate()
     {
         if (_movement)
             _movement.OnMoveInput(moveBuffer);
-
-        
     }
 
     void JumpAction()
     {
-        _movement?.AIJump(allowDouble: true);
+        _movement?.AIJump(allowDouble: false);
     }
 }
 

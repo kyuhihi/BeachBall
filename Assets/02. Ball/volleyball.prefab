@@ -106,13 +106,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 20
   direction: {x: 0, y: -1, z: 0}
-  m_HitParticle: {fileID: 862205229867568131, guid: e8a1b872c8809184992bd876901cf895, type: 3}
+  m_HitParticle: {fileID: 2616284250023544846, guid: 803c3aa5562b5e541a5c5fdcd338b97e, type: 3}
   m_LandSpotParticle: {fileID: 6632219443899659631, guid: 30f52d6ad3369cf4f9eb822dc98d9910, type: 3}
-  yFlipThreshold: 5
+  yFlipThreshold: 3
   yLockDuration: 0.1
-  yFlipWindow: 0.4
+  yFlipWindow: 0.3
   forceDownRangeMinY: 7.8
   forceDownRangeMaxY: 8
+  scoreInterval: 0.1
 --- !u!135 &7547339612150077502
 SphereCollider:
   m_ObjectHideFlags: 0

@@ -5,10 +5,9 @@ using System.Collections.Generic; // 추가
 
 public class Ball : MonoBehaviour
 {
-    [SerializeField]
-    public float speed = 20f;
+    private float speed = 25f;
     private const float MaxSmashSpeed = 30f;
-    [SerializeField] private Vector3 direction = Vector3.down;
+     private Vector3 direction = Vector3.down;
     private Rigidbody m_Rigidbody;
     [SerializeField]private ParticleSystem m_HitParticle;
     [SerializeField]private ParticleSystem m_LandSpotParticle;
@@ -21,25 +20,21 @@ public class Ball : MonoBehaviour
 
     public ParticleSystem LandSpotParticle => m_LandSpotParticle;
 
-    // Y방향 플립 감지/고정 관련
-    [Header("Direction Y Lock")]
-    [SerializeField] private int yFlipThreshold = 5;
-    [SerializeField] private float yLockDuration = 0.1f;
+    private int yFlipThreshold = 3;
+    private float yLockDuration = 0.1f;
     private int lastYSign = -1;
     private bool isYLocked = false;
     private Coroutine yLockCoroutine;
+    private bool wasClamped = false;
 
-    [Tooltip("짧은 시간 윈도우(초) 안의 Y부호 변화 횟수로 판단")]
-    [SerializeField] private float yFlipWindow = 0.1f; // 추가: 윈도우 길이(초, unscaled)
+    private float yFlipWindow = 0.3f; // 추가: 윈도우 길이(초, unscaled)
     private readonly Queue<float> yFlipTimes = new Queue<float>(); // 추가: 부호변경 시각들
 
     // Y 포지션이 특정 구간이면 Y 진행방향을 강제로 -1로 설정
-    [Header("Y 포지션 구간 강제 하강")]
-    [SerializeField] private float forceDownRangeMinY = 7.8f;
-    [SerializeField] private float forceDownRangeMaxY = 8f;
+    private float forceDownRangeMinY = 7.8f;
+    private float forceDownRangeMaxY = 8f;
 
-    [Header("Score Cooldown")]
-    [SerializeField] private float scoreInterval = 0.1f;  // 점수 최소 간격(초)
+    private float scoreInterval = 0.1f;  // 점수 최소 간격(초)
     private float lastScoreTime = -999f;
 
     void Start()
@@ -88,7 +83,10 @@ public class Ball : MonoBehaviour
             m_Rigidbody.WakeUp();
         }
         Movement();
-        GameManager.GetInstance().ConfineObjectPosition(this.gameObject);
+        if (!wasClamped)
+            wasClamped = GameManager.GetInstance().ConfineObjectPosition(this.gameObject, YOffset: 1.0f);
+        else
+            wasClamped = false;
     }
 
     private void Movement()
@@ -107,24 +105,7 @@ public class Ball : MonoBehaviour
         }
 
         Vector3 PredictPos = transform.position + direction * _currentSpeed * Time.deltaTime;
-        Collider[] overlaps = Physics.OverlapSphere(PredictPos, m_SphereCollider.radius, RayLayerMask);
-
-        foreach (var col in overlaps)
-        {
-            if (col == m_SphereCollider) continue;
-
-            Vector3 pushDir;
-            float pushDistance;
-            bool overlapped = Physics.ComputePenetration(
-                m_SphereCollider, PredictPos, transform.rotation,
-                col, col.transform.position, col.transform.rotation,
-                out pushDir, out pushDistance);
-
-            if (overlapped && pushDistance > 0f)
-            {
-                PredictPos += pushDir * pushDistance;
-            }
-        }
+        
         _currentSpeed = Mathf.Lerp(_currentSpeed, speed, Time.deltaTime);
         if (_currentSpeed <= speed)
         {
@@ -228,6 +209,27 @@ public class Ball : MonoBehaviour
             m_HitParticle.Play();
         }
         SetLandSpotParticlePosition();
+        direction = AdjustDirectionY(direction);
+    }
+
+    private Vector3 AdjustDirectionY(Vector3 dir)
+    {
+        float sign = Mathf.Sign(dir.y); // 원래 부호 기억
+        float signZ = Mathf.Sign(dir.z); // 원래 부호 기억
+
+        float absY = Mathf.Abs(dir.y);
+        float absZ = Mathf.Abs(dir.z);
+
+        if (absY < 0.5f)
+        {
+            // 0.5 ~ 1 범위 안에서 기존 y 크기를 보정
+            float clampedY = Mathf.Clamp(absY, 0.5f, 1f);
+            float clampedZ = Mathf.Clamp(absZ, 0.5f, 1f);
+            dir.y = clampedY * sign;
+            dir.z = clampedZ * signZ;
+        }
+
+        return dir.normalized; // 방향 벡터는 항상 정규화
     }
 
     private System.Collections.IEnumerator LockYNegativeFor(float duration)

@@ -25,14 +25,16 @@ public class GameManager : MonoBehaviour
 
     private UltimateSetting m_FoxUltimateSetting;   //Include Environment, CutsceneTransform
     private UltimateSetting m_TurtleUltimateSetting;    //Include Environment, CutsceneTransform
+    private UltimateSetting m_MonkeyUltimateSetting;    //Include Environment, CutsceneTransform
     private EnvironmentConfig m_OriginEnvironmentConfig;
     private GameObject m_CutsceneCameraRoot = null;
     private Light m_DirectionalLight;
     private Coroutine _lightColorCo;
 
     private IPlayerInfo.CourtPosition m_eLastUltimateCourtPosition = IPlayerInfo.CourtPosition.COURT_END;
+    public bool wasPlayedUltimateSkill(){if(m_eLastUltimatePlayerType == IPlayerInfo.PlayerType.End) return true; return false;}
     public IPlayerInfo.CourtPosition GetLastUltimateCourtPosition() => m_eLastUltimateCourtPosition;
-    private IPlayerInfo.PlayerType m_eLastUltimatePlayerType = IPlayerInfo.PlayerType.Fox;
+    private IPlayerInfo.PlayerType m_eLastUltimatePlayerType = IPlayerInfo.PlayerType.End;
     //==============================CutSceneSetting==============================
     List<GameObject> _players = new List<GameObject>();
     public enum GameState
@@ -57,7 +59,7 @@ public class GameManager : MonoBehaviour
         ConfinePlayersPosition();
 
     }
-    public void ConfineObjectPosition(GameObject obj)
+    public bool ConfineObjectPosition(GameObject obj, float YOffset = 0.3f)
     {
         float zFixedPos;
         bool zClamped;
@@ -66,10 +68,14 @@ public class GameManager : MonoBehaviour
         obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, zFixedPos);
         // Y Position 고정 체크
         float yFixedPos;
-        bool yClamped = IsClamped(obj.transform.position.y, float.MinValue, MapOutYDistance + 0.3f, out yFixedPos);
+        bool yClamped = IsClamped(obj.transform.position.y, -0.1f, MapOutYDistance + YOffset, out yFixedPos);
         // 적용
         obj.transform.position = new Vector3(obj.transform.position.x, yFixedPos, obj.transform.position.z);
-
+        if (zClamped || yClamped)
+        {
+            return true;
+        }
+        return false;
     }
     private void ConfinePlayersPosition()
     {
@@ -120,6 +126,8 @@ public class GameManager : MonoBehaviour
             m_FoxUltimateSetting = UltimateConfigLoader.LoadFoxUltimate();
         if (m_TurtleUltimateSetting == null)
             m_TurtleUltimateSetting = UltimateConfigLoader.LoadTurtleUltimate();
+        if (m_MonkeyUltimateSetting == null)
+            m_MonkeyUltimateSetting = UltimateConfigLoader.LoadMonkeyUltimate();
         if (m_OriginEnvironmentConfig == null)
             m_OriginEnvironmentConfig = UltimateConfigLoader.LoadOriginEnv();
     }
@@ -200,8 +208,10 @@ public class GameManager : MonoBehaviour
                 rotation = Quaternion.identity;
                 return true;
             case IPlayerInfo.PlayerType.Monkey:
-                position = Vector3.zero;
-                rotation = Quaternion.identity;
+                Debug.Log("GetUltimatePos Monkey");
+                position = m_MonkeyUltimateSetting.GetUltimatePosition(eCourtPosition);
+                rotation = m_MonkeyUltimateSetting.GetUltimateRotation(eCourtPosition);
+                Debug.Log("GetUltimatePos Monkey Pos : " + position);
                 return true;
         }
         position = Vector3.zero;
@@ -247,9 +257,9 @@ public static class Signals
         public static event Action<IPlayerInfo.PlayerType, IPlayerInfo.CourtPosition> End;
 
         // 구독/해제
-        public static void AddStart(Action<IPlayerInfo.PlayerType, IPlayerInfo.CourtPosition> cb)  { Start += cb; }
-        public static void RemoveStart(Action<IPlayerInfo.PlayerType, IPlayerInfo.CourtPosition> cb){ Start -= cb; }
-        public static void AddEnd(Action<IPlayerInfo.PlayerType, IPlayerInfo.CourtPosition> cb)    { End += cb; }
+        public static void AddStart(Action<IPlayerInfo.PlayerType, IPlayerInfo.CourtPosition> cb) { Start += cb; }
+        public static void RemoveStart(Action<IPlayerInfo.PlayerType, IPlayerInfo.CourtPosition> cb) { Start -= cb; }
+        public static void AddEnd(Action<IPlayerInfo.PlayerType, IPlayerInfo.CourtPosition> cb) { End += cb; }
         public static void RemoveEnd(Action<IPlayerInfo.PlayerType, IPlayerInfo.CourtPosition> cb) { End -= cb; }
 
         // 브로드캐스트(권장 사용)
@@ -264,5 +274,29 @@ public static class Signals
             catch (Exception e) { Debug.LogException(e); }
         }
     }
+    public static class RoundResetAble
+    {
+        public static event Action Start;
+        public static event Action End;
+
+        // 구독/해제
+        public static void AddStart(Action cb) { Start += cb; }
+        public static void RemoveStart(Action cb) { Start -= cb; }
+        public static void AddEnd(Action cb) { End += cb; }
+        public static void RemoveEnd(Action cb) { End -= cb; }
+
+        // 브로드캐스트(권장 사용)
+        public static void RaiseStart()
+        {
+            try { Start?.Invoke(); }
+            catch (Exception e) { Debug.LogException(e); }
+        }
+        public static void RaiseEnd()
+        {
+            try { End?.Invoke(); }
+            catch (Exception e) { Debug.LogException(e); }
+        }
+    }
+
 }
 

@@ -193,7 +193,11 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
             case IUIInfo.UIType.DashBar:
                 return PlayerDashBars[iLRIndex].CanUseAbility;
             case IUIInfo.UIType.UltimateBar:
-                return PlayerUltimateBars[iLRIndex].CanUseAbility;
+                {
+                    
+
+                    return PlayerUltimateBars[iLRIndex].CanUseAbility;
+                }
             case IUIInfo.UIType.ScoreCount:
             default:
                 return false;
@@ -202,6 +206,7 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
 
     public bool UseAbility(IUIInfo.UIType uIType, IPlayerInfo.CourtPosition courtPosition)
     {
+        if (uIType == IUIInfo.UIType.UltimateBar && GameManager.GetInstance().wasPlayedUltimateSkill()) return false;
         if (!CanUseSkill(uIType, courtPosition)) return false;
 
         int iLRIndex = 0;

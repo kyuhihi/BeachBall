@@ -826,6 +826,28 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
             m_Rigidbody.MoveRotation(m_Rotation);
         }
     }
+    protected void OnPlayerMoveVelocity()
+    {
+        if (!m_isMoveByInput)
+        {
+            // 입력이 비활성화된 상태에서는 이동하지 않음
+            return;
+        }
+        // float currentSpeed = m_IsRunning ? runSpeed : walkSpeed;
+        float currentSpeed = walkSpeed;
+
+        // Time.deltaTime을 Time.fixedDeltaTime으로 변경 (FixedUpdate에서 호출되므로)
+        Vector3 targetLinearvelocity = m_Rigidbody.linearVelocity;
+        targetLinearvelocity.x = m_Movement.x * currentSpeed;
+        targetLinearvelocity.z = m_Movement.z * currentSpeed;
+        m_Rigidbody.linearVelocity = targetLinearvelocity;
+
+        // 첫 입력이 있었고 뒤로가기 모드가 아닐 때만 회전 적용
+        if (hasReceivedInput)
+        {
+            m_Rigidbody.MoveRotation(m_Rotation);
+        }
+    }
 
     protected void HandleJump()
     {
@@ -846,10 +868,10 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         // 디버그: 닿은 오브젝트 이름 출력
         if (hits.Length > 0)
         {
-            foreach (var hit in hits)
-            {
-                // Debug.Log($"[GroundCheck] 닿은 오브젝트: {hit.gameObject.name} (Layer: {LayerMask.LayerToName(hit.gameObject.layer)})");
-            }
+                foreach (var hit in hits)
+                {
+                }
+            
         }
             // 착지했을 때 점프 상태 해제
             if (!wasGrounded && isGrounded && m_IsJumping)

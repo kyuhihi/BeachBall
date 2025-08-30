@@ -40,16 +40,10 @@ public class MonkeyPlayerMovement : BasePlayerMovement
     const string BananaPrefabPath = "Banana";
     
     private GameObject BananaPrefab;
-    [SerializeField] private MonkeyType m_eMonkeyType = MonkeyType.MONKEY_PLAYER;
 
-    public enum MonkeyType { MONKEY_PLAYER, MONKEY_ULTIMATE }
     protected override void Start()
     {
         base.Start();
-        if(m_eMonkeyType == MonkeyType.MONKEY_ULTIMATE)
-        {
-            return;
-        }
         m_PlayableDirector = GetComponent<PlayableDirector>();
         m_PlayerType = IPlayerInfo.PlayerType.Monkey;
         m_PlayerDefaultColor = Color.black;
@@ -287,6 +281,20 @@ public class MonkeyPlayerMovement : BasePlayerMovement
     public void ThrowBanana(Transform OtherPlayer)
     {
         if (OtherPlayer == null) return;
+        if (PlayerUIManager.GetInstance().UseAbility(IUIInfo.UIType.UltimateBar, m_CourtPosition))
+        {
+            Vector3 OutPos = Vector3.zero;
+            Quaternion OutRot = Quaternion.identity;
+            bool bRetVal = GameManager.GetInstance().GetUltimatePos(m_PlayerType, m_CourtPosition, out OutPos, out OutRot);
+            if (bRetVal)
+            {
+                transform.position = OutPos;
+                transform.rotation = OutRot;
+                m_PlayableDirector.Play();
+            }
+            return;
+        }
+
         if (GetAvailableBanana() == null) return;
 
         Quaternion lookRot = Quaternion.LookRotation(OtherPlayer.position - transform.position, Vector3.up);
