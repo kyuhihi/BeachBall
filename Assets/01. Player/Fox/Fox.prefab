@@ -26,7 +26,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 12775724563873885}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.00000014106499, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0.000000141065, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -10623,6 +10623,7 @@ GameObject:
   - component: {fileID: 3800572825995215374}
   - component: {fileID: 2368182073865933111}
   - component: {fileID: 8818059597635963912}
+  - component: {fileID: 8769862920102202462}
   m_Layer: 9
   m_Name: Fox
   m_TagString: Player
@@ -10750,7 +10751,7 @@ MonoBehaviour:
     m_ActionName: UI/New action
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: Player
+  m_DefaultActionMap: Player2
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!54 &1108059251560433343
@@ -10935,22 +10936,19 @@ MonoBehaviour:
   dashSpeed: 100
   ballTag: Ball
   jumpForce: 10
-  groundCheckDistance: 0.1
   groundLayer:
     serializedVersion: 2
     m_Bits: 1
   groundCheck: {fileID: 0}
   doubleJumpEffectPrefab: {fileID: 480769592149668674, guid: ebc5961199aa52449828071fdd0d2125, type: 3}
   footstepCloudPrefab: {fileID: 480769592149668674, guid: 1ab264d29a87c404e889abc9c5e65071, type: 3}
+  swimFootstepCloudPrefab: {fileID: 0}
+  bubbleMousePrefab: {fileID: 0}
+  bubbleMouseTransform: {fileID: 0}
   leftFootTransform: {fileID: 1213745910581329705}
   rightFootTransform: {fileID: 250431064749323011}
   m_Animator: {fileID: 45186065190516198}
   m_isMoveByInput: 1
-  m_PlayableAssetList:
-  - playableAsset: {fileID: 11400000, guid: fae82af0655ef444abc2bdca88b33883, type: 2}
-    courtPosition: 0
-  - playableAsset: {fileID: 11400000, guid: 1be32b252409e1a4cad43a1b75787aec, type: 2}
-    courtPosition: 1
   m_FireBallSpawnPoint: {fileID: 3247886071233625896}
 --- !u!320 &8818059597635963912
 PlayableDirector:
@@ -10983,6 +10981,23 @@ PlayableDirector:
     value: {fileID: 6571116185384148725}
   m_ExposedReferences:
     m_References: []
+--- !u!114 &8769862920102202462
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1553185321669430218}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38649a15dd9b0b742a0026ceba9dfd8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: Fox
+  slot: P2
+  slotMode: 2
+  customSlot: P2
+  slotOverride_legacy: 
 --- !u!1 &1611308871698182873
 GameObject:
   m_ObjectHideFlags: 0
@@ -11283,6 +11298,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   unSukPrefab: {fileID: 7562888294545755022, guid: ec03d88055aa142459241e8df55726ec, type: 3}
+  rangeX: 25.4
+  rangeY: 3
+  rangeZ: 16.28
+  baseSpawnOriginPoint: {x: 11.5, y: 25.58, z: -20.13}
+  baseHitPoint: {x: -0.37, y: 0, z: 4.02}
+  spawnRadius: 8
+  side: 1
+  drawGizmos: 1
+  circleSegments: 64
+  rightColor: {r: 0.2, g: 0.9, b: 1, a: 1}
+  leftColor: {r: 1, g: 0.4, b: 0.8, a: 1}
 --- !u!1 &2328400747153897621
 GameObject:
   m_ObjectHideFlags: 0
@@ -11693,8 +11719,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3064199514937378049}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.14522132, y: -0.42155826, z: -0.057686083, w: -0.89323664}
-  m_LocalPosition: {x: 0.0011250153, y: 0.496561, z: 0.005846837}
+  m_LocalRotation: {x: 0.14522134, y: -0.4215583, z: -0.057686087, w: -0.89323664}
+  m_LocalPosition: {x: 0.0011250234, y: 0.49656105, z: 0.0058473083}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
