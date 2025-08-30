@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
     private Coroutine _lightColorCo;
 
     private IPlayerInfo.CourtPosition m_eLastUltimateCourtPosition = IPlayerInfo.CourtPosition.COURT_END;
-    public bool wasPlayedUltimateSkill(){if(m_eLastUltimatePlayerType == IPlayerInfo.PlayerType.End) return true; return false;}
+    public bool wasPlayedUltimateSkill(){if(m_eLastUltimatePlayerType != IPlayerInfo.PlayerType.End) return true; return false;}
     public IPlayerInfo.CourtPosition GetLastUltimateCourtPosition() => m_eLastUltimateCourtPosition;
     private IPlayerInfo.PlayerType m_eLastUltimatePlayerType = IPlayerInfo.PlayerType.End;
     //==============================CutSceneSetting==============================
@@ -47,6 +47,8 @@ public class GameManager : MonoBehaviour
 
     public void Start()
     {
+
+
         SetInstance(this);
         InitializeCamera();
         m_DirectionalLight = FindFirstObjectByType<Light>();
@@ -71,7 +73,7 @@ public class GameManager : MonoBehaviour
         bool yClamped = IsClamped(obj.transform.position.y, -0.1f, MapOutYDistance + YOffset, out yFixedPos);
         // 적용
         obj.transform.position = new Vector3(obj.transform.position.x, yFixedPos, obj.transform.position.z);
-        if (zClamped || yClamped)
+        if (yClamped)
         {
             return true;
         }
@@ -208,10 +210,8 @@ public class GameManager : MonoBehaviour
                 rotation = Quaternion.identity;
                 return true;
             case IPlayerInfo.PlayerType.Monkey:
-                Debug.Log("GetUltimatePos Monkey");
                 position = m_MonkeyUltimateSetting.GetUltimatePosition(eCourtPosition);
                 rotation = m_MonkeyUltimateSetting.GetUltimateRotation(eCourtPosition);
-                Debug.Log("GetUltimatePos Monkey Pos : " + position);
                 return true;
         }
         position = Vector3.zero;

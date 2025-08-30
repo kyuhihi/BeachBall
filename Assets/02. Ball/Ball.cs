@@ -1,13 +1,13 @@
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
-using System.Collections.Generic; // Ãß°¡
+using System.Collections.Generic; // ï¿½ß°ï¿½
 
 public class Ball : MonoBehaviour
 {
     private float speed = 25f;
     private const float MaxSmashSpeed = 30f;
-     private Vector3 direction = Vector3.down;
+    [SerializeField] private Vector3 direction = Vector3.down;
     private Rigidbody m_Rigidbody;
     [SerializeField]private ParticleSystem m_HitParticle;
     [SerializeField]private ParticleSystem m_LandSpotParticle;
@@ -20,28 +20,28 @@ public class Ball : MonoBehaviour
 
     public ParticleSystem LandSpotParticle => m_LandSpotParticle;
 
-    private int yFlipThreshold = 3;
-    private float yLockDuration = 0.1f;
+    private int yFlipThreshold = 8;
+    private float yLockDuration = 0.5f;
     private int lastYSign = -1;
     private bool isYLocked = false;
     private Coroutine yLockCoroutine;
-    private bool wasClamped = false;
+    private int wasClamped = 0;
 
-    private float yFlipWindow = 0.3f; // Ãß°¡: À©µµ¿ì ±æÀÌ(ÃÊ, unscaled)
-    private readonly Queue<float> yFlipTimes = new Queue<float>(); // Ãß°¡: ºÎÈ£º¯°æ ½Ã°¢µé
+    private float yFlipWindow = 0.3f; // ï¿½ß°ï¿½: ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½, unscaled)
+    private readonly Queue<float> yFlipTimes = new Queue<float>(); // ï¿½ß°ï¿½: ï¿½ï¿½È£ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½
 
-    // Y Æ÷Áö¼ÇÀÌ Æ¯Á¤ ±¸°£ÀÌ¸é Y ÁøÇà¹æÇâÀ» °­Á¦·Î -1·Î ¼³Á¤
+    // Y ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Æ¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ì¸ï¿½ Y ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ -1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     private float forceDownRangeMinY = 7.8f;
     private float forceDownRangeMaxY = 8f;
 
-    private float scoreInterval = 0.1f;  // Á¡¼ö ÃÖ¼Ò °£°Ý(ÃÊ)
+    private float scoreInterval = 0.1f;  // ï¿½ï¿½ï¿½ï¿½ ï¿½Ö¼ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½)
     private float lastScoreTime = -999f;
 
     void Start()
     {
         m_Rigidbody = GetComponent<Rigidbody>();
         m_SphereCollider = GetComponent<SphereCollider>();
-        m_Rigidbody.useGravity = false; // ï¿½ß·ï¿½ ï¿½ï¿½ï¿? ï¿½ï¿½ï¿½ï¿½
+        m_Rigidbody.useGravity = false; // ï¿½ß·ï¿½ ï¿½ï¿½ï¿½? ï¿½ï¿½ï¿½ï¿½
         if (m_HitParticle != null)
         {
             m_HitParticle = Instantiate(m_HitParticle, transform.position, Quaternion.identity);
@@ -55,7 +55,7 @@ public class Ball : MonoBehaviour
         }
         RayLayerMask =LayerMask.GetMask("Wall And Ground");
 
-        // ÃÊ±â yºÎÈ£ ±â·Ï
+        // ï¿½Ê±ï¿½ yï¿½ï¿½È£ ï¿½ï¿½ï¿½
         lastYSign = direction.y >= 0f ? 1 : -1;
     }
     private void SetLandSpotParticlePosition()
@@ -83,21 +83,32 @@ public class Ball : MonoBehaviour
             m_Rigidbody.WakeUp();
         }
         Movement();
-        if (!wasClamped)
-            wasClamped = GameManager.GetInstance().ConfineObjectPosition(this.gameObject, YOffset: 1.0f);
-        else
-            wasClamped = false;
+
+        bool bClamped = GameManager.GetInstance().ConfineObjectPosition(this.gameObject, YOffset: 1.0f);
+        if (bClamped)
+        {
+            if (gameObject.transform.position.y <= -0.1f)
+            {
+                direction.y = Mathf.Abs(direction.y);
+                transform.position = new Vector3(transform.position.x, 1.0f, transform.position.z);
+                m_Rigidbody.AddForce(Vector3.up * 5f, ForceMode.Impulse);
+            }
+
+        }
+
+
     }
+    
 
     private void Movement()
     {
-        // Àá½Ã y À½¼ö °íÁ¤ À¯Áö
+        // ï¿½ï¿½ï¿½ y ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (isYLocked && direction.y > 0f)
         {
             direction = new Vector3(direction.x, -Mathf.Abs(direction.y), direction.z).normalized;
         }
 
-        // Y°¡ 7~8 ±¸°£¿¡ ÀÖÀ¸¸é Y ÁøÇà¹æÇâÀ» -1·Î °­Á¦
+        // Yï¿½ï¿½ 7~8 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Y ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ -1ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         float yPos = transform.position.y;
         if (yPos >= forceDownRangeMinY && yPos <= forceDownRangeMaxY)
         {
@@ -105,7 +116,7 @@ public class Ball : MonoBehaviour
         }
 
         Vector3 PredictPos = transform.position + direction * _currentSpeed * Time.deltaTime;
-        
+
         _currentSpeed = Mathf.Lerp(_currentSpeed, speed, Time.deltaTime);
         if (_currentSpeed <= speed)
         {
@@ -121,7 +132,7 @@ public class Ball : MonoBehaviour
 
     public void OnCollisionEnter(Collision other)
     {
-        // Ãæµ¹ µ¥ÀÌÅÍ¿¡¼­ ÇÊ¿äÇÑ °ª ÃßÃâ ÈÄ °ø¿ë Ã³¸® È£Ãâ
+        // ï¿½æµ¹ ï¿½ï¿½ï¿½ï¿½ï¿½Í¿ï¿½ï¿½ï¿½ ï¿½Ê¿ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ Ã³ï¿½ï¿½ È£ï¿½ï¿½
         Vector3 contactPoint = other.contacts[0].point;
         Vector3 hitNormal;
         var wall = other.gameObject.GetComponent<Wall>();
@@ -131,27 +142,27 @@ public class Ball : MonoBehaviour
         ProcessHit(other.gameObject, other.collider, contactPoint, hitNormal);
     }
 
-    // ¿ÜºÎ¿¡¼­µµ µ¿ÀÏ ·ÎÁ÷À» È£ÃâÇÒ ¼ö ÀÖ´Â ÁøÀÔÁ¡
+    // ï¿½ÜºÎ¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ È£ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ö´ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public void ExternalHit(Vector3 contactPoint, Vector3 hitNormal, Collider otherCollider = null, GameObject otherGO = null)
     {
         ProcessHit(otherGO, otherCollider, contactPoint, hitNormal);
     }
 
-    // Ãæµ¹ Ã³¸® °ø¿ë ¸Þ¼­µå(¿ø·¡ OnCollisionEnter ³»¿ë)
+    // ï¿½æµ¹ Ã³ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Þ¼ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ OnCollisionEnter ï¿½ï¿½ï¿½ï¿½)
     private void ProcessHit(GameObject otherGO, Collider otherCol, Vector3 contactPoint, Vector3 hitNormal)
     {
-        // 1) ÇÃ·¹ÀÌ¾î¿Í Ãæµ¹ È¿°ú
+        // 1) ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½ ï¿½æµ¹ È¿ï¿½ï¿½
         if (otherGO != null && otherGO.CompareTag(PlayerTag))
         {
             CameraShakingManager.Instance.DoShake(0.1f, 1f);
             HitStopManager.Instance.DoHitStop(0.1f, 0.1f);
             _currentSpeed = MaxSmashSpeed;
             IPlayerInfo.CourtPosition courtPos = otherGO.GetComponent<IPlayerInfo>().m_CourtPosition;
-            PlayerUIManager.GetInstance().UpUltimateBar(courtPos); // ±Ã±Ø±â °ÔÀÌÁö 10 Áõ°¡
+            PlayerUIManager.GetInstance().UpUltimateBar(courtPos); // ï¿½Ã±Ø±ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 10 ï¿½ï¿½ï¿½ï¿½
         }
         else
         {
-            // ¶¥/ÁöÇü Á¢ÃË ¡æ Á¡¼ö (Äð´Ù¿î Àû¿ë)
+            // ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½ï¿½)
             if (otherGO != null && (otherGO.name == ScoreTags[0] || otherGO.name == ScoreTags[1]))
             {
                 if (Time.time - lastScoreTime >= scoreInterval)
@@ -165,11 +176,11 @@ public class Ball : MonoBehaviour
             }
         }
 
-        // 2) È÷Æ® ³ë¸Ö º¸Á¤(¾øÀ» °æ¿ì ÃßÁ¤)
+        // 2) ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
         if (hitNormal == Vector3.zero)
             hitNormal = (transform.position - contactPoint).normalized;
 
-        // 3) ¹Ý»ç ¹æÇâ °è»ê ¹× Y-ÇÃ¸³ Á¦¾î
+        // 3) ï¿½Ý»ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ Y-ï¿½Ã¸ï¿½ ï¿½ï¿½ï¿½ï¿½
         Vector3 newDir = Vector3.Reflect(direction, hitNormal).normalized;
 
         int newSign = newDir.y >= 0f ? 1 : -1;
@@ -188,7 +199,7 @@ public class Ball : MonoBehaviour
         }
         direction = newDir;
 
-        // 4) °üÅë º¸Á¤(»ó´ë ÄÝ¶óÀÌ´õ°¡ ÀÖÀ¸¸é)
+        // 4) ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ ï¿½Ý¶ï¿½ï¿½Ì´ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
         if (otherCol != null)
         {
             Vector3 pushDir;
@@ -201,7 +212,7 @@ public class Ball : MonoBehaviour
                 transform.position += pushDir * pushDistance;
         }
 
-        // 5) ÆÄÆ¼Å¬/·£µå ½ºÆÌ
+        // 5) ï¿½ï¿½Æ¼Å¬/ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (m_HitParticle != null)
         {
             m_HitParticle.Stop();
@@ -214,22 +225,25 @@ public class Ball : MonoBehaviour
 
     private Vector3 AdjustDirectionY(Vector3 dir)
     {
-        float sign = Mathf.Sign(dir.y); // ¿ø·¡ ºÎÈ£ ±â¾ï
-        float signZ = Mathf.Sign(dir.z); // ¿ø·¡ ºÎÈ£ ±â¾ï
+
+
+
+        float sign = Mathf.Sign(dir.y); // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½
+        float signZ = Mathf.Sign(dir.z); // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£ ï¿½ï¿½ï¿½
 
         float absY = Mathf.Abs(dir.y);
         float absZ = Mathf.Abs(dir.z);
 
         if (absY < 0.5f)
         {
-            // 0.5 ~ 1 ¹üÀ§ ¾È¿¡¼­ ±âÁ¸ y Å©±â¸¦ º¸Á¤
-            float clampedY = Mathf.Clamp(absY, 0.5f, 1f);
-            float clampedZ = Mathf.Clamp(absZ, 0.5f, 1f);
+            // 0.5 ~ 1 ï¿½ï¿½ï¿½ï¿½ ï¿½È¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ y Å©ï¿½â¸¦ ï¿½ï¿½ï¿½ï¿½
+            float clampedY = Mathf.Clamp(absY, 0.7f, 1f);
+            float clampedZ = Mathf.Clamp(absZ, 0.7f, 1f);
             dir.y = clampedY * sign;
             dir.z = clampedZ * signZ;
         }
 
-        return dir.normalized; // ¹æÇâ º¤ÅÍ´Â Ç×»ó Á¤±ÔÈ­
+        return dir.normalized; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Í´ï¿½ ï¿½×»ï¿½ ï¿½ï¿½ï¿½ï¿½È­
     }
 
     private System.Collections.IEnumerator LockYNegativeFor(float duration)
@@ -238,7 +252,7 @@ public class Ball : MonoBehaviour
         float end = Time.time + duration;
         while (Time.time < end)
         {
-            // ¾î¶² °æ·Î·Îµç ¾ç¼ö°¡ µÇ¸é Áï½Ã À½¼ö·Î À¯Áö
+            // ï¿½î¶² ï¿½ï¿½Î·Îµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ç¸ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             if (direction.y > 0f)
                 direction = new Vector3(direction.x, -Mathf.Abs(direction.y), direction.z).normalized;
             yield return null;
@@ -246,17 +260,17 @@ public class Ball : MonoBehaviour
         isYLocked = false;
     }
 
-    // Ãß°¡: ºÎÈ£ º¯°æ ½Ã°¢À» ±â·ÏÇÏ°í, À©µµ¿ì ¹ÛÀÇ Ç×¸ñ Á¦°Å
+    // ï¿½ß°ï¿½: ï¿½ï¿½È£ ï¿½ï¿½ï¿½ï¿½ ï¿½Ã°ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ï°ï¿½, ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½×¸ï¿½ ï¿½ï¿½ï¿½ï¿½
     private void RegisterYFlipTime()
     {
-        float now = Time.unscaledTime; // HitStop ¹«½Ã
+        float now = Time.unscaledTime; // HitStop ï¿½ï¿½ï¿½ï¿½
         yFlipTimes.Enqueue(now);
-        // À©µµ¿ì ¹ÛÀÇ ¿À·¡µÈ ÀÌº¥Æ® Á¦°Å
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ìºï¿½Æ® ï¿½ï¿½ï¿½ï¿½
         while (yFlipTimes.Count > 0 && now - yFlipTimes.Peek() > yFlipWindow)
             yFlipTimes.Dequeue();
     }
 
-    // Ãß°¡: ÇöÀç À©µµ¿ì ¾È¿¡¼­ÀÇ ÇÃ¸³ È½¼ö°¡ ÀÓ°èÄ¡¸¦ ³Ñ´ÂÁö
+    // ï¿½ß°ï¿½: ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½È¿ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ã¸ï¿½ È½ï¿½ï¿½ï¿½ï¿½ ï¿½Ó°ï¿½Ä¡ï¿½ï¿½ ï¿½Ñ´ï¿½ï¿½ï¿½
     private bool ShouldLockYByFlipBurst()
     {
         float now = Time.unscaledTime;
