@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6936526688471821121}
   - component: {fileID: 8526536210030557695}
   m_Layer: 0
-  m_Name: 1vs1
+  m_Name: SelectTurtle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -142,7 +142,7 @@ MonoBehaviour:
   MouseDownColor: {r: 0.3773585, g: 0.3698414, b: 0.2830189, a: 1}
   TakenColor: {r: 0.7, g: 0.7, b: 0.7, a: 1}
   buttonName: TurtleTitle
-  buttonHaviorName: 1vs1
+  buttonHaviorName: Turtle
   keySettingPanel: {fileID: 0}
   isCharacterButton: 0
   characterId: 

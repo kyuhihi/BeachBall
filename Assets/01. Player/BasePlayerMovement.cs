@@ -88,6 +88,14 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         set => m_isMoveByInput = value;
     }
 
+    private bool m_hurtTurtleUltimateSkillStun = false;
+
+    public bool HurtTurtleUltimateSkillStun
+    {
+        get => m_hurtTurtleUltimateSkillStun;
+        set => m_hurtTurtleUltimateSkillStun = value;
+    }
+
     protected float leftPressedTime = -1f;
     protected float rightPressedTime = -1f;
     protected float upPressedTime = -1f;

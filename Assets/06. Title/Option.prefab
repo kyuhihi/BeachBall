@@ -100,9 +100,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 095201ef07573cc4db837819da5eb4cb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  childMeshPrefab: {fileID: 0}
-  maxDepth: 2
-  currentDepth: 0
   mouseClickAction:
     m_Name: Mouse Click
     m_Type: 0
@@ -122,8 +119,17 @@ MonoBehaviour:
     m_Flags: 0
   ClickedColor: {r: 0.9339623, g: 0.8420917, b: 0.33922213, a: 1}
   MouseDownColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  TakenColor: {r: 0.7, g: 0.7, b: 0.7, a: 1}
   buttonName: FoxTitle
   buttonHaviorName: Option
+  keySettingPanel: {fileID: 0}
+  isCharacterButton: 0
+  characterId: 
+  autoLoadOnComplete: 1
+  scene1vs1: 1vs1
+  scene1vsCPU: 1vsCPU
+  meshLabel: {fileID: 0}
+  characterSelectRoot: {fileID: 0}
 --- !u!65 &2853382194337731352
 BoxCollider:
   m_ObjectHideFlags: 0

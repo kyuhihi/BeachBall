@@ -845,8 +845,31 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 2732736474820195146, guid: 10906cb2729ff9742babf771c559e901, type: 3}
       insertIndex: 1
       addedObject: {fileID: 603481907}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1553185321669430218, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 85044878}
   m_SourcePrefab: {fileID: 100100000, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+--- !u!1 &85044877 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1553185321669430218, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+  m_PrefabInstance: {fileID: 85044876}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &85044878
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 85044877}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38649a15dd9b0b742a0026ceba9dfd8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  slotMode: 0
+  customSlot: P1
+  slotOverride_legacy: 
 --- !u!1001 &90582220
 PrefabInstance:
   m_ObjectHideFlags: 0

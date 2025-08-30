@@ -15,6 +15,12 @@ EditorBuildSettings:
     path: Assets/Scenes/1vsCPU.unity
     guid: 302485c4d63c25049bb373be5d27fc3a
   - enabled: 1
+    path: Assets/Scenes/Cho_Scene.unity
+    guid: 887844df1bc34b0488526d835f3412cc
+  - enabled: 1
+    path: Assets/Scenes/Kyu_Scene.unity
+    guid: 793a61e28a7f5cb499866a216fa403f8
+  - enabled: 1
     path: Assets/Scenes/1vs1.unity
     guid: 71fdb6b9c349c594ca0c4ec7ae357962
   m_configObjects:

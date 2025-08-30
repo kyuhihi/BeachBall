@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
 using System.Collections; // 추가
+using System;
 
 [System.Serializable]
 public class KeyButtonInfo
@@ -12,7 +13,7 @@ public class KeyButtonInfo
     public string keyPath;      // 예: "<Keyboard>/c"
     public string actionName;   // 예: "MoveRight"
     public int bindingIndex;
-    public int playerIndex;     // 1: Player1, 2: Player2, CPU: 1
+    public int playerIndex;     // 1: Player1, 2: Player2, CPU: 3
 }
 
 [System.Serializable]
@@ -228,6 +229,55 @@ public class KeySettingPanel : MonoBehaviour
         msg = null;
         return false;
     }
+     private string GetActiveSlotForInfo(KeyButtonInfo info)
+    {
+        if (currentInputActions == null) return null;
+
+        if (currentInputActions.Length == 1)
+            return "CPU"; // 1vsCPU 모드
+
+        // 1vs1 모드
+        if (info.playerIndex == 1) return "P1";
+        if (info.playerIndex == 2) return "P2";
+        return null;
+    }
+
+    // 현재 보이는 패널 + 같은 슬롯 내에서만 중복 검사
+    private bool IsTargetKeyFreeInActivePanel(string layoutPath, string slot, KeyButtonInfo owner)
+    {
+        if (string.IsNullOrEmpty(layoutPath)) return false;
+
+        KeyButtonInfo[] list =
+            (setting1vs1 != null && setting1vs1.activeSelf) ? keyButtonInfos1vs1 :
+            (setting1vsCPU != null && setting1vsCPU.activeSelf) ? keyButtonInfosCPU : null;
+
+        if (list == null) return true;
+
+        bool is1vs1Active = setting1vs1 != null && setting1vs1.activeSelf;
+
+        foreach (var info in list)
+        {
+            if (info == null || info == owner) continue;
+
+            var infoSlot = GetActiveSlotForInfo(info);
+
+            // 1vsCPU: 같은 슬롯만 검사, 1vs1: 슬롯 구분 없이 양쪽 다 검사
+            if (!is1vs1Active && !string.Equals(infoSlot, slot, StringComparison.Ordinal))
+                continue;
+
+            if (ResolveRuntimeActionForInfo(info, out var act, out var bindIndex))
+            {
+                if (act != null && bindIndex >= 0 && bindIndex < act.bindings.Count)
+                {
+                    var b = act.bindings[bindIndex];
+                    var path = string.IsNullOrEmpty(b.effectivePath) ? b.path : b.effectivePath;
+                    if (string.Equals(path, layoutPath, StringComparison.Ordinal))
+                        return false; // 이미 사용 중
+                }
+            }
+        }
+        return true;
+    }
 
     private static string GetBindingPath(InputBinding b)
     {
@@ -373,7 +423,7 @@ public class KeySettingPanel : MonoBehaviour
                         {
                             info.actionName = action.name;
                             info.bindingIndex = i;
-                            info.playerIndex = 1;
+                            info.playerIndex = 3;
                         }
                     }
                 }
@@ -589,10 +639,9 @@ public class KeySettingPanel : MonoBehaviour
             return;
         }
 
-        // 이전 리바인딩이 있으면 먼저 취소
-        CancelCurrentRebindIfAny();
+        var slot = GetActiveSlotForInfo(info); // "P1" 또는 "P2"
 
-        // 진행 중엔 모든 버튼 비활성화(중복 리바인딩 방지)
+        CancelCurrentRebindIfAny();
         SetAllKeyButtonsInteractable(false);
 
         action.Disable();
@@ -603,7 +652,7 @@ public class KeySettingPanel : MonoBehaviour
             .WithControlsExcluding("<Gamepad>")
             .OnPotentialMatch(p =>
             {
-                var layoutPath = ToLayoutPath(p.selectedControl); // "<Keyboard>/w" 등
+                var layoutPath = ToLayoutPath(p.selectedControl);
 
                 if (!string.IsNullOrEmpty(layoutPath) && IsBlockedKey(layoutPath, out var blockMsg))
                 {
@@ -612,9 +661,10 @@ public class KeySettingPanel : MonoBehaviour
                     return;
                 }
 
-                if (string.IsNullOrEmpty(layoutPath) || !IsTargetKeyFree(layoutPath))
+                // 현재 보이는 패널 + 같은 슬롯에서만 중복 체크
+                if (string.IsNullOrEmpty(layoutPath) || !IsTargetKeyFreeInActivePanel(layoutPath, slot, owner: info))
                 {
-                    ShowFail(string.IsNullOrEmpty(layoutPath) ? "알 수 없는 키입니다." : "이미 다른 매핑이 있는 키입니다.");
+                    ShowFail(string.IsNullOrEmpty(layoutPath) ? "알 수 없는 키입니다." : "이미 같은 슬롯에서 사용 중인 키입니다.");
                     p.Cancel();
                 }
             })
@@ -624,7 +674,6 @@ public class KeySettingPanel : MonoBehaviour
                 p.Dispose();
                 if (_currentRebindOp == p) _currentRebindOp = null;
 
-                // 버튼 원복 + UI 갱신
                 SetAllKeyButtonsInteractable(true);
                 UpdateKeyColors();
             })
@@ -637,7 +686,6 @@ public class KeySettingPanel : MonoBehaviour
                 var asset = action.actionMap?.asset;
                 GameSettings.Instance?.SaveAndBroadcastOverrides(asset);
 
-                // 버튼 원복 + UI 갱신
                 SetAllKeyButtonsInteractable(true);
                 MatchKeyInfosWithBindings();
                 UpdateKeyColors();
@@ -663,10 +711,9 @@ public class KeySettingPanel : MonoBehaviour
             return;
         }
 
-        // 이전 리바인딩이 있으면 먼저 취소
-        CancelCurrentRebindIfAny();
+        const string slot = "CPU";
 
-        // 진행 중엔 모든 버튼 비활성화
+        CancelCurrentRebindIfAny();
         SetAllKeyButtonsInteractable(false);
 
         action.Disable();
@@ -686,9 +733,10 @@ public class KeySettingPanel : MonoBehaviour
                     return;
                 }
 
-                if (string.IsNullOrEmpty(layoutPath) || !IsTargetKeyFree(layoutPath))
+                // 현재 패널(1vsCPU) 내에서만 중복 체크
+                if (string.IsNullOrEmpty(layoutPath) || !IsTargetKeyFreeInActivePanel(layoutPath, slot, owner: info))
                 {
-                    ShowFail(string.IsNullOrEmpty(layoutPath) ? "알 수 없는 키입니다." : "이미 다른 매핑이 있는 키입니다.");
+                    ShowFail(string.IsNullOrEmpty(layoutPath) ? "알 수 없는 키입니다." : "이미 같은 슬롯에서 사용 중인 키입니다.");
                     p.Cancel();
                 }
             })

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &331612721097726452
+--- !u!1 &515266226665254430
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,48 +8,48 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7440274256081910545}
-  - component: {fileID: 6120771281585168926}
-  - component: {fileID: 5239091376039424429}
-  - component: {fileID: 6936526688471821121}
-  - component: {fileID: 8526536210030557695}
+  - component: {fileID: 7207481530512864344}
+  - component: {fileID: 7800896448832182773}
+  - component: {fileID: 1594102705793077208}
+  - component: {fileID: 8411091182242037134}
+  - component: {fileID: 2853382194337731352}
   m_Layer: 0
-  m_Name: 1vs1
+  m_Name: SelectFox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 2147483647
+  m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!4 &7440274256081910545
+--- !u!4 &7207481530512864344
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 331612721097726452}
+  m_GameObject: {fileID: 515266226665254430}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.0069099995, z: 0.007}
+  m_LocalRotation: {x: 0.5, y: 0.5, z: 0.5, w: 0.5}
+  m_LocalPosition: {x: -8.63, y: 12.2, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &6120771281585168926
+  m_LocalEulerAnglesHint: {x: 0, y: 90, z: 90}
+--- !u!33 &7800896448832182773
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 331612721097726452}
-  m_Mesh: {fileID: 1360107307202970949, guid: 582cdda196111a347a8448b2dee21ad2, type: 3}
---- !u!23 &5239091376039424429
+  m_GameObject: {fileID: 515266226665254430}
+  m_Mesh: {fileID: 1360107307202970949, guid: 670a0ab289754f540bd877fc698f59c8, type: 3}
+--- !u!23 &1594102705793077208
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 331612721097726452}
+  m_GameObject: {fileID: 515266226665254430}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 49835997119218b419d4228e6cef9617, type: 2}
+  - {fileID: 2100000, guid: a09aeaf92051d75479fd5a504f40c31c, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -88,34 +88,13 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!65 &6936526688471821121
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 331612721097726452}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 1
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 0.009979431, y: 0.0065114247, z: 0.01}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &8526536210030557695
+--- !u!114 &8411091182242037134
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 331612721097726452}
+  m_GameObject: {fileID: 515266226665254430}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 095201ef07573cc4db837819da5eb4cb, type: 3}
@@ -125,12 +104,12 @@ MonoBehaviour:
     m_Name: Mouse Click
     m_Type: 0
     m_ExpectedControlType: 
-    m_Id: c65973e7-ce5e-4cba-ac98-1e3d606f1b0b
+    m_Id: ab92b9f7-6089-4444-89fe-c69a7449da89
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings:
     - m_Name: 
-      m_Id: ed334f6a-8a3c-4f0d-a90c-1d4d5004be24
+      m_Id: 20b0d4f7-1abc-403d-99c8-a4be727718af
       m_Path: <Mouse>/leftButton
       m_Interactions: Press(behavior=2)
       m_Processors: 
@@ -138,11 +117,11 @@ MonoBehaviour:
       m_Action: Mouse Click
       m_Flags: 0
     m_Flags: 0
-  ClickedColor: {r: 0.36565503, g: 0.68107605, b: 0.9339623, a: 1}
-  MouseDownColor: {r: 0.3773585, g: 0.3698414, b: 0.2830189, a: 1}
+  ClickedColor: {r: 0.9339623, g: 0.8420917, b: 0.33922213, a: 1}
+  MouseDownColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   TakenColor: {r: 0.7, g: 0.7, b: 0.7, a: 1}
-  buttonName: TurtleTitle
-  buttonHaviorName: 1vs1
+  buttonName: FoxTitle
+  buttonHaviorName: Option
   keySettingPanel: {fileID: 0}
   isCharacterButton: 0
   characterId: 
@@ -151,3 +130,24 @@ MonoBehaviour:
   scene1vsCPU: 1vsCPU
   meshLabel: {fileID: 0}
   characterSelectRoot: {fileID: 0}
+--- !u!65 &2853382194337731352
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 515266226665254430}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 0.006287873, y: 0.01, z: 0.003703599}
+  m_Center: {x: 0, y: 0, z: 0}

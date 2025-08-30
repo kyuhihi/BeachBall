@@ -252,13 +252,13 @@ public class Dragon : MonoBehaviour
         mesh.RecalculateNormals();
     }
 
-    public void StartDrill()
+    public void StartDrill(GameObject owner)
     {
         // 3. 상대 Player 찾기 (Player 태그, 자기 자신 제외)
         GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
         foreach (var go in players)
         {
-            if (go != this.gameObject)
+            if (go != owner)
             {
                 enemyPlayerTransform = go.transform;
                 break;
