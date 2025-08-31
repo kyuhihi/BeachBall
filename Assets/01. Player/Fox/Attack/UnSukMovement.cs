@@ -1,10 +1,22 @@
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class UnSukMovement : MonoBehaviour
+public class UnSukMovement : MonoBehaviour, IResetAbleListener
 {
     private const string WallLayerName = "Wall And Ground";
     private float m_MovementSpeed = 3.0f;
+
+    public void AddResetCall()
+    {
+        Signals.RoundResetAble.AddStart(OnRoundStart);
+        Signals.RoundResetAble.AddEnd(OnRoundEnd);
+    }
+
+    public void RemoveResetCall()
+    {
+        Signals.RoundResetAble.RemoveStart(OnRoundStart);
+        Signals.RoundResetAble.RemoveEnd(OnRoundEnd);
+    }
 
     private int m_iEffectCnt = 3;
     [SerializeField] private GameObject m_FireEffect;
@@ -30,10 +42,23 @@ public class UnSukMovement : MonoBehaviour
             CameraShakingManager.Instance.DoShake(0.5f, 10f);
 
         Destroy(gameObject);
+
+    }
+    public void OnRoundStart()
+    {
+        _exploded = true;
+        Destroy(gameObject);
+    }
+
+    public void OnRoundEnd()
+    {
+        _exploded = true;
+        Destroy(gameObject);
     }
     public void SetOwnerCourtPosition(IPlayerInfo.CourtPosition courtPosition)
     {
         m_OwnerCourtPosition = courtPosition;
+        AddResetCall();
     }
 
     // Update is called once per frame
@@ -101,6 +126,7 @@ public class UnSukMovement : MonoBehaviour
     }
     public void OnDestroy()
     {
+        RemoveResetCall();
         // 씬 언로드/앱 종료/에디터 정지 등에서는 생성하지 않음
         if (!Application.isPlaying) return;
         if (s_IsQuitting) return;

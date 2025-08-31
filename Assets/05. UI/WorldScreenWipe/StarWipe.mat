@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: StarWipe
+  m_Shader: {fileID: 4800000, guid: 5b8909e53f509d04f82b2aaca45b415b, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _CenterTex:
+        m_Texture: {fileID: 2800000, guid: 7c307cd3413e55242bbc2956b18eab0f, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskTex:
+        m_Texture: {fileID: 2800000, guid: 7c307cd3413e55242bbc2956b18eab0f, type: 3}
+        m_Scale: {x: 0.1, y: 0.1}
+        m_Offset: {x: 0, y: 0}
+    - _StarTex:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BorderThickness: 0.375
+    - _EdgeSharpness: 0.6
+    - _HoleSize: 2.1
+    - _InnerRotateSpeed: 0
+    - _OuterRotateSpeed: 0
+    - _RotateSpeed: 1
+    - _StarRotation: 0
+    - _StarScale: 2
+    m_Colors:
+    - _BackgroundColor: {r: 0.025157154, g: 0.025157154, b: 0.025157154, a: 1}
+    - _BorderColor: {r: 0.9661186, g: 1, b: 0, a: 1}
+    - _InnerColor: {r: 1, g: 0, b: 0, a: 1}
+    - _OuterColor: {r: 0, g: 0.22745132, b: 1, a: 1}
+    - _StarColor: {r: 1, g: 0, b: 1, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1

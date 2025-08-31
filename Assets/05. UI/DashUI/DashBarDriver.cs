@@ -94,4 +94,6 @@ public class DashBarDriver : UIInfoBase, IPauseable
         var r = GetComponent<Renderer>();
         if (r) m_DashUIMat = r.material;
     }
+
+
 }

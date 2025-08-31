@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class FireBall : MonoBehaviour
+public class FireBall : MonoBehaviour, IResetAbleListener
 {
     [SerializeField] private float speed = 20f;
     [SerializeField] private float turnSpeedDegPerSec = 360f; // 초당 회전 속도(도)
@@ -10,14 +10,29 @@ public class FireBall : MonoBehaviour
     private GameObject HitEffectGameObj;
 
     private float m_DisappearTime = 0.0f;
-    
-    private GameObject m_Target;
-    
-    private List<GameObject> m_Players = new List<GameObject>();
 
+    private GameObject m_Target;
+
+    private List<GameObject> m_Players = new List<GameObject>();
+    public void AddResetCall()
+    {
+        Signals.RoundResetAble.AddStart(OnRoundStart);
+        Signals.RoundResetAble.AddEnd(OnRoundEnd);
+    }
+
+    public void RemoveResetCall()
+    {
+        Signals.RoundResetAble.RemoveStart(OnRoundStart);
+        Signals.RoundResetAble.RemoveEnd(OnRoundEnd);
+    }
     private void OnEnable()
     {
         m_DisappearTime = 3.0f;
+        AddResetCall();
+    }
+    private void OnDisable()
+    {
+        RemoveResetCall();
     }
     public void Start()
     {
@@ -93,6 +108,17 @@ public class FireBall : MonoBehaviour
             }
             gameObject.SetActive(false);
         }
+    }
+
+    public void OnRoundStart()
+    {
+        gameObject.SetActive(false);
+
+    }
+
+    public void OnRoundEnd()
+    {
+        gameObject.SetActive(false);
     }
 
 

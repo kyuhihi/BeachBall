@@ -2,7 +2,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.InputSystem;
 
-public class ScoreCounterUI : UIInfoBase
+public class ScoreCounterUI : UIInfoBase, IResetAbleListener
 {
     public TextMeshProUGUI scoreText;
 
@@ -64,6 +64,12 @@ public class ScoreCounterUI : UIInfoBase
     public void AddScore(int amount) => SetScore(currentScore + amount);
     public void SetValueInt(int v) => SetScore(v);
     public void SetValueFloat(float v) => SetScore(Mathf.RoundToInt(v));
+    private BalloonType m_BalloonType = BalloonType.Balloon_PlayerScore;
+    public enum BalloonType
+    {
+        Balloon_PlayerScore,
+        Balloon_RoundScore,
+    }
 
     void Awake()
     {
@@ -72,13 +78,26 @@ public class ScoreCounterUI : UIInfoBase
         if (rt) baseAnchoredPos = rt.anchoredPosition;
         if (scoreText) baseColor = scoreText.color;
         ApplyScoreInstant(currentScore);
+        if (transform.parent.name.Contains("Round"))
+        {
+            m_BalloonType = BalloonType.Balloon_RoundScore;
+        }
+        else
+        {
+            m_BalloonType = BalloonType.Balloon_PlayerScore;
+        }
+    }
+    void OnEnable()
+    {
+        AddResetCall();
+    }
+    void OnDisable()
+    {
+        RemoveResetCall();
     }
 
     void Update()
     {
-        if (Keyboard.current.f5Key.wasPressedThisFrame)
-            AddScore(1);
-
         float dt = paused ? 0f : (useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime);
 
         switch (state)
@@ -130,6 +149,7 @@ public class ScoreCounterUI : UIInfoBase
         ApplyScoreInstant(currentScore);
         StartBump();
     }
+    
 
     void ApplyScoreInstant(int v)
     {
@@ -159,5 +179,30 @@ public class ScoreCounterUI : UIInfoBase
             rt.localScale = Vector3.one;
         }
         if (scoreText) scoreText.color = baseColor;
+    }
+
+    public void AddResetCall()
+    {
+        Signals.RoundResetAble.AddStart(OnRoundStart);
+        Signals.RoundResetAble.AddEnd(OnRoundEnd);
+    }
+
+    public void RemoveResetCall()
+    {
+        Signals.RoundResetAble.RemoveStart(OnRoundStart);
+        Signals.RoundResetAble.RemoveEnd(OnRoundEnd);
+    }
+
+    public void OnRoundStart()
+    {
+        if(m_BalloonType == BalloonType.Balloon_PlayerScore)
+        {
+            SetScore(0);
+            ForceIdleReset();
+        }
+    }
+
+    public void OnRoundEnd()
+    {
     }
 }

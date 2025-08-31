@@ -5,8 +5,9 @@ using System.Collections.Generic;
 using NUnit.Framework.Constraints;
 // using UnityEngine.Experimental.GlobalIllumination;
 
-public class GameManager : MonoBehaviour
+public class GameManager : MonoBehaviour, IResetAbleListener
 {
+    
     //==============================SingleTonSetting=============================
     private static GameManager Instance;
     public static GameManager GetInstance() => Instance;
@@ -37,6 +38,8 @@ public class GameManager : MonoBehaviour
     private IPlayerInfo.PlayerType m_eLastUltimatePlayerType = IPlayerInfo.PlayerType.End;
     //==============================CutSceneSetting==============================
     List<GameObject> _players = new List<GameObject>();
+    public IPlayerInfo.CourtPosition GetLastWinner() { return PlayerUIManager.GetInstance().GetLastWinner(); }
+
     public enum GameState
     {
         GAME,
@@ -44,23 +47,72 @@ public class GameManager : MonoBehaviour
         END
     }
 
+    public void AddResetCall()
+    {
+        Signals.RoundResetAble.AddStart(OnRoundStart);
+        Signals.RoundResetAble.AddEnd(OnRoundEnd);
+    }
 
+    public void RemoveResetCall()
+    {
+        Signals.RoundResetAble.RemoveStart(OnRoundStart);
+        Signals.RoundResetAble.RemoveEnd(OnRoundEnd);
+    }
+    public void OnRoundStart()
+    {
+        m_eLastUltimateCourtPosition = IPlayerInfo.CourtPosition.COURT_END;
+        m_eLastUltimatePlayerType = IPlayerInfo.PlayerType.End;
+    }
+
+    public void OnRoundEnd()
+    {
+        // TODO: Add logic to handle round end
+    }
+
+    public void OnEnable()
+    {
+        AddResetCall();
+    }
+    public void OnDisable()
+    {
+        RemoveResetCall();
+    }
     public void Start()
     {
-
-
         SetInstance(this);
         InitializeCamera();
-        m_DirectionalLight = FindFirstObjectByType<Light>();
+        var lights = FindObjectsByType<Light>(sortMode: FindObjectsSortMode.None);
+        foreach (var light in lights)
+        {
+            if (light.type == LightType.Directional)
+            {
+                m_DirectionalLight = light;
+                break;
+            }
+        }
         LoadScriptableObjects();
     }
-
     public void LateUpdate()
     {
-
         ConfinePlayersPosition();
-
     }
+    public void FadeStart(ScreenWipeDriver.FadeDirection direction)
+    {//CountDown->FadeStartCall->PlayerUIManager.FadeStart->WipeScreenFadeStart
+        PlayerUIManager.GetInstance().FadeStart(direction);
+    }
+
+
+    public void RoundEnd()
+    {//WipeScreenCall 
+        Signals.RoundResetAble.RaiseEnd();
+        PlayerUIManager.GetInstance().RoundEndUpScore();
+    }
+
+    public void RoundStart()
+    {//WipeScreenCall 
+        Signals.RoundResetAble.RaiseStart();
+    }
+
     public bool ConfineObjectPosition(GameObject obj, float YOffset = 0.3f)
     {
         float zFixedPos;
@@ -276,24 +328,24 @@ public static class Signals
     }
     public static class RoundResetAble
     {
-        public static event Action Start;
-        public static event Action End;
+        public static event Action RoundStart;
+        public static event Action RoundEnd;
 
         // 구독/해제
-        public static void AddStart(Action cb) { Start += cb; }
-        public static void RemoveStart(Action cb) { Start -= cb; }
-        public static void AddEnd(Action cb) { End += cb; }
-        public static void RemoveEnd(Action cb) { End -= cb; }
+        public static void AddStart(Action cb) { RoundStart += cb; }
+        public static void RemoveStart(Action cb) { RoundStart -= cb; }
+        public static void AddEnd(Action cb) { RoundEnd += cb; }
+        public static void RemoveEnd(Action cb) { RoundEnd -= cb; }
 
         // 브로드캐스트(권장 사용)
         public static void RaiseStart()
         {
-            try { Start?.Invoke(); }
+            try { RoundStart?.Invoke(); }
             catch (Exception e) { Debug.LogException(e); }
         }
         public static void RaiseEnd()
         {
-            try { End?.Invoke(); }
+            try { RoundEnd?.Invoke(); }
             catch (Exception e) { Debug.LogException(e); }
         }
     }

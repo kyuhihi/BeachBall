@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Banana : MonoBehaviour
+public class Banana : MonoBehaviour,IResetAbleListener
 {
     private float _CantTouchTime = 0.3f;
     private GameObject HitEffectGameObj;
@@ -8,14 +8,40 @@ public class Banana : MonoBehaviour
     private Rigidbody _rb;
 
     public GameObject BananaParent;
+
+    public void AddResetCall()
+    {
+        Signals.RoundResetAble.AddStart(OnRoundStart);
+        Signals.RoundResetAble.AddEnd(OnRoundEnd);
+    }
+
+    public void RemoveResetCall()
+    {
+        Signals.RoundResetAble.RemoveStart(OnRoundStart);
+        Signals.RoundResetAble.RemoveEnd(OnRoundEnd);
+    }
     private void OnEnable()
     {
         _CantTouchTime = 2f;
         HitEffectGameObjPrefab = Resources.Load<GameObject>("BananaHitEffect");
         if (_rb == null) _rb = GetComponent<Rigidbody>();
         _rb.linearVelocity = Vector3.zero;
+        AddResetCall();
+    }
+    private void OnDisable()
+    {
+        RemoveResetCall();
+    }
+    public void OnRoundStart()
+    {
+        gameObject.SetActive(false);
     }
 
+    public void OnRoundEnd()
+    {
+        gameObject.SetActive(false);
+    }
+    
 
     public void Update()
     {

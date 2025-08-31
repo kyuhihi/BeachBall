@@ -3,7 +3,7 @@ using Kyu_BT;
 using Unity.Burst.Intrinsics;
 using UnityEngine.InputSystem;
 
-public class MonkeyBT : MonoBehaviour
+public class MonkeyBT : MonoBehaviour, IResetAbleListener
 {
     BehaviorTreeRunner _runner;
     Blackboard _bb;
@@ -56,10 +56,6 @@ public class MonkeyBT : MonoBehaviour
             }
         }
 
-        if (OtherPlayer == null)
-        {
-            Debug.LogAssertion("MonkeyBT: 다른 플레이어를 찾지 못했습니다!");
-        }
    }
     void InitBT()
     {
@@ -139,7 +135,11 @@ public class MonkeyBT : MonoBehaviour
     {
         if (Keyboard.current.leftAltKey.wasPressedThisFrame)
         {
-            PlayerUIManager.GetInstance().UpUltimateBar(_movement.m_CourtPosition);
+            PlayerUIManager.GetInstance().UpUltimateBar(_movement.m_CourtPosition,0.1f);
+        }
+        if (Keyboard.current.rightAltKey.wasPressedThisFrame)
+        {
+            PlayerUIManager.GetInstance().UpUltimateBar(_movement.m_CourtPosition,-0.1f);
         }
 
     }
@@ -156,5 +156,30 @@ public class MonkeyBT : MonoBehaviour
     {
         _movement?.AIJump(allowDouble: true);
     }
+
+    public void AddResetCall()
+    {
+        Signals.RoundResetAble.AddStart(OnRoundStart);
+        Signals.RoundResetAble.AddEnd(OnRoundEnd);
+    }
+
+    public void RemoveResetCall()
+    {
+        Signals.RoundResetAble.RemoveStart(OnRoundStart);
+        Signals.RoundResetAble.RemoveEnd(OnRoundEnd);
+    }
+
+    public void OnRoundStart()
+    {
+        moveBuffer = Vector2.zero;
+        _runner?.Resume();
+    }
+
+    public void OnRoundEnd()
+    {
+        _runner?.Stop();
+        moveBuffer = Vector2.zero;
+    }
+    
 }
 

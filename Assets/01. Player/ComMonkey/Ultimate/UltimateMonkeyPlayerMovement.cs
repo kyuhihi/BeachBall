@@ -19,13 +19,27 @@ public class UltimateMonkeyPlayerMovement : BasePlayerMovement
         TYPE_SHOW
     }
 
+
     protected override void Start()
     {
-        Signals.Cutscene.AddStart((playerType, courtPosition) => OnStartCutScene(playerType, courtPosition));
-        Signals.Cutscene.AddEnd((playerType, courtPosition) => OnEndCutscene(playerType, courtPosition));
-
+        base.Start();
+        m_CourtPosition = IPlayerInfo.CourtPosition.COURT_END;
         this.gameObject.SetActive(false);
+        base.OnEnable();
     }
+    public void OnDestroy()
+    {
+        base.OnDisable();
+    }
+    protected override void OnDisable()
+    {
+        //base.OnDisable();
+    }
+    protected override void OnEnable()
+    {
+        //base.OnEnable();
+    }
+
 
     public override void OnAttackSkill(InputValue value)
     {
@@ -42,9 +56,6 @@ public class UltimateMonkeyPlayerMovement : BasePlayerMovement
     {
         GameManager.GetInstance().ConfineObjectPosition(this.gameObject);
     }
-
-   
-    
     public override void OnDefenceSkill(InputValue value)
     {
         if (!m_isMoveByInput && value.isPressed)
@@ -71,9 +82,6 @@ public class UltimateMonkeyPlayerMovement : BasePlayerMovement
           this.gameObject.SetActive(true);
         }
         m_isMoveByInput = false;
-
-
-        
     }
     public override void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
@@ -89,9 +97,21 @@ public class UltimateMonkeyPlayerMovement : BasePlayerMovement
                 this.gameObject.SetActive(false);
             }
         }
-    }//이거 오버라이딩해야함.
+    }
 
+    public override void OnRoundStart()
+    {
+        m_isMoveByInput = true;
+    }
+    public override void OnRoundEnd()
+    {
+        SetTransformToRoundStart();
+        this.gameObject.SetActive(false);
 
+        m_isMoveByInput = false;
+        m_Rigidbody.linearVelocity = Vector3.zero;
+        m_Rigidbody.angularVelocity = Vector3.zero;
+    }
 
     protected override void FixedUpdate()
     {        // 입력값 기반으로 목표 속도 계산

@@ -38,7 +38,6 @@ public class MonkeyPlayerMovement : BasePlayerMovement
     private List<GameObject> BananaInstances = new List<GameObject>();
     private GameObject BananaParent;
     const string BananaPrefabPath = "Banana";
-    
     private GameObject BananaPrefab;
 
     protected override void Start()
@@ -257,7 +256,6 @@ public class MonkeyPlayerMovement : BasePlayerMovement
             return;
         }
     }
-
     public override void OnUltimateSkill(InputValue value)
     {
         if (!m_isMoveByInput)
@@ -278,12 +276,32 @@ public class MonkeyPlayerMovement : BasePlayerMovement
         m_isMoveByInput = true;
     }//이거 오버라이딩해야함.
 
-    public void ThrowBanana(Transform OtherPlayer)
+    public override void OnRoundStart()
     {
 
+        LateUpdate();
+        m_isMoveByInput = true;
+        m_Rigidbody.WakeUp();
+    }
+    public override void OnRoundEnd()
+    {
+        m_isMoveByInput = false;
+        stretchAnimT = 0.0f;
+        stretchAnimDir = 0f;
+    
+        m_Rigidbody.linearVelocity = Vector3.zero;
+        m_Rigidbody.angularVelocity = Vector3.zero;
+        m_Rigidbody.Sleep();
+        SetTransformToRoundStart();
 
+    }
+
+
+    public void ThrowBanana(Transform OtherPlayer)
+    {
         if (OtherPlayer == null) return;
-        if (PlayerUIManager.GetInstance().UseAbility(IUIInfo.UIType.UltimateBar, m_CourtPosition))
+        PlayerUIManager UIMgrInstance = PlayerUIManager.GetInstance();
+        if (UIMgrInstance.GetCurrentSecond() > 5 && UIMgrInstance.UseAbility(IUIInfo.UIType.UltimateBar, m_CourtPosition))
         {
             Vector3 OutPos = Vector3.zero;
             Quaternion OutRot = Quaternion.identity;

@@ -521,7 +521,17 @@ public class TurtlePlayerMovement : BasePlayerMovement
                         rb.useGravity = false;
         }
     }
-
+    public override void OnRoundStart()
+    {
+        SetTransformToRoundStart();
+        m_isMoveByInput = true;
+    }
+    public override void OnRoundEnd()
+    {
+        m_isMoveByInput = false;
+        m_Rigidbody.linearVelocity = Vector3.zero;
+        m_Rigidbody.angularVelocity = Vector3.zero;
+    }
 
     protected override void FixedUpdate()
     {
