@@ -20,10 +20,14 @@ public class FoxPlayerMovement : BasePlayerMovement
         m_PlayerType = IPlayerInfo.PlayerType.Fox;
         m_PlayerDefaultColor = Color.orange;
 
-    var active = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        var active = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
         if (active != "TitleScene")
         {
             PlayerUIManager.GetInstance().SetPlayerInfoInUI(this);
+        }
+        else
+        {
+            m_isTitleScene = true;
         }
 
 
@@ -69,6 +73,13 @@ public class FoxPlayerMovement : BasePlayerMovement
 
     public override void OnDefenceSkill(InputValue value)
     {
+        if(m_isTitleScene)
+        {
+            Debug.Log("타이틀 씬에서는 싸움만 하거라");
+            // 타이틀 씬에서는 방어 스킬 사용 불가
+            return;
+        }
+
         if (!m_isMoveByInput && value.isPressed || m_eLocomotionState == IdleWalkRunEnum.Swim)
         {
             return;
@@ -81,6 +92,13 @@ public class FoxPlayerMovement : BasePlayerMovement
 
     public override void OnUltimateSkill(InputValue value)
     {
+        if(m_isTitleScene)
+        {
+            Debug.Log("타이틀 씬에서는 싸움만 하거라");
+            // 타이틀 씬에서는 궁극기 스킬 사용 불가
+            return;
+        }
+
         if (!m_isMoveByInput || m_eLocomotionState == IdleWalkRunEnum.Swim)
         {
             return;

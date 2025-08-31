@@ -5,6 +5,7 @@ using System.Collections;
 using UnityEngine.Playables;
 using System.Threading;
 using System.Collections.Generic;
+using NUnit.Framework;
 
 public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener, IResetAbleListener
 {
@@ -111,6 +112,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     protected float swimfootstepTimer = 0f;
 
 
+
     protected float swimfootstepMinInterval = 0.1f; // 수영 중 발자국 이펙트 최소 간격
     protected float swimfootstepMaxInterval = 1f; // 수영 중 발자국 이펙트 최대 간격
 
@@ -122,6 +124,8 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     protected PlayableDirector m_PlayableDirector;
 
     private bool _cutsceneSubscribed = false;
+
+    protected bool m_isTitleScene = false;
 
     protected Vector3 m_StartPosition = Vector3.zero;
     protected Vector3 m_StartRotationEuler = Vector3.zero;
@@ -386,7 +390,12 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
 
     public void OnDash(InputValue value)
     {
-        
+        if(m_isTitleScene)
+        {
+            Debug.Log("타이틀 씬에서는 싸움만 하거라");
+            // 타이틀 씬에서는 대쉬 사용 불가
+            return;
+        }
         if (!m_isMoveByInput)
             return;
 

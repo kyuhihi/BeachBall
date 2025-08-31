@@ -105,10 +105,14 @@ public class TurtlePlayerMovement : BasePlayerMovement
         m_PlayerType = IPlayerInfo.PlayerType.Turtle;
         m_PlayerDefaultColor = Color.skyBlue;
 
-    var active = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        var active = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
         if (active != "TitleScene")
         {
             PlayerUIManager.GetInstance().SetPlayerInfoInUI(this);
+        }
+        else
+        {
+            m_isTitleScene = true;
         }
 
         if (m_CourtPosition == IPlayerInfo.CourtPosition.COURT_RIGHT)
@@ -188,6 +192,13 @@ public class TurtlePlayerMovement : BasePlayerMovement
 
     public override void OnDefenceSkill(InputValue value)
     {
+        if(m_isTitleScene)
+        {
+            Debug.Log("타이틀 씬에서는 싸움만 하거라");
+            // 타이틀 씬에서는 방어 스킬 사용 불가
+            return;
+        }
+
         if (!m_isMoveByInput || m_eLocomotionState == IdleWalkRunEnum.Swim)
         {
             return;
@@ -205,6 +216,14 @@ public class TurtlePlayerMovement : BasePlayerMovement
     }
     public override void OnUltimateSkill(InputValue value)
     {
+        if(m_isTitleScene)
+        {
+            Debug.Log("타이틀 씬에서는 싸움만 하거라");
+            // 타이틀 씬에서는 궁극기 스킬 사용 불가
+            return;
+        }
+
+
         if (!m_isMoveByInput || m_eLocomotionState == IdleWalkRunEnum.Swim)
         {
             return;
@@ -521,16 +540,145 @@ public class TurtlePlayerMovement : BasePlayerMovement
                         rb.useGravity = false;
         }
     }
+    
+
+    private void SafeDestroyPS(ref ParticleSystem ps)
+    {
+        if (ps)
+        {
+            Destroy(ps.gameObject);
+            ps = null;
+        }
+    }
+    private void SafeDestroyGO(ref GameObject go)
+    {
+        if (go)
+        {
+            Destroy(go);
+            go = null;
+        }
+    }
+    private void RestoreGravity(bool value)
+    {
+        var rb  = GetComponent<Rigidbody>();
+        if (rb) rb.useGravity = value;
+    }
     public override void OnRoundStart()
     {
+        // 코루틴/트리거/상태 초기화
+        StopAllCoroutines();
+
         SetTransformToRoundStart();
         m_isMoveByInput = true;
+
+        isWaterCannonActive = false;
+        isWaterCannonRotating = false;
+        isShellThrowCannonActive = false;
+        isUltimateSkillActiving = false;
+        HurtTurtleUltimateSkillStun = false;
+
+        if (m_Animator != null)
+        {
+            m_Animator.ResetTrigger("ThrowShell");
+            m_Animator.ResetTrigger("WaterCannon");
+            m_Animator.SetBool("WaterCannonActive", false);
+        }
+
+        // 남아있던 셸 제거
+        if (heldShell && heldShell.transform) heldShell.transform.SetParent(null);
+        SafeDestroyGO(ref heldShell);
+
+        // 입 방향 초기화
+        if (mouthTransform) mouthTransform.localRotation = Quaternion.Euler(180f, 90f, 0f);
+
+        // 중력 복구
+        RestoreGravity(true);
+        var selfRb = GetComponent<Rigidbody>();
+        if (selfRb) selfRb.useGravity = true;
+
+        // 남은 이펙트 강제 정리(방어적)
+        SafeDestroyPS(ref waterCannonParticleInstance);
+        SafeDestroyPS(ref waterCannonByEffectParticleInstance);
+        SafeDestroyPS(ref dropWaterFromWallInstance);
+        SafeDestroyPS(ref waterDropParticleInstance);
+        SafeDestroyGO(ref ultimateWaterInstance);
+        SafeDestroyGO(ref waterDragonInstance);
+        SafeDestroyPS(ref waterDragonSplashInstance);
+        SafeDestroyPS(ref waterTornadoInstance);
+        SafeDestroyPS(ref ultimateEffectInstance);
+
+        DestroyAllFishes();
     }
+
     public override void OnRoundEnd()
     {
+        // 더 이상 입력/코루틴 진행 금지
         m_isMoveByInput = false;
+        StopAllCoroutines();
+
+        // 애니메이터 상태/트리거 정리
+        if (m_Animator != null)
+        {
+            m_Animator.ResetTrigger("ThrowShell");
+            m_Animator.ResetTrigger("WaterCannon");
+            m_Animator.SetBool("WaterCannonActive", false);
+        }
+
+        // 상태값 초기화
+        isWaterCannonActive = false;
+        isWaterCannonRotating = false;
+        isShellThrowCannonActive = false;
+        isUltimateSkillActiving = false;
+
+        // 물리 정지
         m_Rigidbody.linearVelocity = Vector3.zero;
         m_Rigidbody.angularVelocity = Vector3.zero;
+        m_eLocomotionState = IdleWalkRunEnum.Idle;
+
+        // 진행 중 컷신 중지
+        if (m_PlayableDirector) m_PlayableDirector.Stop();
+
+        // 셸 제거
+        if (heldShell && heldShell.transform) heldShell.transform.SetParent(null);
+        SafeDestroyGO(ref heldShell);
+
+        // 이펙트/프리팹 전부 정리
+        SafeDestroyPS(ref waterCannonParticleInstance);
+        SafeDestroyPS(ref waterCannonByEffectParticleInstance);
+        SafeDestroyPS(ref dropWaterFromWallInstance);
+        SafeDestroyPS(ref waterDropParticleInstance);
+        SafeDestroyGO(ref ultimateWaterInstance);
+        SafeDestroyGO(ref waterDragonInstance);
+        SafeDestroyPS(ref waterDragonSplashInstance);
+        SafeDestroyPS(ref waterTornadoInstance);
+        SafeDestroyPS(ref ultimateEffectInstance);
+
+        // 물고기 삭제
+        DestroyAllFishes();
+
+        // 입 방향 리셋
+        if (mouthTransform) mouthTransform.localRotation = Quaternion.Euler(180f, 90f, 0f);
+
+        // 전 플레이어 중력 복구(궁극기에서 끈 경우 대비)
+        RestoreGravity(true);
+    }
+
+    private void DestroyAndClearFishList(List<GameObject> list)
+    {
+        if (list == null) return;
+        for (int i = list.Count - 1; i >= 0; i--)
+        {
+            var go = list[i];
+            if (go) Destroy(go);
+        }
+        list.Clear();
+    }
+
+    private void DestroyAllFishes()
+    {
+        DestroyAndClearFishList(fishList1);
+        DestroyAndClearFishList(fishList2);
+        DestroyAndClearFishList(fishList3);
     }
 
     protected override void FixedUpdate()

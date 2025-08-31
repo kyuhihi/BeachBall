@@ -23,9 +23,6 @@ public class GameSceneManager : MonoBehaviour
     [SerializeField] private bool disableAllPlayerInputs = true;
     [SerializeField] private bool disableEventSystems = true;
 
-    [Header("1vsCPU 옵션")]
-    [Tooltip("1vsCPU 모드에서 왼쪽 캐릭터에 사용할 슬롯 이름(P1/CPU 등)")]
-    [SerializeField] private string leftSlotIn1vsCPU = "CPU";
     [Tooltip("1vsCPU 모드에서 오른쪽을 스폰할지 여부(끄면 왼쪽만 스폰)")]
     [SerializeField] private bool cpuModeSpawnRight = false;
 
