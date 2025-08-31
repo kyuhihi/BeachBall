@@ -4422,7 +4422,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7838086797910571750, guid: 10906cb2729ff9742babf771c559e901, type: 3}
       propertyPath: side
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8557198426271000808, guid: 10906cb2729ff9742babf771c559e901, type: 3}
       propertyPath: m_Actions
@@ -17226,9 +17226,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerBottomUIprefab: {fileID: 1444049231907782686, guid: 0adf115b64ba8864d97544e5dd52c9d5, type: 3}
+  playerStunPrefab: {fileID: 0}
+  playerCanUltimateWorldEffectPrefab: {fileID: 0}
   groundMask:
     serializedVersion: 2
     m_Bits: 1
+  PlayerUltimateBars:
+  - {fileID: 0}
+  - {fileID: 0}
+  PlayerDashBars:
+  - {fileID: 0}
+  - {fileID: 0}
+  PlayerScoreCounts:
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1001 &1665165983
 PrefabInstance:
   m_ObjectHideFlags: 0

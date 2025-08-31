@@ -21,7 +21,7 @@ public class FoxPlayerMovement : BasePlayerMovement
         m_PlayerDefaultColor = Color.orange;
 
     var active = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-        if (active == "TitleScene")
+        if (active != "TitleScene")
         {
             PlayerUIManager.GetInstance().SetPlayerInfoInUI(this);
         }
@@ -63,6 +63,7 @@ public class FoxPlayerMovement : BasePlayerMovement
     protected override void Update()
     {
         base.Update();
+        if (m_UltimateFlashGameObject == null || m_UltimateFlashMaterial == null) return;
         m_UltimateFlashMaterial.SetFloat("_LocalYClipOffset", transform.position.y);
 
         

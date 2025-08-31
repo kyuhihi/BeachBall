@@ -106,7 +106,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
         m_PlayerDefaultColor = Color.skyBlue;
 
     var active = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-        if (active == "TitleScene")
+        if (active != "TitleScene")
         {
             PlayerUIManager.GetInstance().SetPlayerInfoInUI(this);
         }
