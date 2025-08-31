@@ -65,10 +65,6 @@ public class FoxPlayerMovement : BasePlayerMovement
         base.Update();
         if (m_UltimateFlashGameObject == null || m_UltimateFlashMaterial == null) return;
         m_UltimateFlashMaterial.SetFloat("_LocalYClipOffset", transform.position.y);
-
-        
-
-
     }
 
     public override void OnDefenceSkill(InputValue value)
@@ -129,15 +125,27 @@ public class FoxPlayerMovement : BasePlayerMovement
             m_isMoveByInput = true;
         }
     }//이거 오버라이딩해야함.
+    public override void OnRoundStart()
+    {
 
+        m_isMoveByInput = true;
+
+
+    }
+    public override void OnRoundEnd()
+    {
+        SetTransformToRoundStart();
+
+        m_isMoveByInput = false;
+        m_Rigidbody.linearVelocity = Vector3.zero;
+        m_Rigidbody.angularVelocity = Vector3.zero;
+        m_Animator.SetBool("DefenceSkill", false);
+
+    }
 
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
-
-
-        // 여우의 특수한 움직임이나 기능이 있다면 여기에 추가
-        // 예: 빠른 이동, 점프 등
     }
 
 }

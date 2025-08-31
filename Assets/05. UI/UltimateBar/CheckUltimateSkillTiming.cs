@@ -34,7 +34,7 @@ public class CheckUltimateSkillTiming : MonoBehaviour
         }
         else
         {
-            if (!m_ParticleSystem.isPlaying)
+            if (m_ParticleSystem.isPlaying)
             {
                 m_ParticleSystem.Stop();
                 m_ChildParticleSystem.Stop();

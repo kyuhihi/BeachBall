@@ -1,14 +1,15 @@
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
-using System.Collections.Generic; // �߰�
+using System.Collections.Generic; 
 
-public class Ball : MonoBehaviour
+public class Ball : MonoBehaviour,IResetAbleListener    
 {
     private float speed = 25f;
     private const float MaxSmashSpeed = 30f;
     [SerializeField] private Vector3 direction = Vector3.down;
     private Rigidbody m_Rigidbody;
+
     [SerializeField]private ParticleSystem m_HitParticle;
     [SerializeField]private ParticleSystem m_LandSpotParticle;
     private SphereCollider m_SphereCollider;
@@ -16,7 +17,9 @@ public class Ball : MonoBehaviour
 
     private float _currentSpeed = 0.0f;
     private const string PlayerTag = "Player";
+    private const string WallAndGroundLayerName = "Wall And Ground";
     private static readonly string[] ScoreTags = { "Ground", "Terrain" };
+    private readonly Vector3 InitialRightPosition = new Vector3(-0.83f, 6.24f, -5.76f);
 
     public ParticleSystem LandSpotParticle => m_LandSpotParticle;
 
@@ -25,23 +28,71 @@ public class Ball : MonoBehaviour
     private int lastYSign = -1;
     private bool isYLocked = false;
     private Coroutine yLockCoroutine;
-    private int wasClamped = 0;
+    private float yFlipWindow = 0.3f; // ???: ?????? ????(??, unscaled)
+    private readonly Queue<float> yFlipTimes = new Queue<float>(); // ???: ??????? ?��???
 
-    private float yFlipWindow = 0.3f; // �߰�: ������ ����(��, unscaled)
-    private readonly Queue<float> yFlipTimes = new Queue<float>(); // �߰�: ��ȣ���� �ð���
-
-    // Y �������� Ư�� �����̸� Y ��������� ������ -1�� ����
+    // Y ???????? ??? ??????? Y ????????? ?????? -1?? ????
     private float forceDownRangeMinY = 7.8f;
     private float forceDownRangeMaxY = 8f;
 
-    private float scoreInterval = 0.1f;  // ���� �ּ� ����(��)
+    private float scoreInterval = 0.1f;  // ???? ??? ????(??)
     private float lastScoreTime = -999f;
+    private bool _Stop = false;
+    public void AddResetCall()
+    {
+        Signals.RoundResetAble.AddStart(OnRoundStart);
+        Signals.RoundResetAble.AddEnd(OnRoundEnd);
+    }
+
+    public void RemoveResetCall()
+    {
+        Signals.RoundResetAble.RemoveStart(OnRoundStart);
+        Signals.RoundResetAble.RemoveEnd(OnRoundEnd);
+    }
+    public void OnRoundStart()
+    {
+        m_Rigidbody.WakeUp();
+        direction = Vector3.down;
+        lastYSign = direction.y >= 0f ? 1 : -1;
+        yFlipTimes.Clear();
+        isYLocked = false;
+        _Stop = false;
+    }
+
+    public void OnRoundEnd()
+    {
+        _Stop = true;
+        IPlayerInfo.CourtPosition lastWinner = GameManager.GetInstance().GetLastWinner();
+        Vector3 TargetPosition = InitialRightPosition;
+
+        if (lastWinner == IPlayerInfo.CourtPosition.COURT_LEFT)
+        {
+            TargetPosition.z = Mathf.Abs(TargetPosition.z);
+            transform.position = TargetPosition;
+        }
+
+        m_Rigidbody.linearVelocity = Vector3.zero;
+
+        _currentSpeed = 0.0f;
+        direction = Vector3.zero;
+        m_Rigidbody.Sleep();
+        // TODO: Add logic to handle the ball at the end of a round
+    }
+
+    void OnEnable()
+    {
+        AddResetCall();
+    }
+    void OnDisable()
+    {
+        RemoveResetCall();
+    }
 
     void Start()
     {
         m_Rigidbody = GetComponent<Rigidbody>();
         m_SphereCollider = GetComponent<SphereCollider>();
-        m_Rigidbody.useGravity = false; // �߷� ���? ����
+        m_Rigidbody.useGravity = false; // �߷� ��Ȱ��ȭ
         if (m_HitParticle != null)
         {
             m_HitParticle = Instantiate(m_HitParticle, transform.position, Quaternion.identity);
@@ -53,9 +104,9 @@ public class Ball : MonoBehaviour
             m_LandSpotParticle.Play();
             SetLandSpotParticlePosition();
         }
-        RayLayerMask =LayerMask.GetMask("Wall And Ground");
+        RayLayerMask =LayerMask.GetMask(WallAndGroundLayerName);
 
-        // �ʱ� y��ȣ ���
+        // Y�� ����
         lastYSign = direction.y >= 0f ? 1 : -1;
     }
     private void SetLandSpotParticlePosition()
@@ -73,6 +124,9 @@ public class Ball : MonoBehaviour
 
     void LateUpdate()
     {
+        if(_Stop)
+            return;
+
         if (GameManager.GetInstance().CurrentGameState == GameManager.GameState.CUTSCENE)
         {
             m_Rigidbody.Sleep();
@@ -102,13 +156,13 @@ public class Ball : MonoBehaviour
 
     private void Movement()
     {
-        // ��� y ���� ���� ����
+        // ??? y ???? ???? ????
         if (isYLocked && direction.y > 0f)
         {
             direction = new Vector3(direction.x, -Mathf.Abs(direction.y), direction.z).normalized;
         }
 
-        // Y�� 7~8 ������ ������ Y ��������� -1�� ����
+        // Y?? 7~8 ?????? ?????? Y ????????? -1?? ????
         float yPos = transform.position.y;
         if (yPos >= forceDownRangeMinY && yPos <= forceDownRangeMaxY)
         {
@@ -132,7 +186,8 @@ public class Ball : MonoBehaviour
 
     public void OnCollisionEnter(Collision other)
     {
-        // �浹 �����Ϳ��� �ʿ��� �� ���� �� ���� ó�� ȣ��
+        if (_Stop) return;
+        // ?�� ????????? ????? ?? ???? ?? ???? ??? ???
         Vector3 contactPoint = other.contacts[0].point;
         Vector3 hitNormal;
         var wall = other.gameObject.GetComponent<Wall>();
@@ -142,27 +197,27 @@ public class Ball : MonoBehaviour
         ProcessHit(other.gameObject, other.collider, contactPoint, hitNormal);
     }
 
-    // �ܺο����� ���� ������ ȣ���� �� �ִ� ������
+    // ??��????? ???? ?????? ????? ?? ??? ??????
     public void ExternalHit(Vector3 contactPoint, Vector3 hitNormal, Collider otherCollider = null, GameObject otherGO = null)
     {
         ProcessHit(otherGO, otherCollider, contactPoint, hitNormal);
     }
 
-    // �浹 ó�� ���� �޼���(���� OnCollisionEnter ����)
+    // ?�� ??? ???? ?????(???? OnCollisionEnter ????)
     private void ProcessHit(GameObject otherGO, Collider otherCol, Vector3 contactPoint, Vector3 hitNormal)
     {
-        // 1) �÷��̾�� �浹 ȿ��
+        // 1) ?��????? ?�� ???
         if (otherGO != null && otherGO.CompareTag(PlayerTag))
         {
             CameraShakingManager.Instance.DoShake(0.1f, 1f);
             HitStopManager.Instance.DoHitStop(0.1f, 0.1f);
             _currentSpeed = MaxSmashSpeed;
             IPlayerInfo.CourtPosition courtPos = otherGO.GetComponent<IPlayerInfo>().m_CourtPosition;
-            PlayerUIManager.GetInstance().UpUltimateBar(courtPos); // �ñر� ������ 10 ����
+            PlayerUIManager.GetInstance().UpUltimateBar(courtPos); // ???? ?????? 10 ????
         }
         else
         {
-            // ��/���� ���� �� ���� (��ٿ� ����)
+            // ??/???? ???? ?? ???? (???? ????)
             if (otherGO != null && (otherGO.name == ScoreTags[0] || otherGO.name == ScoreTags[1]))
             {
                 if (Time.time - lastScoreTime >= scoreInterval)
@@ -176,11 +231,11 @@ public class Ball : MonoBehaviour
             }
         }
 
-        // 2) ��Ʈ ��� ����(���� ��� ����)
+        // 2) ??? ??? ????(???? ??? ????)
         if (hitNormal == Vector3.zero)
             hitNormal = (transform.position - contactPoint).normalized;
 
-        // 3) �ݻ� ���� ��� �� Y-�ø� ����
+        // 3) ??? ???? ??? ?? Y-?��? ????
         Vector3 newDir = Vector3.Reflect(direction, hitNormal).normalized;
 
         int newSign = newDir.y >= 0f ? 1 : -1;
@@ -199,7 +254,7 @@ public class Ball : MonoBehaviour
         }
         direction = newDir;
 
-        // 4) ���� ����(��� �ݶ��̴��� ������)
+        // 4) ???? ????(??? ???????? ??????)
         if (otherCol != null)
         {
             Vector3 pushDir;
@@ -212,7 +267,7 @@ public class Ball : MonoBehaviour
                 transform.position += pushDir * pushDistance;
         }
 
-        // 5) ��ƼŬ/���� ����
+        // 5) ????/???? ????
         if (m_HitParticle != null)
         {
             m_HitParticle.Stop();
@@ -225,25 +280,22 @@ public class Ball : MonoBehaviour
 
     private Vector3 AdjustDirectionY(Vector3 dir)
     {
-
-
-
-        float sign = Mathf.Sign(dir.y); // ���� ��ȣ ���
-        float signZ = Mathf.Sign(dir.z); // ���� ��ȣ ���
+        float sign = Mathf.Sign(dir.y); // ???? ??? ???
+        float signZ = Mathf.Sign(dir.z); // ???? ??? ???
 
         float absY = Mathf.Abs(dir.y);
         float absZ = Mathf.Abs(dir.z);
 
         if (absY < 0.5f)
         {
-            // 0.5 ~ 1 ���� �ȿ��� ���� y ũ�⸦ ����
+            // 0.5 ~ 1 ???? ????? ???? y ??? ????
             float clampedY = Mathf.Clamp(absY, 0.7f, 1f);
             float clampedZ = Mathf.Clamp(absZ, 0.7f, 1f);
             dir.y = clampedY * sign;
             dir.z = clampedZ * signZ;
         }
 
-        return dir.normalized; // ���� ���ʹ� �׻� ����ȭ
+        return dir.normalized; // ???? ????? ??? ?????
     }
 
     private System.Collections.IEnumerator LockYNegativeFor(float duration)
@@ -252,7 +304,7 @@ public class Ball : MonoBehaviour
         float end = Time.time + duration;
         while (Time.time < end)
         {
-            // � ��ηε� ����� �Ǹ� ��� ������ ����
+            // ?? ??���? ????? ??? ??? ?????? ????
             if (direction.y > 0f)
                 direction = new Vector3(direction.x, -Mathf.Abs(direction.y), direction.z).normalized;
             yield return null;
@@ -260,17 +312,17 @@ public class Ball : MonoBehaviour
         isYLocked = false;
     }
 
-    // �߰�: ��ȣ ���� �ð��� ����ϰ�, ������ ���� �׸� ����
+    // ???: ??? ???? ?��??? ??????, ?????? ???? ??? ????
     private void RegisterYFlipTime()
     {
-        float now = Time.unscaledTime; // HitStop ����
+        float now = Time.unscaledTime; // HitStop ????
         yFlipTimes.Enqueue(now);
-        // ������ ���� ������ �̺�Ʈ ����
+        // ?????? ???? ?????? ???? ????
         while (yFlipTimes.Count > 0 && now - yFlipTimes.Peek() > yFlipWindow)
             yFlipTimes.Dequeue();
     }
 
-    // �߰�: ���� ������ �ȿ����� �ø� Ƚ���� �Ӱ�ġ�� �Ѵ���
+    // ???: ???? ?????? ??????? ?��? ????? ?????? ?????
     private bool ShouldLockYByFlipBurst()
     {
         float now = Time.unscaledTime;

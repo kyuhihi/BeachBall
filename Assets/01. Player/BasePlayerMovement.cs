@@ -6,7 +6,7 @@ using UnityEngine.Playables;
 using System.Threading;
 using System.Collections.Generic;
 
-public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
+public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener, IResetAbleListener
 {
     public IPlayerInfo.PlayerType m_PlayerType { get; set; }
     public Color m_PlayerDefaultColor { get; set; }
@@ -123,40 +123,59 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
 
     private bool _cutsceneSubscribed = false;
 
-
+    protected Vector3 m_StartPosition = Vector3.zero;
+    protected Vector3 m_StartRotationEuler = Vector3.zero;
     public virtual void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition) { }
     public virtual void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition){}//이거 오버라이딩해야함.
+    public virtual void OnRoundStart() { Debug.Log("너 라운드 시작 혹시 구독만 했니? 오버라이딩하렴."); }
+    public virtual void OnRoundEnd() { Debug.Log("너 라운드 끝 혹시 구독만 했니? 오버라이딩하렴."); }
+    public virtual void AddResetCall()
+    {
+        Signals.RoundResetAble.AddStart(OnRoundStart);
+        Signals.RoundResetAble.AddEnd(OnRoundEnd);
+    }
+    public virtual void RemoveResetCall()
+    {
+        Signals.RoundResetAble.RemoveStart(OnRoundStart);
+        Signals.RoundResetAble.RemoveEnd(OnRoundEnd);
+    }
+    protected void SetTransformToRoundStart() { gameObject.transform.position = m_StartPosition; gameObject.transform.rotation = Quaternion.Euler(m_StartRotationEuler); }
+
     protected virtual void Start()
     {
+        m_StartPosition = gameObject.transform.position;
+        m_StartRotationEuler = Vector3.zero;
         if (gameObject.transform.position.z < 0.0f)
         {
             m_CourtPosition = IPlayerInfo.CourtPosition.COURT_RIGHT;
+
         }
         else
         {
+            m_StartRotationEuler.y = 180.0f;
             m_CourtPosition = IPlayerInfo.CourtPosition.COURT_LEFT;
         }
-
-        // Signals.Cutscene.AddStart((playerType, courtPosition) => OnStartCutScene(playerType, courtPosition));
-        // Signals.Cutscene.AddEnd((playerType, courtPosition) => OnEndCutscene(playerType, courtPosition));
     }
 
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         // 명명된 핸들러로 구독
         if (!_cutsceneSubscribed)
         {
+            AddResetCall();
             Signals.Cutscene.AddStart(OnStartCutScene);
             Signals.Cutscene.AddEnd(OnEndCutscene);
             _cutsceneSubscribed = true;
+
         }
     }
 
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
         // 명명된 핸들러로 해제(람다 쓰지 말 것)
         if (_cutsceneSubscribed)
         {
+            RemoveResetCall();
             Signals.Cutscene.RemoveStart(OnStartCutScene);
             Signals.Cutscene.RemoveEnd(OnEndCutscene);
             _cutsceneSubscribed = false;

@@ -39,9 +39,9 @@ Material:
     - _Brightness: 1
     - _ChipFadeSpeed: 5.56
 <<<<<<< HEAD
-    - _ChipHealth: 1
+    - _ChipHealth: 0.3
 =======
-    - _ChipHealth: 0.5
+    - _ChipHealth: 0.1
 >>>>>>> origin/Kyu_Map
     - _DamageFadeSpeed: 3
     - _EdgeAdd: 6
@@ -67,9 +67,9 @@ Material:
     - _HeadSharpness: 3
     - _HeadWidthPx: 0
 <<<<<<< HEAD
-    - _Health: 1
+    - _Health: 0.3
 =======
-    - _Health: 0.5
+    - _Health: 0.1
 >>>>>>> origin/Kyu_Map
     - _HeightPx: 32
     - _HighlightAdd: 20
@@ -96,9 +96,9 @@ Material:
     - _OuterBorderPx: 0
     - _OuterBorderSoftPx: 1.25
 <<<<<<< HEAD
-    - _PrevHealth: 1
+    - _PrevHealth: 0.3
 =======
-    - _PrevHealth: 0.5
+    - _PrevHealth: 0.1
 >>>>>>> origin/Kyu_Map
     - _ResolutionX: 300
     - _ResolutionY: 37.29

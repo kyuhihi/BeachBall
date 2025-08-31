@@ -29,3 +29,11 @@ public interface ICutSceneListener
     void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition);
     void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition);
 }
+
+public interface IResetAbleListener
+{
+    void AddResetCall();
+    void RemoveResetCall();
+    void OnRoundStart();
+    void OnRoundEnd();
+}

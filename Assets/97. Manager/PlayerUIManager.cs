@@ -1,8 +1,10 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerUIManager : MonoBehaviour, ICutSceneListener
 {    //==============================SingleTonSetting=============================
+
     private static PlayerUIManager Instance;
     public static PlayerUIManager GetInstance() => Instance;
     public static void SetInstance(PlayerUIManager instance) => Instance = instance;
@@ -30,12 +32,16 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
     private const string CanvasObjName = "WorldUICanvas";
     private const float StunUIYOffset = 1.66f;
     private const float CanUltimateUIYOffset = 0.6f;
+    private IPlayerInfo.CourtPosition m_eLastWinner = IPlayerInfo.CourtPosition.COURT_END;
+    public IPlayerInfo.CourtPosition GetLastWinner() { return m_eLastWinner; }
 
 
     [SerializeField] private UIInfoBase[] PlayerUltimateBars = new UIInfoBase[2];//L R
     [SerializeField] private UIInfoBase[] PlayerDashBars = new UIInfoBase[2];//L R
     [SerializeField] private UIInfoBase[] PlayerScoreCounts = new UIInfoBase[2];//L R
-
+    [SerializeField] private UIInfoBase[] RoundScoreCounts = new UIInfoBase[2];//L R
+    private ScreenWipeDriver m_ScreenWipeDriver;
+    private Countdown m_SecondCountdown;
 
     void Awake()
     {
@@ -46,15 +52,14 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
 
     void OnEnable()
     {
-        Signals.Cutscene.AddStart((playerType, courtPosition) => OnStartCutScene(playerType, courtPosition));
-        Signals.Cutscene.AddEnd((playerType, courtPosition) => OnEndCutscene(playerType, courtPosition));
+        Signals.Cutscene.AddStart(OnStartCutScene);
+        Signals.Cutscene.AddEnd(OnEndCutscene);
     }
     void OnDisable()
     {
-        Signals.Cutscene.RemoveStart((playerType, courtPosition) => OnStartCutScene(playerType, courtPosition));
-        Signals.Cutscene.RemoveEnd((playerType, courtPosition) => OnEndCutscene(playerType, courtPosition));
+        Signals.Cutscene.RemoveStart(OnStartCutScene);
+        Signals.Cutscene.RemoveEnd(OnEndCutscene);
     }
-
     public void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
         if (!m_WorldUICanvas) SetUpCanvas();
@@ -62,7 +67,7 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
         // UI 비활성 (필요 시 유지)
         if (m_WorldUICanvas) m_WorldUICanvas.SetActive(false);
         ApplyPauseToUICanvas(true);   // 모든 자손 IPauseable Pause
-
+Debug.Log("Start Cutscene");
     }
 
     public void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
@@ -76,7 +81,6 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
 
     void Start()
     {
-
         if (!m_WorldUICanvas) SetUpCanvas();
         SetUpPlayers();
     }
@@ -84,6 +88,8 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
     private void SetUpCanvas()
     {
         if (m_WorldUICanvas) return;
+        m_ScreenWipeDriver = FindFirstObjectByType<ScreenWipeDriver>();
+        m_SecondCountdown = FindFirstObjectByType<Countdown>();
         var canvases = FindObjectsByType<Canvas>(FindObjectsSortMode.None);
         for (int i = 0; i < canvases.Length; i++)
         {
@@ -116,6 +122,19 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
     void LateUpdate()
     {
         UpdatePlayerUIs();
+    }
+
+    public void FadeStart(ScreenWipeDriver.FadeDirection direction)
+    {
+        switch (direction)
+        {
+            case ScreenWipeDriver.FadeDirection.In:
+                m_ScreenWipeDriver?.OnRoundEndFade();
+                break;
+            case ScreenWipeDriver.FadeDirection.Out:
+                m_ScreenWipeDriver?.OnRoundStartFade();
+                break;
+        }
     }
 
     private void UpdatePlayerUIs()
@@ -160,6 +179,8 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
             }
             //=====================================================================================
         }
+        //CheckUltimateBarEffectTiming();
+
     }
 
     // 모든 자식 + 하위 자식들 중 IPauseable 컴포넌트 찾아 Pause/Resume
@@ -221,13 +242,12 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
             case IUIInfo.UIType.UltimateBar:
                 PlayerUltimateBars[iLRIndex].UseAbility();
                 break;
-            case IUIInfo.UIType.ScoreCount:
             default:
                 break;
         }
         return true;
     }
-    public void UpScore(IPlayerInfo.CourtPosition courtPosition)
+    public void UpScore(IPlayerInfo.CourtPosition courtPosition)//volleyball hit count
     {
         int iLRIndex = 0;
         if (courtPosition != IPlayerInfo.CourtPosition.COURT_RIGHT)
@@ -236,32 +256,36 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
         PlayerScoreCounts[iLRIndex].DecreaseValueInt(-1);
     }
 
-    public void UpUltimateBar(IPlayerInfo.CourtPosition courtPosition)
+    public int GetCurrentSecond()
+    {
+        return m_SecondCountdown.GetRestSecond();
+    }
+    public void RoundEndUpScore()
+    {
+        int iLeftScore = PlayerScoreCounts[0].GetValueInt;
+        int iRightScore = PlayerScoreCounts[1].GetValueInt;
+        if (iLeftScore > iRightScore)
+        {
+            m_eLastWinner = IPlayerInfo.CourtPosition.COURT_LEFT;
+            RoundScoreCounts[0].DecreaseValueInt(-1);
+        }
+        else if (iLeftScore < iRightScore)
+        {
+            m_eLastWinner = IPlayerInfo.CourtPosition.COURT_RIGHT;
+            RoundScoreCounts[1].DecreaseValueInt(-1);
+        }
+    }
+    public void UpUltimateBar(IPlayerInfo.CourtPosition courtPosition,float fAmount = 0.1f)
     {
         int iLRIndex = 0;
         if (courtPosition == IPlayerInfo.CourtPosition.COURT_RIGHT)
             iLRIndex = 1;
 
-        PlayerUltimateBars[iLRIndex].DecreaseValueFloat(-0.1f);
-
-        foreach (var playerUI in Players)
-        {
-            var info = playerUI.PlayerObject.GetComponent<IPlayerInfo>();
-            if (info.m_CourtPosition != courtPosition)
-                continue;
-            var ultimateBar = PlayerUltimateBars[iLRIndex];
-            if (ultimateBar.GetComponent<UltimateBarDriver>().GetGauge() >= 0.999f)
-            {
-                playerUI.CanUltimateWorldEffect.SetActive(true);
-                var particleMain = playerUI.CanUltimateWorldEffect.GetComponent<ParticleSystem>().main;
-                particleMain.startColor = info.m_PlayerDefaultColor;
-            }
-            else
-            {
-                playerUI.CanUltimateWorldEffect.SetActive(false);
-            }
-        }
+        PlayerUltimateBars[iLRIndex].DecreaseValueFloat(-fAmount);
     }
+
+   
+
     public void SetPlayerInfoInUI(IPlayerInfo playerInfo)
     {
         var headMeshUIs = FindObjectsByType<HeadMeshUI>(FindObjectsSortMode.None);
