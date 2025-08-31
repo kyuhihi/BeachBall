@@ -26,8 +26,8 @@ public class TitleButtonMesh : MonoBehaviour
 
     // 선택 완료 시 자동 씬 진입 여부
     [SerializeField] private bool autoLoadOnComplete = true;
-    [SerializeField] private string scene1vs1 = "Cho_Scene";
-    [SerializeField] private string scene1vsCPU = "Cho_Scene";
+    [SerializeField] private string scene1vs1 = "ComSceneTest";
+    [SerializeField] private string scene1vsCPU = "ComSceneTest";
 
     private bool isRotating = false;
     private bool isFixed90 = false;
@@ -42,6 +42,8 @@ public class TitleButtonMesh : MonoBehaviour
     [SerializeField] private TMP_Text selectionPromptText;   // 추가: 선택 안내 문구(TMP 텍스트)
 
     [SerializeField] private bool clearSelectionOnClose = true; // 추가: 닫을 때 선택 초기화할지
+
+    private static bool s_isSceneLoading = false; // 씬 로드 중 플래그
 
     private void Start()
     {
@@ -68,8 +70,7 @@ public class TitleButtonMesh : MonoBehaviour
         if (GameSettings.Instance != null)
             GameSettings.Instance.SelectionChanged += OnSelectionChanged;
     }
-
-    private void OnDisable()
+  private void OnDisable()
     {
         if (mouseClickAction != null)
         {
@@ -80,11 +81,8 @@ public class TitleButtonMesh : MonoBehaviour
         if (GameSettings.Instance != null)
             GameSettings.Instance.SelectionChanged -= OnSelectionChanged;
 
-
-        CloseCharacterSelectIfOpen();
-
+        CloseCharacterSelectIfOpen(); // 아래서 씬 로드 중이면 초기화 건너뜀
     }
-
 
     private void CloseCharacterSelectIfOpen()
     {
@@ -92,10 +90,11 @@ public class TitleButtonMesh : MonoBehaviour
         {
             characterSelectRoot.SetActive(false);
 
-            if (clearSelectionOnClose && GameSettings.Instance != null)
+            // 씬 로딩 중에는 선택 초기화 금지(로드 후 GameSceneManager가 읽어야 함)
+            if (!s_isSceneLoading && clearSelectionOnClose && GameSettings.Instance != null)
             {
-                GameSettings.Instance.ClearAllSelectedCharacters(); // P1/P2/CPU 선택 초기화
-                if (selectionPromptText) selectionPromptText.text = ""; // 안내 문구 정리
+                GameSettings.Instance.ClearAllSelectedCharacters(); // P1/P2/CPU 초기화
+                if (selectionPromptText) selectionPromptText.text = "";
             }
         }
     }
@@ -306,7 +305,7 @@ public class TitleButtonMesh : MonoBehaviour
         }
     }
 
-    private void HandleCharacterSelectionClick()
+     private void HandleCharacterSelectionClick()
     {
         var gs = GameSettings.Instance;
         if (gs == null) return;
@@ -327,12 +326,22 @@ public class TitleButtonMesh : MonoBehaviour
 
         if (gs.TrySelectCurrent(id, out var completed, out var err))
         {
-            UpdateVisualBySelection(); // 내 버튼 갱신
-            UpdateSelectionPrompt();   // 안내 문구 갱신
+            UpdateVisualBySelection();
+            UpdateSelectionPrompt();
 
             // 완료 시 자동 씬 진입
             if (completed && autoLoadOnComplete)
             {
+                // 디버그: 슬롯/ID 출력
+                string p1  = gs.GetCharacterForSlot("P1");
+                string p2  = gs.GetCharacterForSlot("P2");
+                string cpu = gs.GetCharacterForSlot("CPU");
+                string T(string s) => string.IsNullOrWhiteSpace(s) ? "(null)" : s.Trim();
+                Debug.Log($"[Title] Load Scene - mode='{gs.gameMode}', P1='{T(p1)}', P2='{T(p2)}', CPU='{T(cpu)}'");
+
+                // 씬 로딩 플래그 On → OnDisable에서 선택 초기화 방지
+                s_isSceneLoading = true;
+
                 if (gs.gameMode == "1vs1") SceneManager.LoadScene(scene1vs1);
                 else SceneManager.LoadScene(scene1vsCPU);
             }
@@ -342,6 +351,8 @@ public class TitleButtonMesh : MonoBehaviour
             Debug.Log(err ?? "선택 실패");
         }
     }
+
+    public static void ResetSceneLoadingFlag() => s_isSceneLoading = false;
 
     private void ShowLabel()
     {

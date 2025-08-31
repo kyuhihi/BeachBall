@@ -16,14 +16,11 @@ public class PlayerInputRegistrar : MonoBehaviour
         P1,
         P2,
         CPU,
-        Custom               // 아래 customSlot 사용
+
     }
 
     [Header("Slot 설정")]
     public SlotMode slotMode = SlotMode.AutoFromPlayerIndex;
-
-    [Tooltip("slotMode가 Custom일 때만 사용. 예: P3, Boss, Spectator 등")]
-    public string customSlot;
 
     [FormerlySerializedAs("slotOverride")] // 기존 필드명을 썼다면 자동 마이그레이션
     [SerializeField, HideInInspector] private string slotOverride_legacy;
@@ -63,8 +60,7 @@ public class PlayerInputRegistrar : MonoBehaviour
             case SlotMode.P1: return "P1";
             case SlotMode.P2: return "P2";
             case SlotMode.CPU: return "CPU";
-            case SlotMode.Custom:
-                return string.IsNullOrWhiteSpace(customSlot) ? null : customSlot.Trim();
+
             case SlotMode.AutoFromPlayerIndex:
             default:
                 // playerIndex(0→P1, 1→P2, …)

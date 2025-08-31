@@ -159,6 +159,7 @@ public class GameSettings : MonoBehaviour
 
     public void LoadKeyBindings()
     {
+        Debug.Log("GameSettings: LoadKeyBindings()");
         foreach (var a in registeredAssets)
             LoadForAsset(a);
     }
@@ -170,7 +171,7 @@ public class GameSettings : MonoBehaviour
         gameMode = mode;
         forbidDuplicateChars = forbidDuplicate;
         if (clearExisting) ClearAllSelectedCharacters();
-        _currentSelectSlot = (mode == "1vs1") ? "P1" : "P1"; // 1vsCPU도 P1에 기록(플레이어 한 명)
+        _currentSelectSlot = (mode == "1vs1") ? "P1" : "CPU"; // 1vsCPU도 P1에 기록(플레이어 한 명)
         SelectionChanged?.Invoke();
     }
 
@@ -192,7 +193,7 @@ public class GameSettings : MonoBehaviour
         if (gameMode == "1vs1")
             _currentSelectSlot = (_currentSelectSlot == "P1") ? "P2" : null;
         else
-            _currentSelectSlot = null;
+            _currentSelectSlot = "";
 
         completed = string.IsNullOrEmpty(_currentSelectSlot);
         SelectionChanged?.Invoke();
@@ -249,12 +250,12 @@ public class GameSettings : MonoBehaviour
         }
         else // 1vsCPU
         {
-            var playerChar = GetCharacterForSlot("P1");
+            var playerChar = GetCharacterForSlot("CPU");
             var cpuChar = GetCharacterForSlot("CPU");
             if (string.IsNullOrEmpty(cpuChar)) cpuChar = playerChar;
 
             if (!string.IsNullOrEmpty(playerChar))
-                list.Add(new SpawnSpec { slot = "P1",  characterId = playerChar, isHuman = true });
+                list.Add(new SpawnSpec { slot = "CPU",  characterId = playerChar, isHuman = true });
             if (!string.IsNullOrEmpty(cpuChar))
                 list.Add(new SpawnSpec { slot = "CPU", characterId = cpuChar, isHuman = false });
         }

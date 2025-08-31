@@ -1134,7 +1134,6 @@ MonoBehaviour:
   id: Fox
   slot: 
   slotMode: 1
-  customSlot: P1
   slotOverride_legacy: 
 --- !u!1 &443477483
 GameObject:
@@ -2193,11 +2192,15 @@ PrefabInstance:
       objectReference: {fileID: 443477483}
     - target: {fileID: 8526536210030557695, guid: 2e2a62d57845dd94f95b11a298018c58, type: 3}
       propertyPath: scene1vs1
-      value: Cho_Scene
+      value: ComSceneTest1vs1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8526536210030557695, guid: 2e2a62d57845dd94f95b11a298018c58, type: 3}
+      propertyPath: characterId
+      value: Turtle
       objectReference: {fileID: 0}
     - target: {fileID: 8526536210030557695, guid: 2e2a62d57845dd94f95b11a298018c58, type: 3}
       propertyPath: scene1vsCPU
-      value: Cho_Scene
+      value: ComSceneTest
       objectReference: {fileID: 0}
     - target: {fileID: 8526536210030557695, guid: 2e2a62d57845dd94f95b11a298018c58, type: 3}
       propertyPath: buttonHaviorName
@@ -3415,11 +3418,15 @@ PrefabInstance:
       objectReference: {fileID: 118419485}
     - target: {fileID: 8411091182242037134, guid: a87a740b29fb4bb4bb432273b332fd75, type: 3}
       propertyPath: scene1vs1
-      value: Cho_Scene
+      value: ComSceneTest1vs1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8411091182242037134, guid: a87a740b29fb4bb4bb432273b332fd75, type: 3}
+      propertyPath: characterId
+      value: Fox
       objectReference: {fileID: 0}
     - target: {fileID: 8411091182242037134, guid: a87a740b29fb4bb4bb432273b332fd75, type: 3}
       propertyPath: scene1vsCPU
-      value: Cho_Scene
+      value: ComSceneTest
       objectReference: {fileID: 0}
     - target: {fileID: 8411091182242037134, guid: a87a740b29fb4bb4bb432273b332fd75, type: 3}
       propertyPath: buttonHaviorName
@@ -5954,13 +5961,33 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1158781069}
     - target: {fileID: 3084555260344398940, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
+      propertyPath: scene1vs1
+      value: ComSceneTest
+      objectReference: {fileID: 0}
+    - target: {fileID: 3084555260344398940, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
+      propertyPath: scene1vsCPU
+      value: ComSceneTest
+      objectReference: {fileID: 0}
+    - target: {fileID: 3084555260344398940, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: keySettingPanel
       value: 
       objectReference: {fileID: 1374120753}
+    - target: {fileID: 3084555260344398940, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
+      propertyPath: autoLoadOnComplete
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3959290207836044548, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: meshLabel
       value: 
       objectReference: {fileID: 61473441}
+    - target: {fileID: 3959290207836044548, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
+      propertyPath: scene1vs1
+      value: ComSceneTest
+      objectReference: {fileID: 0}
+    - target: {fileID: 3959290207836044548, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
+      propertyPath: scene1vsCPU
+      value: ComSceneTest
+      objectReference: {fileID: 0}
     - target: {fileID: 3959290207836044548, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: keySettingPanel
       value: 
@@ -6025,6 +6052,14 @@ PrefabInstance:
       propertyPath: meshLabel
       value: 
       objectReference: {fileID: 1257386753}
+    - target: {fileID: 8308226184048919081, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
+      propertyPath: scene1vs1
+      value: ComSceneTest
+      objectReference: {fileID: 0}
+    - target: {fileID: 8308226184048919081, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
+      propertyPath: scene1vsCPU
+      value: ComSceneTest
+      objectReference: {fileID: 0}
     - target: {fileID: 8308226184048919081, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: keySettingPanel
       value: 
