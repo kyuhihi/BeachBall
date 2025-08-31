@@ -113,23 +113,18 @@ public class GameManager : MonoBehaviour, IResetAbleListener
         Signals.RoundResetAble.RaiseStart();
     }
 
-    public bool ConfineObjectPosition(GameObject obj, float YOffset = 0.3f)
+    public void ConfineObjectPosition(GameObject obj, out bool yClamped, out bool zClamped, float YOffset = 0.3f)
     {
         float zFixedPos;
-        bool zClamped;
         zClamped = IsClamped(obj.transform.position.z, -MapOutZDistance, MapOutZDistance, out zFixedPos);
         // 적용
         obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, zFixedPos);
         // Y Position 고정 체크
         float yFixedPos;
-        bool yClamped = IsClamped(obj.transform.position.y, -0.1f, MapOutYDistance + YOffset, out yFixedPos);
+        yClamped = IsClamped(obj.transform.position.y, -0.1f, MapOutYDistance + YOffset, out yFixedPos);
         // 적용
         obj.transform.position = new Vector3(obj.transform.position.x, yFixedPos, obj.transform.position.z);
-        if (yClamped)
-        {
-            return true;
-        }
-        return false;
+
     }
     private void ConfinePlayersPosition()
     {

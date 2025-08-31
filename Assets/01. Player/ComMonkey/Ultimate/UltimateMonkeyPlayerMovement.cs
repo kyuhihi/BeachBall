@@ -54,7 +54,7 @@ public class UltimateMonkeyPlayerMovement : BasePlayerMovement
     }
     public void LateUpdate()
     {
-        GameManager.GetInstance().ConfineObjectPosition(this.gameObject);
+        GameManager.GetInstance().ConfineObjectPosition(this.gameObject, out bool yClamped, out bool zClamped);
     }
     public override void OnDefenceSkill(InputValue value)
     {
@@ -77,26 +77,28 @@ public class UltimateMonkeyPlayerMovement : BasePlayerMovement
     }
     public override void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
+        m_isMoveByInput = false;
+        if (playerType != IPlayerInfo.PlayerType.Monkey)
+            return;
         if (monkeyType == UltimateMonkeyType.TYPE_SHOW)
         {
-          this.gameObject.SetActive(true);
+            this.gameObject.SetActive(true);
         }
-        m_isMoveByInput = false;
     }
     public override void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
         m_isMoveByInput = true;
-        if (playerType == IPlayerInfo.PlayerType.Monkey)
+        if (playerType != IPlayerInfo.PlayerType.Monkey)
+            return;
+        if (monkeyType != UltimateMonkeyType.TYPE_SHOW)
         {
-            if (monkeyType != UltimateMonkeyType.TYPE_SHOW)
-            {
-                this.gameObject.SetActive(true);
-            }
-            else
-            {
-                this.gameObject.SetActive(false);
-            }
+            this.gameObject.SetActive(true);
         }
+        else
+        {
+            this.gameObject.SetActive(false);
+        }
+
     }
 
     public override void OnRoundStart()
@@ -111,6 +113,7 @@ public class UltimateMonkeyPlayerMovement : BasePlayerMovement
         m_isMoveByInput = false;
         m_Rigidbody.linearVelocity = Vector3.zero;
         m_Rigidbody.angularVelocity = Vector3.zero;
+
     }
 
     protected override void FixedUpdate()

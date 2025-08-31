@@ -281,6 +281,8 @@ public class MonkeyPlayerMovement : BasePlayerMovement
 
         LateUpdate();
         m_isMoveByInput = true;
+        GetComponent<CapsuleCollider>().enabled = true;
+
         m_Rigidbody.WakeUp();
     }
     public override void OnRoundEnd()
@@ -288,18 +290,19 @@ public class MonkeyPlayerMovement : BasePlayerMovement
         m_isMoveByInput = false;
         stretchAnimT = 0.0f;
         stretchAnimDir = 0f;
-    
+
         m_Rigidbody.linearVelocity = Vector3.zero;
         m_Rigidbody.angularVelocity = Vector3.zero;
         m_Rigidbody.Sleep();
         SetTransformToRoundStart();
+        GetComponent<CapsuleCollider>().enabled = false;
 
     }
 
 
     public void ThrowBanana(Transform OtherPlayer)
     {
-        if (OtherPlayer == null) return;
+        if (OtherPlayer == null|| !m_isMoveByInput) return;
         PlayerUIManager UIMgrInstance = PlayerUIManager.GetInstance();
         if (UIMgrInstance.GetCurrentSecond() > 5 && UIMgrInstance.UseAbility(IUIInfo.UIType.UltimateBar, m_CourtPosition))
         {

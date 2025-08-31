@@ -67,7 +67,6 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
         // UI 비활성 (필요 시 유지)
         if (m_WorldUICanvas) m_WorldUICanvas.SetActive(false);
         ApplyPauseToUICanvas(true);   // 모든 자손 IPauseable Pause
-Debug.Log("Start Cutscene");
     }
 
     public void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)

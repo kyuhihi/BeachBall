@@ -23,17 +23,6 @@ public class Ball : MonoBehaviour,IResetAbleListener
 
     public ParticleSystem LandSpotParticle => m_LandSpotParticle;
 
-    private int yFlipThreshold = 8;
-    private float yLockDuration = 0.5f;
-    private int lastYSign = -1;
-    private bool isYLocked = false;
-    private Coroutine yLockCoroutine;
-    private float yFlipWindow = 0.3f; // ???: ?????? ????(??, unscaled)
-    private readonly Queue<float> yFlipTimes = new Queue<float>(); // ???: ??????? ?©£???
-
-    // Y ???????? ??? ??????? Y ????????? ?????? -1?? ????
-    private float forceDownRangeMinY = 7.8f;
-    private float forceDownRangeMaxY = 8f;
 
     private float scoreInterval = 0.1f;  // ???? ??? ????(??)
     private float lastScoreTime = -999f;
@@ -51,11 +40,10 @@ public class Ball : MonoBehaviour,IResetAbleListener
     }
     public void OnRoundStart()
     {
+        m_SphereCollider.enabled = true;
         m_Rigidbody.WakeUp();
         direction = Vector3.down;
-        lastYSign = direction.y >= 0f ? 1 : -1;
-        yFlipTimes.Clear();
-        isYLocked = false;
+
         _Stop = false;
     }
 
@@ -73,10 +61,10 @@ public class Ball : MonoBehaviour,IResetAbleListener
 
         m_Rigidbody.linearVelocity = Vector3.zero;
 
+        m_SphereCollider.enabled = false;
         _currentSpeed = 0.0f;
         direction = Vector3.zero;
         m_Rigidbody.Sleep();
-        // TODO: Add logic to handle the ball at the end of a round
     }
 
     void OnEnable()
@@ -107,7 +95,6 @@ public class Ball : MonoBehaviour,IResetAbleListener
         RayLayerMask =LayerMask.GetMask(WallAndGroundLayerName);
 
         // YÃà °íÁ¤
-        lastYSign = direction.y >= 0f ? 1 : -1;
     }
     private void SetLandSpotParticlePosition()
     {
@@ -136,38 +123,23 @@ public class Ball : MonoBehaviour,IResetAbleListener
         {
             m_Rigidbody.WakeUp();
         }
+
         Movement();
 
-        bool bClamped = GameManager.GetInstance().ConfineObjectPosition(this.gameObject, YOffset: 1.0f);
-        if (bClamped)
+        GameManager.GetInstance().ConfineObjectPosition(this.gameObject, out bool yClamped, out bool zClamped, YOffset: 1.0f);
+        if (yClamped)
         {
             if (gameObject.transform.position.y <= -0.1f)
             {
                 direction.y = Mathf.Abs(direction.y);
-                transform.position = new Vector3(transform.position.x, 1.0f, transform.position.z);
-                m_Rigidbody.AddForce(Vector3.up * 5f, ForceMode.Impulse);
             }
-
         }
-
-
     }
-    
 
     private void Movement()
     {
-        // ??? y ???? ???? ????
-        if (isYLocked && direction.y > 0f)
-        {
-            direction = new Vector3(direction.x, -Mathf.Abs(direction.y), direction.z).normalized;
-        }
-
-        // Y?? 7~8 ?????? ?????? Y ????????? -1?? ????
         float yPos = transform.position.y;
-        if (yPos >= forceDownRangeMinY && yPos <= forceDownRangeMaxY)
-        {
-            direction = new Vector3(direction.x, -1f, direction.z);
-        }
+
 
         Vector3 PredictPos = transform.position + direction * _currentSpeed * Time.deltaTime;
 
@@ -238,20 +210,8 @@ public class Ball : MonoBehaviour,IResetAbleListener
         // 3) ??? ???? ??? ?? Y-?©ª? ????
         Vector3 newDir = Vector3.Reflect(direction, hitNormal).normalized;
 
-        int newSign = newDir.y >= 0f ? 1 : -1;
-        if (newSign != lastYSign)
-        {
-            lastYSign = newSign;
-            RegisterYFlipTime();
-        }
-        if (ShouldLockYByFlipBurst())
-        {
-            newDir = new Vector3(newDir.x, -Mathf.Abs(newDir.y), newDir.z).normalized;
-            if (yLockCoroutine != null) StopCoroutine(yLockCoroutine);
-            yLockCoroutine = StartCoroutine(LockYNegativeFor(yLockDuration));
-            yFlipTimes.Clear();
-            lastYSign = -1;
-        }
+
+
         direction = newDir;
 
         // 4) ???? ????(??? ???????? ??????)
@@ -266,6 +226,7 @@ public class Ball : MonoBehaviour,IResetAbleListener
             if (overlapped && pushDistance > 0f)
                 transform.position += pushDir * pushDistance;
         }
+        direction = AdjustDirectionY(direction);
 
         // 5) ????/???? ????
         if (m_HitParticle != null)
@@ -275,7 +236,6 @@ public class Ball : MonoBehaviour,IResetAbleListener
             m_HitParticle.Play();
         }
         SetLandSpotParticlePosition();
-        direction = AdjustDirectionY(direction);
     }
 
     private Vector3 AdjustDirectionY(Vector3 dir)
@@ -285,50 +245,23 @@ public class Ball : MonoBehaviour,IResetAbleListener
 
         float absY = Mathf.Abs(dir.y);
         float absZ = Mathf.Abs(dir.z);
+        var TargetDir = dir; 
 
         if (absY < 0.5f)
         {
             // 0.5 ~ 1 ???? ????? ???? y ??? ????
-            float clampedY = Mathf.Clamp(absY, 0.7f, 1f);
-            float clampedZ = Mathf.Clamp(absZ, 0.7f, 1f);
-            dir.y = clampedY * sign;
-            dir.z = clampedZ * signZ;
+            float clampedY = Mathf.Clamp(absY, 0.5f, 1f);
+            TargetDir.y = clampedY * sign;
         }
+        TargetDir = TargetDir.normalized;
 
-        return dir.normalized; // ???? ????? ??? ?????
+        float clampedZ = Mathf.Clamp(absZ, 0.7f, 1f);
+        TargetDir.z = clampedZ * signZ;
+        
+        return TargetDir; // ???? ????? ??? ?????
     }
 
-    private System.Collections.IEnumerator LockYNegativeFor(float duration)
-    {
-        isYLocked = true;
-        float end = Time.time + duration;
-        while (Time.time < end)
-        {
-            // ?? ??¥ç¥å? ????? ??? ??? ?????? ????
-            if (direction.y > 0f)
-                direction = new Vector3(direction.x, -Mathf.Abs(direction.y), direction.z).normalized;
-            yield return null;
-        }
-        isYLocked = false;
-    }
 
-    // ???: ??? ???? ?©£??? ??????, ?????? ???? ??? ????
-    private void RegisterYFlipTime()
-    {
-        float now = Time.unscaledTime; // HitStop ????
-        yFlipTimes.Enqueue(now);
-        // ?????? ???? ?????? ???? ????
-        while (yFlipTimes.Count > 0 && now - yFlipTimes.Peek() > yFlipWindow)
-            yFlipTimes.Dequeue();
-    }
 
-    // ???: ???? ?????? ??????? ?©ª? ????? ?????? ?????
-    private bool ShouldLockYByFlipBurst()
-    {
-        float now = Time.unscaledTime;
-        while (yFlipTimes.Count > 0 && now - yFlipTimes.Peek() > yFlipWindow)
-            yFlipTimes.Dequeue();
-        return yFlipTimes.Count >= yFlipThreshold;
-    }
 
 }
