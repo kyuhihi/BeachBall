@@ -18,6 +18,7 @@ public class TitleButtonMesh : MonoBehaviour
     [SerializeField] private string buttonHaviorName; // 모드/기능 이름("1vs1","1vsCPU","KeyMapping") 또는 캐릭터ID로도 사용 가능
 
     [SerializeField] private GameObject keySettingPanel;
+    [SerializeField] private GameObject soundPanel;
 
     // 캐릭터 선택 버튼으로 사용할지 여부(체크 시 이 메시 클릭이 캐릭터 선택으로 동작)
     [SerializeField] private bool isCharacterButton = false;
@@ -200,8 +201,9 @@ public class TitleButtonMesh : MonoBehaviour
 
     private void OnMouseAction(InputAction.CallbackContext ctx)
     {
-        if (keySettingPanel != null && keySettingPanel.activeSelf)
-            return;
+        if ((keySettingPanel != null && keySettingPanel.activeSelf) ||
+            (soundPanel != null && soundPanel.activeSelf))
+            return; // 옵션/키세팅 패널 열려있으면 무시
 
         float value = ctx.ReadValue<float>();
         if (value > 0.5f)
@@ -291,6 +293,10 @@ public class TitleButtonMesh : MonoBehaviour
                             else if (buttonHaviorName == "KeyMapping")
                             {
                                 if (keySettingPanel != null) keySettingPanel.SetActive(true);
+                            }
+                            else if (buttonHaviorName == "Option")
+                            {
+                                if (soundPanel != null) soundPanel.SetActive(true);
                             }
                             else if (buttonHaviorName == "Bye")
                             {
