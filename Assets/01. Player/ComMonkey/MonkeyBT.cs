@@ -30,7 +30,7 @@ public class MonkeyBT : MonoBehaviour, IResetAbleListener
     void Start()
     {
         _movement = GetComponent<MonkeyPlayerMovement>();
-
+        AddResetCall();
         if (!Ball && !string.IsNullOrEmpty(targetTag))
         {
             var found = GameObject.FindWithTag(targetTag);
@@ -39,6 +39,11 @@ public class MonkeyBT : MonoBehaviour, IResetAbleListener
         }
         FindOtherPlayer();
         InitBT();
+
+    }
+    void OnDisable()
+    {
+        RemoveResetCall();
     }
 
     private void FindOtherPlayer()
@@ -56,7 +61,7 @@ public class MonkeyBT : MonoBehaviour, IResetAbleListener
             }
         }
 
-   }
+    }
     void InitBT()
     {
         _bb = new Blackboard();

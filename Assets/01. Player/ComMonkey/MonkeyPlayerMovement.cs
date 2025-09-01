@@ -17,7 +17,8 @@ public class MonkeyPlayerMovement : BasePlayerMovement
     [SerializeField] GameObject stretchPrefab;
     [SerializeField] int stretchCount = 30;
     [SerializeField] float stretchSpacing = 0.3f;
-     float stretchAnimTime = 1f;   // 늘어나는 시간
+    [SerializeField] Vector3 LinearVelocity = Vector3.zero;
+    float stretchAnimTime = 1f;   // 늘어나는 시간
     float shrinkAnimTime = 1f;    // 줄어드는 시간
     [SerializeField] AnimationCurve stretchCurve = AnimationCurve.EaseInOut(0, 0, 1, 1); // 늘어날 때 커브
     [SerializeField] AnimationCurve shrinkCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);  // 줄어들 때 커브
@@ -115,6 +116,19 @@ public class MonkeyPlayerMovement : BasePlayerMovement
     }
     public void LateUpdate()
     {
+        if (m_eLocomotionState == IdleWalkRunEnum.Swim)
+        {
+            if (isStretched)
+            {
+                stretchAnimT = 0.0f;
+                stretchAnimDir = 0f;
+                isStretched = false;
+            }
+            else
+                return;
+        }   
+
+
         ArmRoutine();
         StretchArm();
 
@@ -278,20 +292,33 @@ public class MonkeyPlayerMovement : BasePlayerMovement
 
     public override void OnRoundStart()
     {
-
-        LateUpdate();
         m_isMoveByInput = true;
+        LateUpdate();
         m_Rigidbody.WakeUp();
+        GetComponent<CapsuleCollider>().enabled = true;
+        m_Rigidbody.isKinematic = false;
+        m_Rigidbody.linearVelocity = Vector3.zero;
+
+        m_Movement = Vector2.zero;
     }
     public override void OnRoundEnd()
     {
         m_isMoveByInput = false;
+
         stretchAnimT = 0.0f;
         stretchAnimDir = 0f;
-    
+        isStretched = false;
+
         m_Rigidbody.linearVelocity = Vector3.zero;
-        m_Rigidbody.angularVelocity = Vector3.zero;
+        m_Rigidbody.isKinematic = true;
         m_Rigidbody.Sleep();
+        m_Movement = Vector2.zero;
+
+        isGrounded = false;
+
+        GetComponent<CapsuleCollider>().enabled = false;
+        m_eLocomotionState = IdleWalkRunEnum.Idle;
+        SetAnimatorParameters(0.0f);
         SetTransformToRoundStart();
 
     }
@@ -299,7 +326,7 @@ public class MonkeyPlayerMovement : BasePlayerMovement
 
     public void ThrowBanana(Transform OtherPlayer)
     {
-        if (OtherPlayer == null) return;
+        if (OtherPlayer == null|| !m_isMoveByInput) return;
         PlayerUIManager UIMgrInstance = PlayerUIManager.GetInstance();
         if (UIMgrInstance.GetCurrentSecond() > 5 && UIMgrInstance.UseAbility(IUIInfo.UIType.UltimateBar, m_CourtPosition))
         {
@@ -335,6 +362,7 @@ public class MonkeyPlayerMovement : BasePlayerMovement
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
+        LinearVelocity = m_Rigidbody.linearVelocity;
     }
     public bool IsGroundedForAI() => isGrounded;
 

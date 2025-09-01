@@ -25,6 +25,8 @@ public class GameManager : MonoBehaviour, IResetAbleListener
     private const int OffVirtualCameraPriority = 10;
     private const float MapOutZDistance = 11.2f;
     private const float MapOutYDistance = 6.82f;
+    private const float MapOutXDistance = 6.3f;
+
 
     private UltimateSetting m_FoxUltimateSetting;   //Include Environment, CutsceneTransform
     private UltimateSetting m_TurtleUltimateSetting;    //Include Environment, CutsceneTransform
@@ -125,32 +127,35 @@ public class GameManager : MonoBehaviour, IResetAbleListener
 
     public void RoundEnd()
     {//WipeScreenCall 
-        Signals.RoundResetAble.RaiseEnd();
         PlayerUIManager.GetInstance().RoundEndUpScore();
+        Signals.RoundResetAble.RaiseEnd();
     }
 
     public void RoundStart()
     {//WipeScreenCall 
         Signals.RoundResetAble.RaiseStart();
     }
+    public IPlayerInfo.CourtPosition GetWinner()
+    {
+        return PlayerUIManager.GetInstance().GetWinner();
+    }
 
-    public bool ConfineObjectPosition(GameObject obj, float YOffset = 0.3f)
+    public void ConfineObjectPosition(GameObject obj, out bool yClamped, out bool zClamped, float YOffset = 0.3f)
     {
         float zFixedPos;
-        bool zClamped;
         zClamped = IsClamped(obj.transform.position.z, -MapOutZDistance, MapOutZDistance, out zFixedPos);
         // 적용
         obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, zFixedPos);
         // Y Position 고정 체크
         float yFixedPos;
-        bool yClamped = IsClamped(obj.transform.position.y, -0.1f, MapOutYDistance + YOffset, out yFixedPos);
+        yClamped = IsClamped(obj.transform.position.y, -0.5f, MapOutYDistance + YOffset, out yFixedPos);
         // 적용
         obj.transform.position = new Vector3(obj.transform.position.x, yFixedPos, obj.transform.position.z);
-        if (yClamped)
-        {
-            return true;
-        }
-        return false;
+        float xFixedPos;
+        IsClamped(obj.transform.position.x, -MapOutXDistance, MapOutXDistance, out xFixedPos);
+        // 적용
+        obj.transform.position = new Vector3(xFixedPos, obj.transform.position.y, obj.transform.position.z);
+
     }
     private void ConfinePlayersPosition()
     {
@@ -178,13 +183,17 @@ public class GameManager : MonoBehaviour, IResetAbleListener
 
             // Y Position 고정 체크
             float yFixedPos;
-            bool yClamped = IsClamped(player.transform.position.y, float.MinValue, MapOutYDistance, out yFixedPos);
+            bool yClamped = IsClamped(player.transform.position.y, float.MinValue, MapOutYDistance +0.3f, out yFixedPos);
 
-            // 적용
-            player.transform.position = new Vector3(player.transform.position.x, yFixedPos, player.transform.position.z);
+            if (yClamped)
+                player.transform.position = new Vector3(player.transform.position.x, 0.0f, player.transform.position.z);
+
+            float xFixedPos;
+            bool xClamped = IsClamped(player.transform.position.x, -5.1f, 5.1f, out xFixedPos);
+            player.transform.position = new Vector3(xFixedPos, player.transform.position.y, player.transform.position.z);
 
             // 결과 확인
-            if (zClamped || yClamped)
+            if (zClamped || yClamped || xClamped)
             {
                 player.GetComponent<BasePlayerMovement>().EndDashCall();
             }

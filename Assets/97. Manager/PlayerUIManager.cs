@@ -67,7 +67,6 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
         // UI 비활성 (필요 시 유지)
         if (m_WorldUICanvas) m_WorldUICanvas.SetActive(false);
         ApplyPauseToUICanvas(true);   // 모든 자손 IPauseable Pause
-Debug.Log("Start Cutscene");
     }
 
     public void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
@@ -264,6 +263,7 @@ Debug.Log("Start Cutscene");
     {
         int iLeftScore = PlayerScoreCounts[0].GetValueInt;
         int iRightScore = PlayerScoreCounts[1].GetValueInt;
+
         if (iLeftScore > iRightScore)
         {
             m_eLastWinner = IPlayerInfo.CourtPosition.COURT_LEFT;
@@ -275,7 +275,23 @@ Debug.Log("Start Cutscene");
             RoundScoreCounts[1].DecreaseValueInt(-1);
         }
     }
-    public void UpUltimateBar(IPlayerInfo.CourtPosition courtPosition,float fAmount = 0.1f)
+    
+    public IPlayerInfo.CourtPosition GetWinner()
+    {
+        int iLeftScore = RoundScoreCounts[0].GetValueInt;
+        int iRightScore = RoundScoreCounts[1].GetValueInt;
+
+        if (iLeftScore > iRightScore)
+        {
+            return IPlayerInfo.CourtPosition.COURT_LEFT;
+        }
+        else if (iLeftScore < iRightScore)
+        {
+            return IPlayerInfo.CourtPosition.COURT_RIGHT;
+        }
+        return IPlayerInfo.CourtPosition.COURT_END;
+    }
+    public void UpUltimateBar(IPlayerInfo.CourtPosition courtPosition, float fAmount = 0.1f)
     {
         int iLRIndex = 0;
         if (courtPosition == IPlayerInfo.CourtPosition.COURT_RIGHT)

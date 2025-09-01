@@ -195,14 +195,15 @@ public class ScoreCounterUI : UIInfoBase, IResetAbleListener
 
     public void OnRoundStart()
     {
-        if(m_BalloonType == BalloonType.Balloon_PlayerScore)
-        {
-            SetScore(0);
-            ForceIdleReset();
-        }
+
     }
 
     public void OnRoundEnd()
     {
+        if (m_BalloonType == BalloonType.Balloon_PlayerScore)
+        {
+            SetScore(0);
+            ForceIdleReset();
+        }
     }
 }
