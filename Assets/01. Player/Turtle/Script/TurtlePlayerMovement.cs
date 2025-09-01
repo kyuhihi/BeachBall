@@ -536,6 +536,11 @@ public class TurtlePlayerMovement : BasePlayerMovement
     protected override void FixedUpdate()
     {
         base.FixedUpdate();
+        if (Keyboard.current.digit4Key.wasPressedThisFrame)
+        {
+            PlayerUIManager.GetInstance().UpUltimateBar(m_CourtPosition, 0.1f);
+        }
+
         GameObject ballObj = GameObject.FindWithTag(ballTag);
 
         // 1. 물대포 회전 중: 몸통/머리 서서히 Ball 쪽으로 회전

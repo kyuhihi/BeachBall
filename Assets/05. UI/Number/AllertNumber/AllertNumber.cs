@@ -45,8 +45,7 @@ public class AllertNumber : MonoBehaviour, IResetAbleListener
     private bool _active = true;
     private bool _gameSetStarted = false; // 추가: GameSet 한 번 실행 후 재카운트 방지
 
-    [Header("디버그 / 수동 트리거")]
-    [SerializeField] private bool manualGameSetTrigger = true; // L키로 즉시 GameSet
+  private bool manualGameSetTrigger = false; // L키로 즉시 GameSet
 
     private void Awake()
     {

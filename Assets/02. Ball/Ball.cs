@@ -1,32 +1,28 @@
 using System;
 using Unity.VisualScripting;
 using UnityEngine;
-using System.Collections.Generic; 
+using System.Collections.Generic;
+using UnityEngine.AI;
 
-public class Ball : MonoBehaviour,IResetAbleListener    
+public class Ball : MonoBehaviour, IResetAbleListener
 {
-    private float speed = 25f;
-    private const float MaxSmashSpeed = 30f;
-    [SerializeField] private Vector3 direction = Vector3.down;
     private Rigidbody m_Rigidbody;
 
-    [SerializeField]private ParticleSystem m_HitParticle;
-    [SerializeField]private ParticleSystem m_LandSpotParticle;
-
-
+    [SerializeField] private ParticleSystem m_HitParticle;
+    [SerializeField] private ParticleSystem m_LandSpotParticle;
     private SphereCollider m_SphereCollider;
     private int RayLayerMask = 0;
 
-    [SerializeField]private float _currentSpeed = 0.0f;
     private const string PlayerTag = "Player";
     private const string WallAndGroundLayerName = "Wall And Ground";
     private static readonly string[] ScoreTags = { "Ground", "Terrain" };
     private readonly Vector3 InitialRightPosition = new Vector3(-0.83f, 6.24f, -5.76f);
 
     public ParticleSystem LandSpotParticle => m_LandSpotParticle;
-    private float scoreInterval = 0.1f;  // ???? ??? ????(??)
+    private float scoreInterval = 0.1f;
     private float lastScoreTime = -999f;
-    [SerializeField]private bool _Stop = false;
+    [SerializeField] private bool _Stop = false;
+    [SerializeField] private Vector3 Linearvelocity;
 
 
 
@@ -43,14 +39,18 @@ public class Ball : MonoBehaviour,IResetAbleListener
     }
     public void OnRoundStart()
     {
+        m_Rigidbody.WakeUp();
         Application.targetFrameRate = 120;
+
         IPlayerInfo.CourtPosition lastWinner = GameManager.GetInstance().GetLastWinner();
         Vector3 TargetPosition = InitialRightPosition;
+        if (lastWinner == IPlayerInfo.CourtPosition.COURT_LEFT)
+            TargetPosition.z = Mathf.Abs(TargetPosition.z);
+        transform.position = TargetPosition;
         m_SphereCollider.enabled = true;
 
-
-        direction = Vector3.down;
         m_Rigidbody.isKinematic = false;
+
         _Stop = false;
     }
 
@@ -59,20 +59,19 @@ public class Ball : MonoBehaviour,IResetAbleListener
         _Stop = true;
         IPlayerInfo.CourtPosition lastWinner = GameManager.GetInstance().GetLastWinner();
         Vector3 TargetPosition = InitialRightPosition;
-
+        Linearvelocity = Vector3.zero;
         if (lastWinner == IPlayerInfo.CourtPosition.COURT_LEFT)
         {
             TargetPosition.z = Mathf.Abs(TargetPosition.z);
         }
         transform.position = TargetPosition;
-    
+
         m_Rigidbody.linearVelocity = Vector3.zero;
         m_Rigidbody.angularVelocity = Vector3.zero;
 
         m_SphereCollider.enabled = false;
-        _currentSpeed = 0.0f;
-        direction = Vector3.zero;
         m_Rigidbody.isKinematic = true;
+        m_Rigidbody.Sleep();
     }
 
     void OnEnable()
@@ -89,8 +88,8 @@ public class Ball : MonoBehaviour,IResetAbleListener
     void Start()
     {
         m_Rigidbody = GetComponent<Rigidbody>();
+        m_Rigidbody.maxLinearVelocity = 20f;
         m_SphereCollider = GetComponent<SphereCollider>();
-        //m_Rigidbody.useGravity = false; // 중력 비활성화
         if (m_HitParticle != null)
         {
             m_HitParticle = Instantiate(m_HitParticle, transform.position, Quaternion.identity);
@@ -100,74 +99,77 @@ public class Ball : MonoBehaviour,IResetAbleListener
         {
             m_LandSpotParticle = Instantiate(m_LandSpotParticle, transform.position, Quaternion.identity);
             m_LandSpotParticle.Play();
-            SetLandSpotParticlePosition();
         }
-        RayLayerMask =LayerMask.GetMask(WallAndGroundLayerName);
+        RayLayerMask = LayerMask.GetMask(WallAndGroundLayerName);
 
-        // Y축 고정
     }
     private void SetLandSpotParticlePosition()
     {
-        RaycastHit hitInfo;
-        if (Physics.SphereCast(transform.position, m_SphereCollider.radius,direction, out hitInfo, 100f, RayLayerMask))
+        if (m_Rigidbody == null || m_SphereCollider == null || m_LandSpotParticle == null) return;
+
+        Vector3 vel = m_Rigidbody.linearVelocity;
+        if (vel.sqrMagnitude < 0.0001f) return; // ?? ??? ??
+
+        Vector3 dir = vel.normalized;
+
+        if (Physics.SphereCast(transform.position, m_SphereCollider.radius, dir, out RaycastHit hitInfo, 100f, RayLayerMask))
         {
-            m_LandSpotParticle.gameObject.transform.position = hitInfo.point;
+            m_LandSpotParticle.transform.position = hitInfo.point;
             Quaternion rot = Quaternion.LookRotation(hitInfo.normal);
             Vector3 euler = rot.eulerAngles;
             euler.x += 90f;
-            m_LandSpotParticle.gameObject.transform.rotation = Quaternion.Euler(euler);
+            m_LandSpotParticle.transform.rotation = Quaternion.Euler(euler);
         }
     }
 
     void Update()
     {
-        if (_Stop)
-            return;
+        if (GameManager.GetInstance().CurrentGameState == GameManager.GameState.CUTSCENE)
+            _Stop = true;
+        else
+            _Stop = false;
 
-        if (m_Rigidbody.IsSleeping() && GameManager.GetInstance().CurrentGameState == GameManager.GameState.CUTSCENE)
-        {
-            m_Rigidbody.Sleep();
-            return;
-        }
-        else if (m_Rigidbody.IsSleeping())
-        {
-            m_Rigidbody.WakeUp();
-        }
-        Movement();
-    }
-    void LateUpdate()
-    {
         if (_Stop)
-            return;
-
-         GameManager.GetInstance().ConfineObjectPosition(this.gameObject, out bool yClamped, out bool zClamped, YOffset: 1.0f);
-         if (yClamped)
-         {
-            if (gameObject.transform.position.y <= -0.5f)
+        {
+            if (!m_Rigidbody.isKinematic && !m_Rigidbody.IsSleeping())
             {
-                direction.y = Mathf.Abs(direction.y);
-           }
-         }
-
-    }
-
-    private void Movement()
-    {
-        Vector3 PredictPos = gameObject.transform.position + direction * _currentSpeed * Time.deltaTime;
-
-        m_Rigidbody.MovePosition(PredictPos); // Rigidbody ???
-
-        _currentSpeed = Mathf.Lerp(_currentSpeed, speed, Time.deltaTime);
-        if (_currentSpeed <= speed)
-        {
-            _currentSpeed = Mathf.Clamp(_currentSpeed, 0.1f, speed);
+                m_Rigidbody.linearVelocity = Vector3.zero;
+                m_Rigidbody.isKinematic = true;
+            }
+            return;
         }
         else
         {
-            _currentSpeed = Mathf.Clamp(_currentSpeed, speed, MaxSmashSpeed);
+            if (m_Rigidbody.isKinematic || m_Rigidbody.IsSleeping())
+            {
+                m_Rigidbody.WakeUp();
+                m_Rigidbody.isKinematic = false;
+                m_Rigidbody.linearVelocity = Linearvelocity;
+            }
+            return;
         }
-
     }
+    void LateUpdate()
+    {
+        if (_Stop) return;
+
+        // ?? ?? ? ?? ?? ????
+        Linearvelocity = m_Rigidbody.linearVelocity;
+
+        Linearvelocity.x *= 3f;
+        Linearvelocity.x = Mathf.Clamp(Linearvelocity.x, -5f, 5f);
+        Linearvelocity.y = Mathf.Clamp(Linearvelocity.y, -15f, 13f);
+        Linearvelocity.z *= 10f;
+        Linearvelocity.z = Mathf.Clamp(Linearvelocity.z, -8f, 8f);
+
+        m_Rigidbody.linearVelocity = Linearvelocity;
+
+        SetLandSpotParticlePosition();
+
+        GameManager.GetInstance().ConfineObjectPosition(this.gameObject, out bool yClamped, out bool zClamped);
+    }
+
+
 
     public void OnCollisionEnter(Collision other)
     {
@@ -177,7 +179,7 @@ public class Ball : MonoBehaviour,IResetAbleListener
         Vector3 hitNormal;
         var wall = other.gameObject.GetComponent<Wall>();
         if (wall != null) hitNormal = wall.GetNormalDirection();
-        else              hitNormal = (transform.position - contactPoint).normalized;
+        else hitNormal = (transform.position - contactPoint).normalized;
 
         ProcessHit(other.gameObject, other.collider, contactPoint, hitNormal);
     }
@@ -191,12 +193,14 @@ public class Ball : MonoBehaviour,IResetAbleListener
     // ?浹 ??? ???? ?????(???? OnCollisionEnter ????)
     private void ProcessHit(GameObject otherGO, Collider otherCol, Vector3 contactPoint, Vector3 hitNormal)
     {
+        IPlayerInfo.CourtPosition HitcourtPos = contactPoint.z < 0.0f ?
+                        IPlayerInfo.CourtPosition.COURT_RIGHT : IPlayerInfo.CourtPosition.COURT_LEFT;
+
         // 1) ?÷????? ?浹 ???
         if (otherGO != null && otherGO.CompareTag(PlayerTag))
         {
             CameraShakingManager.Instance.DoShake(0.1f, 1f);
             HitStopManager.Instance.DoHitStop(0.1f, 0.1f);
-            _currentSpeed = MaxSmashSpeed;
             IPlayerInfo.CourtPosition courtPos = otherGO.GetComponent<IPlayerInfo>().m_CourtPosition;
             PlayerUIManager.GetInstance().UpUltimateBar(courtPos); // ???? ?????? 10 ????
         }
@@ -207,70 +211,26 @@ public class Ball : MonoBehaviour,IResetAbleListener
             {
                 if (Time.time - lastScoreTime >= scoreInterval)
                 {
-                    IPlayerInfo.CourtPosition courtPos = contactPoint.z < 0.0f ?
-                        IPlayerInfo.CourtPosition.COURT_RIGHT : IPlayerInfo.CourtPosition.COURT_LEFT;
 
-                    PlayerUIManager.GetInstance().UpScore(courtPos);
+                    PlayerUIManager.GetInstance().UpScore(HitcourtPos);
                     lastScoreTime = Time.time;
                 }
             }
         }
-
-        // 2) ??? ??? ????(???? ??? ????)
-        if (hitNormal == Vector3.zero)
-            hitNormal = (transform.position - contactPoint).normalized;
-
-        // 3) ??? ???? ??? ?? Y-?ø? ????
-        Vector3 newDir = Vector3.Reflect(direction, hitNormal).normalized;
-
-        direction = newDir;
-
-        // 4) ???? ????(??? ???????? ??????)
-        if (otherCol != null)
+        if (otherGO.gameObject.transform.position.y < 5f)
         {
-            Vector3 pushDir;
-            float pushDistance;
-            bool overlapped = Physics.ComputePenetration(
-                m_SphereCollider, transform.position, transform.rotation,
-                otherCol, otherCol.transform.position, otherCol.transform.rotation,
-                out pushDir, out pushDistance);
-            if (overlapped && pushDistance > 0f)
-                transform.position += pushDir * pushDistance;
+            Vector3 forceVector = Vector3.up * 1.5f;
+            m_Rigidbody.AddForce(forceVector, ForceMode.Impulse);
         }
-        direction = AdjustDirectionY(direction);
-
-        // 5) ????/???? ????
         if (m_HitParticle != null)
         {
             m_HitParticle.Stop();
             m_HitParticle.transform.position = contactPoint;
             m_HitParticle.Play();
         }
-        SetLandSpotParticlePosition();
     }
 
-    private Vector3 AdjustDirectionY(Vector3 dir)
-    {
-        float sign = Mathf.Sign(dir.y); // ???? ??? ???
-        float signZ = Mathf.Sign(dir.z); // ???? ??? ???
 
-        float absY = Mathf.Abs(dir.y);
-        float absZ = Mathf.Abs(dir.z);
-        var TargetDir = dir; 
-
-        if (absY < 0.5f)
-        {
-            // 0.5 ~ 1 ???? ????? ???? y ??? ????
-            float clampedY = Mathf.Clamp(absY, 0.5f, 1f);
-            TargetDir.y = clampedY * sign;
-        }
-        TargetDir = TargetDir.normalized;
-
-        float clampedZ = Mathf.Clamp(absZ, 0.7f, 1f);
-        TargetDir.z = clampedZ * signZ;
-        
-        return TargetDir; // ???? ????? ??? ?????
-    }
 
 
 
