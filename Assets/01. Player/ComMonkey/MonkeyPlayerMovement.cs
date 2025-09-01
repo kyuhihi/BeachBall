@@ -278,24 +278,27 @@ public class MonkeyPlayerMovement : BasePlayerMovement
 
     public override void OnRoundStart()
     {
-
         LateUpdate();
         m_isMoveByInput = true;
         GetComponent<CapsuleCollider>().enabled = true;
-
-        m_Rigidbody.WakeUp();
+        m_Rigidbody.isKinematic = false;
     }
     public override void OnRoundEnd()
     {
         m_isMoveByInput = false;
         stretchAnimT = 0.0f;
         stretchAnimDir = 0f;
+        Vector3 Velocity = m_Rigidbody.linearVelocity;
+        Velocity.x = 0.0f;
+        Velocity.z = 0.0f;
+        m_Rigidbody.linearVelocity = Velocity;
+        isGrounded = false;
 
-        m_Rigidbody.linearVelocity = Vector3.zero;
-        m_Rigidbody.angularVelocity = Vector3.zero;
-        m_Rigidbody.Sleep();
+        m_Rigidbody.isKinematic = true;
         SetTransformToRoundStart();
         GetComponent<CapsuleCollider>().enabled = false;
+        m_eLocomotionState = IdleWalkRunEnum.Idle;
+        SetAnimatorParameters(0.0f);
 
     }
 

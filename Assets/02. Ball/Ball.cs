@@ -12,21 +12,24 @@ public class Ball : MonoBehaviour,IResetAbleListener
 
     [SerializeField]private ParticleSystem m_HitParticle;
     [SerializeField]private ParticleSystem m_LandSpotParticle;
+
+
     private SphereCollider m_SphereCollider;
     private int RayLayerMask = 0;
 
-    private float _currentSpeed = 0.0f;
+    [SerializeField]private float _currentSpeed = 0.0f;
     private const string PlayerTag = "Player";
     private const string WallAndGroundLayerName = "Wall And Ground";
     private static readonly string[] ScoreTags = { "Ground", "Terrain" };
     private readonly Vector3 InitialRightPosition = new Vector3(-0.83f, 6.24f, -5.76f);
 
     public ParticleSystem LandSpotParticle => m_LandSpotParticle;
-
-
     private float scoreInterval = 0.1f;  // ???? ??? ????(??)
     private float lastScoreTime = -999f;
-    private bool _Stop = false;
+    [SerializeField]private bool _Stop = false;
+
+
+
     public void AddResetCall()
     {
         Signals.RoundResetAble.AddStart(OnRoundStart);
@@ -40,10 +43,14 @@ public class Ball : MonoBehaviour,IResetAbleListener
     }
     public void OnRoundStart()
     {
+        Application.targetFrameRate = 120;
+        IPlayerInfo.CourtPosition lastWinner = GameManager.GetInstance().GetLastWinner();
+        Vector3 TargetPosition = InitialRightPosition;
         m_SphereCollider.enabled = true;
-        m_Rigidbody.WakeUp();
-        direction = Vector3.down;
 
+
+        direction = Vector3.down;
+        m_Rigidbody.isKinematic = false;
         _Stop = false;
     }
 
@@ -56,31 +63,34 @@ public class Ball : MonoBehaviour,IResetAbleListener
         if (lastWinner == IPlayerInfo.CourtPosition.COURT_LEFT)
         {
             TargetPosition.z = Mathf.Abs(TargetPosition.z);
-            transform.position = TargetPosition;
         }
-
+        transform.position = TargetPosition;
+    
         m_Rigidbody.linearVelocity = Vector3.zero;
+        m_Rigidbody.angularVelocity = Vector3.zero;
 
         m_SphereCollider.enabled = false;
         _currentSpeed = 0.0f;
         direction = Vector3.zero;
-        m_Rigidbody.Sleep();
+        m_Rigidbody.isKinematic = true;
     }
 
     void OnEnable()
     {
         AddResetCall();
+
     }
     void OnDisable()
     {
         RemoveResetCall();
+
     }
 
     void Start()
     {
         m_Rigidbody = GetComponent<Rigidbody>();
         m_SphereCollider = GetComponent<SphereCollider>();
-        m_Rigidbody.useGravity = false; // 중력 비활성화
+        //m_Rigidbody.useGravity = false; // 중력 비활성화
         if (m_HitParticle != null)
         {
             m_HitParticle = Instantiate(m_HitParticle, transform.position, Quaternion.identity);
@@ -109,51 +119,54 @@ public class Ball : MonoBehaviour,IResetAbleListener
         }
     }
 
-    void LateUpdate()
+    void Update()
     {
-        if(_Stop)
+        if (_Stop)
             return;
 
-        if (GameManager.GetInstance().CurrentGameState == GameManager.GameState.CUTSCENE)
+        if (m_Rigidbody.IsSleeping() && GameManager.GetInstance().CurrentGameState == GameManager.GameState.CUTSCENE)
         {
             m_Rigidbody.Sleep();
             return;
         }
-        else
+        else if (m_Rigidbody.IsSleeping())
         {
             m_Rigidbody.WakeUp();
         }
-
         Movement();
+    }
+    void LateUpdate()
+    {
+        if (_Stop)
+            return;
 
-        GameManager.GetInstance().ConfineObjectPosition(this.gameObject, out bool yClamped, out bool zClamped, YOffset: 1.0f);
-        if (yClamped)
-        {
-            if (gameObject.transform.position.y <= -0.1f)
+         GameManager.GetInstance().ConfineObjectPosition(this.gameObject, out bool yClamped, out bool zClamped, YOffset: 1.0f);
+         if (yClamped)
+         {
+            if (gameObject.transform.position.y <= -0.5f)
             {
                 direction.y = Mathf.Abs(direction.y);
-            }
-        }
+           }
+         }
+
     }
 
     private void Movement()
     {
-        float yPos = transform.position.y;
+        Vector3 PredictPos = gameObject.transform.position + direction * _currentSpeed * Time.deltaTime;
 
-
-        Vector3 PredictPos = transform.position + direction * _currentSpeed * Time.deltaTime;
+        m_Rigidbody.MovePosition(PredictPos); // Rigidbody ???
 
         _currentSpeed = Mathf.Lerp(_currentSpeed, speed, Time.deltaTime);
         if (_currentSpeed <= speed)
         {
-            _currentSpeed = Mathf.Clamp(_currentSpeed, 0.0f, speed);
+            _currentSpeed = Mathf.Clamp(_currentSpeed, 0.1f, speed);
         }
         else
         {
             _currentSpeed = Mathf.Clamp(_currentSpeed, speed, MaxSmashSpeed);
         }
 
-        transform.position = PredictPos;
     }
 
     public void OnCollisionEnter(Collision other)
@@ -209,8 +222,6 @@ public class Ball : MonoBehaviour,IResetAbleListener
 
         // 3) ??? ???? ??? ?? Y-?ø? ????
         Vector3 newDir = Vector3.Reflect(direction, hitNormal).normalized;
-
-
 
         direction = newDir;
 

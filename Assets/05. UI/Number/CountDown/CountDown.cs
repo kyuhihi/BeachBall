@@ -273,11 +273,14 @@ public class Countdown : MonoBehaviour, IPauseable, IResetAbleListener
     public void OnRoundStart()
     {
         running = true;
-        currentValue = startValue;
     }
 
     public void OnRoundEnd()
     {
+        currentValue = startValue;
+        meltAmount = 0.0f;
+        UpdateDigits(currentValue);               // 현재 값 즉시 갱신
+        ApplyGlobalMelt(meltAmount);              // Melt 상태 반영
         running = false;
     }
 }

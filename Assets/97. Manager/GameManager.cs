@@ -121,7 +121,7 @@ public class GameManager : MonoBehaviour, IResetAbleListener
         obj.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, zFixedPos);
         // Y Position 고정 체크
         float yFixedPos;
-        yClamped = IsClamped(obj.transform.position.y, -0.1f, MapOutYDistance + YOffset, out yFixedPos);
+        yClamped = IsClamped(obj.transform.position.y, -0.5f, MapOutYDistance + YOffset, out yFixedPos);
         // 적용
         obj.transform.position = new Vector3(obj.transform.position.x, yFixedPos, obj.transform.position.z);
 
