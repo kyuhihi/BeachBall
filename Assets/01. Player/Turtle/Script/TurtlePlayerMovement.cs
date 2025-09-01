@@ -5,6 +5,7 @@ using UnityEngine.Playables;
 using NUnit.Framework;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
+using UnityEngine.Timeline;
 
 public class TurtlePlayerMovement : BasePlayerMovement
 {
@@ -102,6 +103,9 @@ public class TurtlePlayerMovement : BasePlayerMovement
     {
         base.Start();
         m_PlayableDirector = GetComponent<PlayableDirector>();
+
+        var timeline = m_PlayableDirector.playableAsset as TimelineAsset;
+        if (timeline == null) return;
         m_PlayerType = IPlayerInfo.PlayerType.Turtle;
         m_PlayerDefaultColor = Color.skyBlue;
 
@@ -109,6 +113,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
         if (active != "TitleScene")
         {
             PlayerUIManager.GetInstance().SetPlayerInfoInUI(this);
+            SetEmptyPlayableDirector();
         }
         else
         {
@@ -157,6 +162,35 @@ public class TurtlePlayerMovement : BasePlayerMovement
             ultimateWaterRot = Quaternion.identity;
         }
 
+    }
+
+    private void SetEmptyPlayableDirector()
+    {
+        var timeline = m_PlayableDirector.playableAsset as TimelineAsset;
+        if (timeline == null) return;
+
+        foreach (var track in timeline.GetOutputTracks())
+        {
+            // 이미 바인딩된 경우는 건너뜀
+            var currentBinding = m_PlayableDirector.GetGenericBinding(track);
+            if (currentBinding != null)
+                continue;
+
+            string groupName = track.parent != null ? track.parent.name : "";
+
+             if (groupName == "Camera" && track is AnimationTrack)
+            {
+                GameObject cutSceneCamera = GameManager.GetInstance().GetCutSceneCamera();
+                if (cutSceneCamera != null)
+                    m_PlayableDirector.SetGenericBinding(track, cutSceneCamera.GetComponent<Animator>());
+            }
+            else if (track is UnityEngine.Timeline.SignalTrack)
+            {
+                var gm = FindFirstObjectByType<GameManager>();
+                if (gm != null)
+                    m_PlayableDirector.SetGenericBinding(track, gm);
+            }
+        }
     }
 
     public override void OnAttackSkill(InputValue value)

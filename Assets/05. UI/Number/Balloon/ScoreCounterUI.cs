@@ -5,6 +5,13 @@ using UnityEngine.InputSystem;
 public class ScoreCounterUI : UIInfoBase, IResetAbleListener
 {
     public TextMeshProUGUI scoreText;
+    private ScoreType m_eScoreType = ScoreType.RoundCourtHitCount;
+    public enum ScoreType
+    {
+        RoundCourtHitCount,
+        ScoreCount,
+
+    }
 
     [Header("Idle Float")]
     public float idleFloatAmplitude = 5f;
@@ -69,6 +76,7 @@ public class ScoreCounterUI : UIInfoBase, IResetAbleListener
     {
         Balloon_PlayerScore,
         Balloon_RoundScore,
+        Balloon_None,
     }
 
     void Awake()
@@ -82,9 +90,13 @@ public class ScoreCounterUI : UIInfoBase, IResetAbleListener
         {
             m_BalloonType = BalloonType.Balloon_RoundScore;
         }
-        else
+        else if (transform.parent.name.Contains("Balloon"))
         {
             m_BalloonType = BalloonType.Balloon_PlayerScore;
+        }
+        else
+        {
+            m_BalloonType = BalloonType.Balloon_None;
         }
     }
     void OnEnable()
@@ -200,10 +212,13 @@ public class ScoreCounterUI : UIInfoBase, IResetAbleListener
 
     public void OnRoundEnd()
     {
-        if (m_BalloonType == BalloonType.Balloon_PlayerScore)
+        if (m_eScoreType == ScoreType.RoundCourtHitCount)
         {
-            SetScore(0);
-            ForceIdleReset();
+            if (m_BalloonType == BalloonType.Balloon_PlayerScore)
+            {
+                SetScore(0);
+                ForceIdleReset();
+            }
         }
     }
 }

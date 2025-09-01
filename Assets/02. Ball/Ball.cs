@@ -23,7 +23,7 @@ public class Ball : MonoBehaviour, IResetAbleListener
     private float lastScoreTime = -999f;
     [SerializeField] private bool _Stop = false;
     [SerializeField] private Vector3 Linearvelocity;
-
+    private GameSettings.SceneType _currentSceneType = GameSettings.SceneType.None;
 
 
     public void AddResetCall()
@@ -130,6 +130,14 @@ public class Ball : MonoBehaviour, IResetAbleListener
 
     void Update()
     {
+        if (_currentSceneType == GameSettings.SceneType.None)
+            _currentSceneType = GameSettings.Instance.GetSceneType();
+
+        if (_currentSceneType == GameSettings.SceneType.Title)
+        {
+            return;
+        }
+
         if (GameManager.GetInstance().CurrentGameState == GameManager.GameState.CUTSCENE)
             _Stop = true;
         else
@@ -171,10 +179,32 @@ public class Ball : MonoBehaviour, IResetAbleListener
         m_Rigidbody.linearVelocity = Linearvelocity;
 
         SetLandSpotParticlePosition();
-
-        GameManager.GetInstance().ConfineObjectPosition(this.gameObject, out bool yClamped, out bool zClamped);
+        if (_currentSceneType != GameSettings.SceneType.Title && _currentSceneType != GameSettings.SceneType.None)
+        {
+            GameManager.GetInstance().CheckObjectPosition(transform.position, out bool xClamped, out bool yClamped, out bool zClamped);
+            ConfineBall(xClamped, yClamped, zClamped);
+        }
     }
+    private void ConfineBall(bool xClamped, bool yClamped, bool zClamped)
+    {
+        if (xClamped)
+        {
+            float fSignValue = -Mathf.Sign(transform.position.x);
+            m_Rigidbody.AddForce(new Vector3(fSignValue * 0.5f, 0f, 0f), ForceMode.Impulse);
+        }
 
+        if (yClamped)
+        {
+            float fSignValue = -Mathf.Sign(transform.position.y);
+            m_Rigidbody.AddForce(new Vector3(0f, fSignValue * 0.5f, 0f), ForceMode.Impulse);
+        }
+
+        if (zClamped)
+        {
+            float fSignValue = -Mathf.Sign(transform.position.z);
+            m_Rigidbody.AddForce(new Vector3(0f, 0f, fSignValue * 0.5f), ForceMode.Impulse);
+        }
+    }
 
 
     public void OnCollisionEnter(Collision other)
@@ -202,27 +232,30 @@ public class Ball : MonoBehaviour, IResetAbleListener
         IPlayerInfo.CourtPosition HitcourtPos = contactPoint.z < 0.0f ?
                         IPlayerInfo.CourtPosition.COURT_RIGHT : IPlayerInfo.CourtPosition.COURT_LEFT;
 
-        // 1) ?��????? ?�� ???
-        if (otherGO != null && otherGO.CompareTag(PlayerTag))
+        if (_currentSceneType != GameSettings.SceneType.Title && _currentSceneType != GameSettings.SceneType.None)
         {
-            CameraShakingManager.Instance.DoShake(0.1f, 1f);
-            HitStopManager.Instance.DoHitStop(0.1f, 0.1f);
-            IPlayerInfo.CourtPosition courtPos = otherGO.GetComponent<IPlayerInfo>().m_CourtPosition;
-            PlayerUIManager.GetInstance().UpUltimateBar(courtPos); // ???? ?????? 10 ????
-        }
-        else
-        {
-            // ??/???? ???? ?? ???? (???? ????)
-            if (otherGO != null && (otherGO.name == ScoreTags[0] || otherGO.name == ScoreTags[1]))
+            if (otherGO != null && otherGO.CompareTag(PlayerTag))
             {
-                if (Time.time - lastScoreTime >= scoreInterval)
+                CameraShakingManager.Instance.DoShake(0.1f, 1f);
+                HitStopManager.Instance.DoHitStop(0.1f, 0.1f);
+                IPlayerInfo.CourtPosition courtPos = otherGO.GetComponent<IPlayerInfo>().m_CourtPosition;
+                PlayerUIManager.GetInstance().UpUltimateBar(courtPos); // ???? ?????? 10 ????
+            }
+            else
+            {
+                // ??/???? ???? ?? ???? (???? ????)
+                if (otherGO != null && (otherGO.name == ScoreTags[0] || otherGO.name == ScoreTags[1]))
                 {
+                    if (Time.time - lastScoreTime >= scoreInterval)
+                    {
 
-                    PlayerUIManager.GetInstance().UpScore(HitcourtPos);
-                    lastScoreTime = Time.time;
+                        PlayerUIManager.GetInstance().UpScore(HitcourtPos);
+                        lastScoreTime = Time.time;
+                    }
                 }
             }
         }
+        // 1) ?��????? ?�� ???
         if (otherGO.gameObject.transform.position.y < 5f)
         {
             Vector3 forceVector = Vector3.up * 1.5f;

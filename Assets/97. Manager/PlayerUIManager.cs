@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -78,7 +79,7 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
 
     }
 
-    void Start()
+    public void Start()
     {
         if (!m_WorldUICanvas) SetUpCanvas();
         SetUpPlayers();
@@ -102,7 +103,9 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
 
     private void SetUpPlayers()
     {
-        foreach (var player in GameObject.FindGameObjectsWithTag("Player"))
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        if(players.Count() > 2 || players.Count() <= 1) return;
+        foreach (var player in players)
         {
 
             PlayerUI playerUI = new PlayerUI
@@ -273,6 +276,10 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
         {
             m_eLastWinner = IPlayerInfo.CourtPosition.COURT_RIGHT;
             RoundScoreCounts[1].DecreaseValueInt(-1);
+        }
+        else
+        {
+            m_eLastWinner = IPlayerInfo.CourtPosition.COURT_END;
         }
     }
     

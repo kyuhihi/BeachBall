@@ -287,7 +287,10 @@ public class MonkeyPlayerMovement : BasePlayerMovement
     }
     public override void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
-        m_isMoveByInput = true;
+        if (!base.IsStunned)
+        {
+            m_isMoveByInput = true;
+        }
     }//이거 오버라이딩해야함.
 
     public override void OnRoundStart()
@@ -329,7 +332,8 @@ public class MonkeyPlayerMovement : BasePlayerMovement
 
     public void ThrowBanana(Transform OtherPlayer)
     {
-        if (OtherPlayer == null|| !m_isMoveByInput) return;
+        if(base.IsStunned || !m_isMoveByInput) return;
+        if (OtherPlayer == null || !m_isMoveByInput) return;
         PlayerUIManager UIMgrInstance = PlayerUIManager.GetInstance();
         if (UIMgrInstance.GetCurrentSecond() > 5 && UIMgrInstance.UseAbility(IUIInfo.UIType.UltimateBar, m_CourtPosition))
         {
@@ -371,7 +375,7 @@ public class MonkeyPlayerMovement : BasePlayerMovement
 
     public void AIJump(bool allowDouble = true)
     {
-        if (!m_isMoveByInput) return;
+        if (base.IsStunned || !m_isMoveByInput) return;
         if (m_eLocomotionState == IdleWalkRunEnum.Swim) return;
 
         // 1단 점프

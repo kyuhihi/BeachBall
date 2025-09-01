@@ -46,12 +46,20 @@ public class GameSettings : MonoBehaviour
         public bool isHuman;       // 사람이 조작하는지
     }
 
+    [Header("Scene Name Lists (단순 판별용)")]
+    [SerializeField] private string[] VSComputerSceneNames = {  };//Enable Multiple Names;
+    [SerializeField] private string[] VSPlayerSceneNames = {  };
+
+    private const string titleSceneName = "TitleScene";
+    public enum SceneType{ Title, VSComputer, VSPlayer, None }
+    private SceneType _currentSceneType = SceneType.None;
+    public SceneType GetSceneType() {return _currentSceneType;}
+
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
-
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -62,9 +70,41 @@ public class GameSettings : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // 씬 로드 후, 이미 등록된 에셋에 대해 저장본을 재적용(보강)
+        ClassifySimple(scene.name);   // 추가: 단순 판별
         LoadKeyBindings();
     }
+
+    private void ClassifySimple(string sceneName)
+    {
+
+        if (!string.IsNullOrEmpty(sceneName))
+        {
+            if (string.Equals(titleSceneName, sceneName, StringComparison.OrdinalIgnoreCase))
+            {
+                _currentSceneType = SceneType.Title;
+                return;
+            }
+
+            foreach (var name in VSComputerSceneNames)
+            {
+                if (sceneName.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    _currentSceneType = SceneType.VSComputer;
+                    return;
+                }
+            }
+            foreach (var name in VSPlayerSceneNames)
+            {
+                if (sceneName.IndexOf(name, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    _currentSceneType = SceneType.VSPlayer;
+                    return;
+                }
+            }
+
+        }
+    }
+
 
     // 슬롯에 에셋 등록 + 저장된 오버라이드 즉시 적용
     public void RegisterActionsForSlot(string slot, params InputActionAsset[] assets)
@@ -255,7 +295,7 @@ public class GameSettings : MonoBehaviour
             if (string.IsNullOrEmpty(cpuChar)) cpuChar = playerChar;
 
             if (!string.IsNullOrEmpty(playerChar))
-                list.Add(new SpawnSpec { slot = "CPU",  characterId = playerChar, isHuman = true });
+                list.Add(new SpawnSpec { slot = "CPU", characterId = playerChar, isHuman = true });
             if (!string.IsNullOrEmpty(cpuChar))
                 list.Add(new SpawnSpec { slot = "CPU", characterId = cpuChar, isHuman = false });
         }

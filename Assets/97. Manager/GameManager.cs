@@ -21,6 +21,7 @@ public class GameManager : MonoBehaviour, IResetAbleListener
     public GameState CurrentGameState => m_eCurrentGameState;
     private CinemachineVirtualCamera m_GameVirtualCam;
     private CinemachineVirtualCamera m_CutSceneVirtualCam;
+    public GameObject GetCutSceneCamera() => m_CutSceneVirtualCam.gameObject;
     private const int OnVirtualCameraPriority = 50;
     private const int OffVirtualCameraPriority = 10;
     private const float MapOutZDistance = 11.2f;
@@ -155,12 +156,35 @@ public class GameManager : MonoBehaviour, IResetAbleListener
         IsClamped(obj.transform.position.x, -MapOutXDistance, MapOutXDistance, out xFixedPos);
         // 적용
         obj.transform.position = new Vector3(xFixedPos, obj.transform.position.y, obj.transform.position.z);
-
     }
+
+    public void CheckObjectPosition(Vector3 position, out bool xClamped, out bool yClamped, out bool zClamped, float YOffset = 0.3f)
+    {
+        float zFixedPos;
+        zClamped = IsClamped(position.z, -MapOutZDistance, MapOutZDistance, out zFixedPos);
+        // 적용
+        position = new Vector3(position.x, position.y, zFixedPos);
+        // Y Position 고정 체크
+        float yFixedPos;
+        yClamped = IsClamped(position.y, -0.5f, MapOutYDistance + YOffset, out yFixedPos);
+        // 적용
+        position = new Vector3(position.x, yFixedPos, position.z);
+        float xFixedPos;
+        xClamped = IsClamped(position.x, -MapOutXDistance, MapOutXDistance, out xFixedPos);
+    }
+    
     private void ConfinePlayersPosition()
     {
         if (_players.Count <= 1 || _players == null)
-            _players = PlayerUIManager.GetInstance()?.GetPlayers();
+        {
+            PlayerUIManager playerUIMgr = PlayerUIManager.GetInstance();
+            _players = playerUIMgr?.GetPlayers();
+            if (_players.Count <= 1 || _players.Count > 2)
+            {
+                playerUIMgr.Start();
+
+            }
+        }
         foreach (var player in _players)
         {
             if (player == null) continue;
@@ -183,7 +207,7 @@ public class GameManager : MonoBehaviour, IResetAbleListener
 
             // Y Position 고정 체크
             float yFixedPos;
-            bool yClamped = IsClamped(player.transform.position.y, float.MinValue, MapOutYDistance +0.3f, out yFixedPos);
+            bool yClamped = IsClamped(player.transform.position.y, float.MinValue, MapOutYDistance + 0.3f, out yFixedPos);
 
             if (yClamped)
                 player.transform.position = new Vector3(player.transform.position.x, 0.0f, player.transform.position.z);

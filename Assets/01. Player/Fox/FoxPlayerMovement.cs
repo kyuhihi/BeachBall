@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using System.Collections;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
+using UnityEngine.Timeline;
 
 public class FoxPlayerMovement : BasePlayerMovement
 {
@@ -24,6 +25,7 @@ public class FoxPlayerMovement : BasePlayerMovement
         if (active != "TitleScene")
         {
             PlayerUIManager.GetInstance().SetPlayerInfoInUI(this);
+            SetEmptyPlayableDirector();
         }
         else
         {
@@ -44,7 +46,38 @@ public class FoxPlayerMovement : BasePlayerMovement
         }
     }
 
+    private void SetEmptyPlayableDirector()
+    {
+        var timeline = m_PlayableDirector.playableAsset as TimelineAsset;
+        if (timeline == null) return;
 
+        foreach (var track in timeline.GetOutputTracks())
+        {
+            // 이미 바인딩된 경우는 건너뜀
+            var currentBinding = m_PlayableDirector.GetGenericBinding(track);
+            if (currentBinding != null)
+                continue;
+
+            string groupName = track.parent != null ? track.parent.name : "";
+
+            if (groupName == "Camera" && track is AnimationTrack)
+            {
+                GameObject cutSceneCamera = GameManager.GetInstance().GetCutSceneCamera();
+                if (cutSceneCamera != null)
+                    m_PlayableDirector.SetGenericBinding(track, cutSceneCamera.GetComponent<Animator>());
+            }
+            else if (track is UnityEngine.Timeline.SignalTrack)
+            {
+                var gm = FindFirstObjectByType<GameManager>();
+                if (gm != null)
+                    m_PlayableDirector.SetGenericBinding(track, gm);
+            }
+            else if (track is CinemachineTrack)
+            {
+                m_PlayableDirector.SetGenericBinding(track, Camera.main.GetComponent<Cinemachine.CinemachineBrain>());
+            }
+        }
+    }
     public override void OnAttackSkill(InputValue value)
     {
         if (!m_isMoveByInput || m_eLocomotionState == IdleWalkRunEnum.Swim)

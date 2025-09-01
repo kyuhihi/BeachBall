@@ -13877,6 +13877,63 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 7440274256081910545, guid: 2e2a62d57845dd94f95b11a298018c58, type: 3}
   m_PrefabInstance: {fileID: 557445203}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &560235623
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 3515125723976739998, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.99
+      objectReference: {fileID: 0}
+    - target: {fileID: 3515125723976739998, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3.94
+      objectReference: {fileID: 0}
+    - target: {fileID: 3515125723976739998, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -5.93
+      objectReference: {fileID: 0}
+    - target: {fileID: 3515125723976739998, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3515125723976739998, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3515125723976739998, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3515125723976739998, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3515125723976739998, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3515125723976739998, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3515125723976739998, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8617419807013372452, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
+      propertyPath: m_Name
+      value: volleyball
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 54be63e6ff4253e4ba57385ec19571ab, type: 3}
 --- !u!1001 &565185905
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -23507,6 +23564,38 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 3692269544981774570, guid: dddcd7d62ce0693469f48c482f84323e, type: 3}
+      propertyPath: VSPlayerSceneNames.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3692269544981774570, guid: dddcd7d62ce0693469f48c482f84323e, type: 3}
+      propertyPath: VSComputerSceneNames.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3692269544981774570, guid: dddcd7d62ce0693469f48c482f84323e, type: 3}
+      propertyPath: 'VSPlayerSceneNames.Array.data[0]'
+      value: 1vs1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3692269544981774570, guid: dddcd7d62ce0693469f48c482f84323e, type: 3}
+      propertyPath: 'VSPlayerSceneNames.Array.data[1]'
+      value: Kyu_Scene
+      objectReference: {fileID: 0}
+    - target: {fileID: 3692269544981774570, guid: dddcd7d62ce0693469f48c482f84323e, type: 3}
+      propertyPath: 'VSPlayerSceneNames.Array.data[2]'
+      value: Cho_Scene
+      objectReference: {fileID: 0}
+    - target: {fileID: 3692269544981774570, guid: dddcd7d62ce0693469f48c482f84323e, type: 3}
+      propertyPath: 'VSComputerSceneNames.Array.data[0]'
+      value: 1vsCPU
+      objectReference: {fileID: 0}
+    - target: {fileID: 3692269544981774570, guid: dddcd7d62ce0693469f48c482f84323e, type: 3}
+      propertyPath: 'VSComputerSceneNames.Array.data[1]'
+      value: ComScene
+      objectReference: {fileID: 0}
+    - target: {fileID: 3692269544981774570, guid: dddcd7d62ce0693469f48c482f84323e, type: 3}
+      propertyPath: 'VSComputerSceneNames.Array.data[2]'
+      value: ComSceneTest
+      objectReference: {fileID: 0}
     - target: {fileID: 6050293660264094034, guid: dddcd7d62ce0693469f48c482f84323e, type: 3}
       propertyPath: m_Name
       value: GameSettingStaticManager
@@ -23819,3 +23908,4 @@ SceneRoots:
   - {fileID: 1754201757}
   - {fileID: 1631333298}
   - {fileID: 780525616}
+  - {fileID: 560235623}
