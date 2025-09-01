@@ -13849,7 +13849,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8526536210030557695, guid: 2e2a62d57845dd94f95b11a298018c58, type: 3}
       propertyPath: scene1vsCPU
-      value: ComSceneTest
+      value: ComScene
       objectReference: {fileID: 0}
     - target: {fileID: 8526536210030557695, guid: 2e2a62d57845dd94f95b11a298018c58, type: 3}
       propertyPath: buttonHaviorName
@@ -17380,7 +17380,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8411091182242037134, guid: a87a740b29fb4bb4bb432273b332fd75, type: 3}
       propertyPath: scene1vsCPU
-      value: ComSceneTest
+      value: ComScene
       objectReference: {fileID: 0}
     - target: {fileID: 8411091182242037134, guid: a87a740b29fb4bb4bb432273b332fd75, type: 3}
       propertyPath: buttonHaviorName
@@ -23309,6 +23309,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1121519740}
     m_Modifications:
+    - target: {fileID: 508328682900003166, guid: 23abc40c02328604c8bd6c8bc9f286d3, type: 3}
+      propertyPath: m_VerticalAlignment
+      value: 512
+      objectReference: {fileID: 0}
     - target: {fileID: 1549130041435637478, guid: 23abc40c02328604c8bd6c8bc9f286d3, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
@@ -23316,6 +23320,10 @@ PrefabInstance:
     - target: {fileID: 6563213429244515230, guid: 23abc40c02328604c8bd6c8bc9f286d3, type: 3}
       propertyPath: m_Name
       value: KeySettingPanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 6563213429244515230, guid: 23abc40c02328604c8bd6c8bc9f286d3, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6894316769128120101, guid: 23abc40c02328604c8bd6c8bc9f286d3, type: 3}
       propertyPath: m_Color.a
@@ -23575,11 +23583,11 @@ PrefabInstance:
       objectReference: {fileID: 1158781069}
     - target: {fileID: 3084555260344398940, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: scene1vs1
-      value: ComSceneTest
+      value: ComScene
       objectReference: {fileID: 0}
     - target: {fileID: 3084555260344398940, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: scene1vsCPU
-      value: ComSceneTest
+      value: ComScene
       objectReference: {fileID: 0}
     - target: {fileID: 3084555260344398940, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: keySettingPanel
@@ -23595,11 +23603,11 @@ PrefabInstance:
       objectReference: {fileID: 61473441}
     - target: {fileID: 3959290207836044548, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: scene1vs1
-      value: ComSceneTest
+      value: ComScene
       objectReference: {fileID: 0}
     - target: {fileID: 3959290207836044548, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: scene1vsCPU
-      value: ComSceneTest
+      value: ComScene
       objectReference: {fileID: 0}
     - target: {fileID: 3959290207836044548, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: keySettingPanel

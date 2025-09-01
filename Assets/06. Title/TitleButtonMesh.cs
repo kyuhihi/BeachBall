@@ -27,8 +27,8 @@ public class TitleButtonMesh : MonoBehaviour
 
     // 선택 완료 시 자동 씬 진입 여부
     [SerializeField] private bool autoLoadOnComplete = true;
-    [SerializeField] private string scene1vs1 = "ComSceneTest";
-    [SerializeField] private string scene1vsCPU = "ComSceneTest";
+    [SerializeField] private string scene1vs1 = "ComScene";
+    [SerializeField] private string scene1vsCPU = "ComScene";
 
     private bool isRotating = false;
     private bool isFixed90 = false;
