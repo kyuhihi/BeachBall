@@ -122,7 +122,7 @@ public class GameSceneManager : MonoBehaviour
         }
         else
         {
-           // 슬롯/ID 결정
+            // 슬롯/ID 결정
             string leftSlot, rightSlot;
             if (gs.gameMode == "1vs1")
             {
@@ -143,7 +143,7 @@ public class GameSceneManager : MonoBehaviour
 
             // 선택 로직: 1vs1은 strict=true, 1vsCPU는 strict=false(id만 맞아도 선택)
             bool strict = (gs.gameMode == "1vs1");
-            leftChosen  = SelectCharacterByIdAndSlot(leftRoot,  leftId,  leftSlot,  strict);
+            leftChosen = SelectCharacterByIdAndSlot(leftRoot, leftId, leftSlot, strict);
             rightChosen = spawnRight ? SelectCharacterByIdAndSlot(rightRoot, rightId, rightSlot, strict) : null;
 
             if (debugLog)
@@ -225,6 +225,18 @@ public class GameSceneManager : MonoBehaviour
 
         if (enableAfterInit != null)
             foreach (var go in enableAfterInit) if (go) go.SetActive(true);
+            
+        // 초기화 완료 후, UI에 플레이어 정보 보정 등록(매니저/UI가 이제 켜진 뒤)
+        var ui = PlayerUIManager.GetInstance();
+        if (ui != null)
+        {
+            var players = GameObject.FindGameObjectsWithTag("Player");
+            for (int i = 0; i < players.Length; i++)
+            {
+                var info = players[i].GetComponent<IPlayerInfo>();
+                if (info != null) ui.SetPlayerInfoInUI(info);
+            }
+        }
     }
 
     // ---- Helpers ----

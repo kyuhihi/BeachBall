@@ -122,7 +122,8 @@ public class OptionManager : MonoBehaviour
         if (soundPanel) soundPanel.SetActive(false);
         if (optionPanel) optionPanel.SetActive(false);
         GameManager.GetInstance()?.Resume();
-        SceneManager.LoadScene("TitleScene");
+        SceneLoader.LoadWithLoadingScene("TitleScene");
+        // SceneManager.LoadScene("TitleScene");
     }
     
     public void ApplyOptionPanelBlock()

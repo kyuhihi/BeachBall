@@ -108,7 +108,8 @@ public class TurtlePlayerMovement : BasePlayerMovement
         var active = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
         if (active != "TitleScene")
         {
-            PlayerUIManager.GetInstance().SetPlayerInfoInUI(this);
+            // PlayerUIManager.GetInstance().SetPlayerInfoInUI(this);
+            StartCoroutine(Co_RegisterPlayerInfoWhenReady());
         }
         else
         {
@@ -158,6 +159,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
         }
 
     }
+
 
     public override void OnAttackSkill(InputValue value)
     {

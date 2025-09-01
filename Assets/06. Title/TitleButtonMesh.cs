@@ -339,8 +339,8 @@ public class TitleButtonMesh : MonoBehaviour
             if (completed && autoLoadOnComplete)
             {
                 // 디버그: 슬롯/ID 출력
-                string p1  = gs.GetCharacterForSlot("P1");
-                string p2  = gs.GetCharacterForSlot("P2");
+                string p1 = gs.GetCharacterForSlot("P1");
+                string p2 = gs.GetCharacterForSlot("P2");
                 string cpu = gs.GetCharacterForSlot("CPU");
                 string T(string s) => string.IsNullOrWhiteSpace(s) ? "(null)" : s.Trim();
                 Debug.Log($"[Title] Load Scene - mode='{gs.gameMode}', P1='{T(p1)}', P2='{T(p2)}', CPU='{T(cpu)}'");
@@ -348,8 +348,14 @@ public class TitleButtonMesh : MonoBehaviour
                 // 씬 로딩 플래그 On → OnDisable에서 선택 초기화 방지
                 s_isSceneLoading = true;
 
-                if (gs.gameMode == "1vs1") SceneManager.LoadScene(scene1vs1);
-                else SceneManager.LoadScene(scene1vsCPU);
+
+                if (gs.gameMode == "1vs1")
+                    SceneLoader.LoadWithLoadingScene(scene1vs1);
+                else
+                    SceneLoader.LoadWithLoadingScene(scene1vsCPU);
+                    
+                // if (gs.gameMode == "1vs1") SceneManager.LoadScene(scene1vs1);
+                // else SceneManager.LoadScene(scene1vsCPU);
             }
         }
         else

@@ -152,6 +152,21 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     }
     protected void SetTransformToRoundStart() { gameObject.transform.position = m_StartPosition; gameObject.transform.rotation = Quaternion.Euler(m_StartRotationEuler); }
 
+
+    protected System.Collections.IEnumerator Co_RegisterPlayerInfoWhenReady()
+    {
+        // GameSceneManager 초기화 완료 + PlayerUIManager 살아날 때까지 대기
+        while (this && isActiveAndEnabled &&
+               (PlayerUIManager.GetInstance() == null || !GameSceneManager.IsInitialized))
+            yield return null;
+
+        if (!this || !isActiveAndEnabled) yield break;
+
+        var ui = PlayerUIManager.GetInstance();
+        if (ui != null)
+            ui.SetPlayerInfoInUI(this);
+    }
+
     protected virtual void Start()
     {
         baseWalkSpeed = walkSpeed;
