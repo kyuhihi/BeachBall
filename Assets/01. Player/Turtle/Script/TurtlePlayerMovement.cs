@@ -525,13 +525,14 @@ public class TurtlePlayerMovement : BasePlayerMovement
                 {
 
                     controller.Stun(10f); // 10초간 스턴
+                    controller.IsSwimming = true;
                     controller.HurtTurtleUltimateSkillStun = true;
                     controller.SetSwimModeAfterStun(0.5f); // 10초 후 수영모드, 속도 0.5배
                 }
             }
             else
             {
-
+                IsSwimming = true;
                 SetSwimmingMode(2f); // 수영모드, 속도 2배
             }
             

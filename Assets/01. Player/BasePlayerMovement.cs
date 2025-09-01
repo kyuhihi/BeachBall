@@ -27,6 +27,12 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     protected Vector3 dashTargetPosition;
     protected bool isDashingToBall = false;
     protected bool isSwimming = false;
+
+    public bool IsSwimming
+    {
+        get => isSwimming;
+        set => isSwimming = value;
+    }
     protected float dashArriveDistance = 0.5f; // 도착 판정 거리
 
     [SerializeField] protected float jumpForce = 10f;
@@ -523,7 +529,6 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     public void OnDoubleJumpInput(bool doubleJumpInput)
     {
 
-        
         m_IsDoubleJumping = doubleJumpInput;
         // Animator 파라미터 업데이트
         if (m_Animator != null)
@@ -679,6 +684,17 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         else
         {
             footstepTimer = 0f;
+        }
+
+        if (m_PlayerType == IPlayerInfo.PlayerType.Monkey && isGrounded && (m_eLocomotionState != IdleWalkRunEnum.Swim))
+        {
+            footstepTimer += Time.deltaTime;
+            if (footstepTimer > footstepInterval)
+            {
+                // 왼발/오른발 번갈아가며
+                SpawnFootstepEffect((int)(Time.time * 2) % 2 == 0);
+                footstepTimer = 0f;
+            }
         }
 
         // *** Swim 상태에서 위/아래 이동 처리 ***
@@ -973,9 +989,14 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         // Swimming 상태로 전환
         // 예: isSwimming = true;
         // 속도 조정
+
+        if (!isSwimming)
+        {
+            return; // 수영모드 아니면 금지
+        }
+
         m_eLocomotionState = IdleWalkRunEnum.Swim;
         walkSpeed = walkSpeed * speedMultiplier;
-        isSwimming = true;
         m_Animator.SetBool("IsSwimming", true);
         m_Animator.SetTrigger("Swimming");
         // 애니메이션 등 추가
@@ -996,7 +1017,10 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         m_eLocomotionState = IdleWalkRunEnum.Idle;
         walkSpeed = baseWalkSpeed;
         isSwimming = false;
+        isStunned = false;
         m_Animator.SetBool("IsSwimming", false);
+        m_Animator.ResetTrigger("Stunned");
+        HurtTurtleUltimateSkillStun = false;
         RestoreGravity(true);
     }
 

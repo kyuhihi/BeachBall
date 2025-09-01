@@ -292,6 +292,7 @@ public class MonkeyPlayerMovement : BasePlayerMovement
 
     public override void OnRoundStart()
     {
+        StopAllCoroutines();
         m_isMoveByInput = true;
         LateUpdate();
         m_Rigidbody.WakeUp();
@@ -303,6 +304,7 @@ public class MonkeyPlayerMovement : BasePlayerMovement
     }
     public override void OnRoundEnd()
     {
+        StopAllCoroutines();
         m_isMoveByInput = false;
 
         stretchAnimT = 0.0f;
