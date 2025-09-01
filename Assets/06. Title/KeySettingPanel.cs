@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.InputSystem;
 using TMPro;
-using System.Collections; // 추가
+using System.Collections;
 using System;
 
 [System.Serializable]
@@ -809,7 +809,8 @@ public class KeySettingPanel : MonoBehaviour
 
     private IEnumerator HideFailPopupAfterDelay()
     {
-        yield return new WaitForSeconds(failureAutoHideSeconds);
+        // 일시정지와 무관하게 흐르는 실시간 기준 딜레이
+        yield return new WaitForSecondsRealtime(failureAutoHideSeconds);
         if (failurePopup) failurePopup.SetActive(false);
     }
 

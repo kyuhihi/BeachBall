@@ -191,7 +191,6 @@ public class GameSceneManager : MonoBehaviour
         // 완료
         IsInitialized = true;
 
-        // 로딩창 닫기(오버레이가 스케일드타임을 쓰면 Unscaled로 처리하도록 내부가 구현돼 있어야 합니다)
         if (loadingOverlay != null)
             yield return loadingOverlay.FadeOut(2f);
 

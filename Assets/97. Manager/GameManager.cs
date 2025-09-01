@@ -3,11 +3,13 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using NUnit.Framework.Constraints;
+using UnityEngine.InputSystem;
+using UnityEngine.Playables;
 // using UnityEngine.Experimental.GlobalIllumination;
 
 public class GameManager : MonoBehaviour, IResetAbleListener
 {
-    
+
     //==============================SingleTonSetting=============================
     private static GameManager Instance;
     public static GameManager GetInstance() => Instance;
@@ -33,12 +35,31 @@ public class GameManager : MonoBehaviour, IResetAbleListener
     private Coroutine _lightColorCo;
 
     private IPlayerInfo.CourtPosition m_eLastUltimateCourtPosition = IPlayerInfo.CourtPosition.COURT_END;
-    public bool wasPlayedUltimateSkill(){if(m_eLastUltimatePlayerType != IPlayerInfo.PlayerType.End) return true; return false;}
+    public bool wasPlayedUltimateSkill() { if (m_eLastUltimatePlayerType != IPlayerInfo.PlayerType.End) return true; return false; }
     public IPlayerInfo.CourtPosition GetLastUltimateCourtPosition() => m_eLastUltimateCourtPosition;
     private IPlayerInfo.PlayerType m_eLastUltimatePlayerType = IPlayerInfo.PlayerType.End;
     //==============================CutSceneSetting==============================
     List<GameObject> _players = new List<GameObject>();
     public IPlayerInfo.CourtPosition GetLastWinner() { return PlayerUIManager.GetInstance().GetLastWinner(); }
+
+    // =========================Pause=================================
+    private float _prevTimeScale = 1f;
+    public bool IsPaused { get; private set; }
+
+    // 커서 상태 백업
+    private bool _prevCursorVisible;
+    private CursorLockMode _prevCursorLock;
+
+
+    // 일시정지 대상 추적(재개 시 원복용)
+    private readonly System.Collections.Generic.List<PlayableDirector> _pausedDirectors = new System.Collections.Generic.List<PlayableDirector>();
+    private readonly System.Collections.Generic.List<ParticleSystem> _pausedParticles = new System.Collections.Generic.List<ParticleSystem>();
+    private readonly System.Collections.Generic.Dictionary<Animator, float> _animPrevSpeed = new System.Collections.Generic.Dictionary<Animator, float>();
+    private readonly System.Collections.Generic.Dictionary<CinemachineBrain, bool> _brainPrevIgnore = new System.Collections.Generic.Dictionary<CinemachineBrain, bool>();
+
+    [Header("Pause 예외(이 루트 하위의 PlayerInput은 Pause 시에도 유지)")]
+    [SerializeField] private List<GameObject> pauseExemptRoots = new List<GameObject>();
+
 
     public enum GameState
     {
@@ -296,7 +317,223 @@ public class GameManager : MonoBehaviour, IResetAbleListener
 
         _lightColorCo = null;
     }
+
+
+    public void RegisterPauseExemptRoot(GameObject go)
+    {
+        if (go != null && !pauseExemptRoots.Contains(go))
+            pauseExemptRoots.Add(go);
+    }
+
+    private bool IsUnderExemptRoot(Component c)
+    {
+        if (c == null) return false;
+        var t = c.transform;
+        foreach (var root in pauseExemptRoots)
+        {
+            if (root == null) continue;
+            if (t.IsChildOf(root.transform)) return true;
+        }
+        return false;
+    }
+
+    private void TrySetPlayersInputEnabled(bool enable)
+    {
+        // 씬 내 모든 PlayerInput을 대상으로 하되, 예외 루트 하위는 건드리지 않음
+        var inputs = FindObjectsByType<PlayerInput>(FindObjectsSortMode.None);
+        foreach (var pi in inputs)
+        {
+            if (pi == null) continue;
+            if (IsUnderExemptRoot(pi)) continue; // 옵션/사운드 패널 등은 유지
+            pi.enabled = enable;
+        }
+    }
+
+    public void Pause()
+    {
+        if (IsPaused) return;
+        IsPaused = true;
+
+        // 시간/오디오
+        _prevTimeScale = Time.timeScale;
+        Time.timeScale = 0f;
+        AudioListener.pause = true;
+
+        // 커서 표시/언락
+        _prevCursorVisible = Cursor.visible;
+        _prevCursorLock = Cursor.lockState;
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+
+        // 입력 끄기
+        TrySetPlayersInputEnabled(false);
+
+        // 컷신/타임라인 멈춤
+        PausePlayableDirectors();
+
+        // UnscaledTime 사용하는 파티클/애니메이터 방어적 정지
+        PauseUnscaledParticles();
+        PauseUnscaledAnimators();
+
+        // Cinemachine 블렌드가 타임스케일 무시 중이면 끄기(블렌드 멈춤)
+        SetCinemachineIgnoreTimeScale(false);
+    }
+
+    public void Resume()
+    {
+        if (!IsPaused) return;
+        IsPaused = false;
+
+        // 시간/오디오
+        Time.timeScale = _prevTimeScale <= 0f ? 1f : _prevTimeScale;
+        AudioListener.pause = false;
+
+        // 커서 복원
+        Cursor.visible = _prevCursorVisible;
+        Cursor.lockState = _prevCursorLock;
+
+        // 입력 켜기
+        TrySetPlayersInputEnabled(true);
+
+        // 원복
+        ResumePlayableDirectors();
+        ResumeUnscaledParticles();
+        ResumeUnscaledAnimators();
+        RestoreCinemachineIgnoreTimeScale();
+    }
+
+    
+    // 타임라인 일시정지(업데이트 모드가 Unscaled이어도 강제 정지)
+    private void PausePlayableDirectors()
+    {
+        _pausedDirectors.Clear();
+        var directors = FindObjectsByType<PlayableDirector>(FindObjectsSortMode.None);
+        foreach (var d in directors)
+        {
+            if (d == null || !d.playableGraph.IsValid()) continue;
+
+            var root = d.playableGraph.GetRootPlayable(0);
+            if (root.IsValid())
+            {
+                if (d.state == PlayState.Playing)
+                {
+                    root.SetSpeed(0); // 정지
+                    _pausedDirectors.Add(d);
+                }
+            }
+        }
+    }
+
+    private void ResumePlayableDirectors()
+    {
+        foreach (var d in _pausedDirectors)
+        {
+            if (d == null || !d.playableGraph.IsValid()) continue;
+            var root = d.playableGraph.GetRootPlayable(0);
+            if (root.IsValid())
+                root.SetSpeed(1); // 재개
+        }
+        _pausedDirectors.Clear();
+    }
+
+    // UnscaledTime 파티클 방어적 정지/재개
+    private void PauseUnscaledParticles()
+    {
+        _pausedParticles.Clear();
+        var particles = FindObjectsByType<ParticleSystem>(FindObjectsSortMode.None);
+        foreach (var ps in particles)
+        {
+            if (ps == null) continue;
+            var main = ps.main;
+            // 타임스케일 무시하거나 현재 재생 중이면 정지
+            if (main.useUnscaledTime || ps.isPlaying)
+            {
+                ps.Pause(true);
+                _pausedParticles.Add(ps);
+            }
+        }
+    }
+
+    private void ResumeUnscaledParticles()
+    {
+        foreach (var ps in _pausedParticles)
+        {
+            if (ps == null) continue;
+            ps.Play(true);
+        }
+        _pausedParticles.Clear();
+    }
+
+    // UnscaledTime 애니메이터 방어적 정지/재개
+    private void PauseUnscaledAnimators()
+    {
+        _animPrevSpeed.Clear();
+        var animators = FindObjectsByType<Animator>(FindObjectsSortMode.None);
+        foreach (var a in animators)
+        {
+            if (a == null) continue;
+            if (a.updateMode == AnimatorUpdateMode.UnscaledTime && a.speed != 0f)
+            {
+                _animPrevSpeed[a] = a.speed;
+                a.speed = 0f;
+            }
+        }
+    }
+
+    private void ResumeUnscaledAnimators()
+    {
+        foreach (var kv in _animPrevSpeed)
+        {
+            if (kv.Key == null) continue;
+            kv.Key.speed = kv.Value;
+        }
+        _animPrevSpeed.Clear();
+    }
+
+    // Cinemachine 블렌드가 타임스케일을 무시하지 않도록 강제
+    private void SetCinemachineIgnoreTimeScale(bool ignore)
+    {
+        _brainPrevIgnore.Clear();
+        var brains = FindObjectsByType<CinemachineBrain>(FindObjectsSortMode.None);
+        foreach (var b in brains)
+        {
+            if (b == null) continue;
+            bool prev = GetBrainIgnoreTimeScale(b);
+            _brainPrevIgnore[b] = prev;
+            SetBrainIgnoreTimeScale(b, ignore);
+        }
+    }
+
+    private void RestoreCinemachineIgnoreTimeScale()
+    {
+        foreach (var kv in _brainPrevIgnore)
+        {
+            if (kv.Key == null) continue;
+            SetBrainIgnoreTimeScale(kv.Key, kv.Value);
+        }
+        _brainPrevIgnore.Clear();
+    }
+
+    // 호환용: 속성 또는 필드 접근
+    private static bool GetBrainIgnoreTimeScale(CinemachineBrain brain)
+    {
+        var prop = typeof(CinemachineBrain).GetProperty("IgnoreTimeScale");
+        if (prop != null) return (bool)prop.GetValue(brain);
+        var field = typeof(CinemachineBrain).GetField("m_IgnoreTimeScale", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+        if (field != null) return (bool)field.GetValue(brain);
+        return false;
+    }
+    private static void SetBrainIgnoreTimeScale(CinemachineBrain brain, bool value)
+    {
+        var prop = typeof(CinemachineBrain).GetProperty("IgnoreTimeScale");
+        if (prop != null) { prop.SetValue(brain, value); return; }
+        var field = typeof(CinemachineBrain).GetField("m_IgnoreTimeScale", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic);
+        if (field != null) field.SetValue(brain, value);
+    }
+
 }
+
+
 
 
 
