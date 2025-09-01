@@ -23667,16 +23667,20 @@ PrefabInstance:
       objectReference: {fileID: 1257386753}
     - target: {fileID: 8308226184048919081, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: scene1vs1
-      value: ComSceneTest
+      value: ComScene
       objectReference: {fileID: 0}
     - target: {fileID: 8308226184048919081, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: scene1vsCPU
-      value: ComSceneTest
+      value: ComScene
       objectReference: {fileID: 0}
     - target: {fileID: 8308226184048919081, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: keySettingPanel
       value: 
       objectReference: {fileID: 1374120753}
+    - target: {fileID: 8308226184048919081, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
+      propertyPath: autoLoadOnComplete
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8308226184048919081, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: characterSelectRoot
       value: 
