@@ -38,7 +38,7 @@ Material:
     - _BorderWidth: 1.73
     - _Brightness: 1
     - _ChipFadeSpeed: 5.56
-    - _ChipHealth: 0.1
+    - _ChipHealth: 0.4
     - _DamageFadeSpeed: 3
     - _EdgeAdd: 6
     - _EdgeAddIntensity: 6
@@ -62,7 +62,7 @@ Material:
     - _HeadLerp: 0.25
     - _HeadSharpness: 3
     - _HeadWidthPx: 0
-    - _Health: 0.1
+    - _Health: 0.4
     - _HeightPx: 32
     - _HighlightAdd: 20
     - _HighlightBoost: 3.1
@@ -87,7 +87,7 @@ Material:
     - _NoiseSigned: 0
     - _OuterBorderPx: 0
     - _OuterBorderSoftPx: 1.25
-    - _PrevHealth: 0.1
+    - _PrevHealth: 0.4
     - _ResolutionX: 300
     - _ResolutionY: 37.29
     - _RightBottomTrim: 0.08
