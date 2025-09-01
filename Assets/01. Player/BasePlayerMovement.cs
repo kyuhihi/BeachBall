@@ -16,6 +16,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     [Header("Movement Settings")]
     public float turnSpeed = 20f;
     protected float walkSpeed = 7f;
+    protected float baseWalkSpeed = 7f;
     protected float swimMaxSpeed = 0f;
 
     // public float runSpeed = 5f;
@@ -147,6 +148,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
 
     protected virtual void Start()
     {
+        baseWalkSpeed = walkSpeed;
         m_StartPosition = gameObject.transform.position;
         m_StartRotationEuler = Vector3.zero;
         if (gameObject.transform.position.z < 0.0f)
@@ -973,8 +975,29 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         // 속도 조정
         m_eLocomotionState = IdleWalkRunEnum.Swim;
         walkSpeed = walkSpeed * speedMultiplier;
+        isSwimming = true;
+        m_Animator.SetBool("IsSwimming", true);
         m_Animator.SetTrigger("Swimming");
         // 애니메이션 등 추가
+    }
+
+    protected void RestoreGravity(bool value)
+    {
+        var rb  = GetComponent<Rigidbody>();
+        if (rb) rb.useGravity = value;
+    }
+
+    public void SetResetMode()
+    {
+        Debug.Log("Reset Mode로 전환");
+        // Swimming 상태로 전환
+        // 예: isSwimming = true;
+        // 속도 조정
+        m_eLocomotionState = IdleWalkRunEnum.Idle;
+        walkSpeed = baseWalkSpeed;
+        isSwimming = false;
+        m_Animator.SetBool("IsSwimming", false);
+        RestoreGravity(true);
     }
 
     protected void OnDrawGizmosSelected()

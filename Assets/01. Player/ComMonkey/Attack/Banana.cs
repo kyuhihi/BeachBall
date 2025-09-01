@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Banana : MonoBehaviour,IResetAbleListener
+public class Banana : MonoBehaviour,IResetAbleListener, ICutSceneListener
 {
     private float _CantTouchTime = 0.3f;
     private GameObject HitEffectGameObj;
@@ -13,12 +13,16 @@ public class Banana : MonoBehaviour,IResetAbleListener
     {
         Signals.RoundResetAble.AddStart(OnRoundStart);
         Signals.RoundResetAble.AddEnd(OnRoundEnd);
+        Signals.Cutscene.AddStart(OnStartCutScene);
+        Signals.Cutscene.AddStart(OnEndCutscene);
     }
 
     public void RemoveResetCall()
     {
         Signals.RoundResetAble.RemoveStart(OnRoundStart);
         Signals.RoundResetAble.RemoveEnd(OnRoundEnd);
+        Signals.Cutscene.RemoveStart(OnStartCutScene);
+        Signals.Cutscene.RemoveEnd(OnEndCutscene);
     }
     private void OnEnable()
     {
@@ -88,4 +92,17 @@ public class Banana : MonoBehaviour,IResetAbleListener
         gameObject.SetActive(false);
     }
 
+    public void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
+    {
+        if(playerType != IPlayerInfo.PlayerType.Monkey)
+            gameObject.SetActive(false);
+
+    }
+
+    public void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
+    {
+        if(playerType != IPlayerInfo.PlayerType.Monkey)
+            gameObject.SetActive(false);
+
+    }
 }

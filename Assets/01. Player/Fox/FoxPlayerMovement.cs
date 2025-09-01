@@ -145,14 +145,16 @@ public class FoxPlayerMovement : BasePlayerMovement
     }//이거 오버라이딩해야함.
     public override void OnRoundStart()
     {
-
+        StopAllCoroutines();
         m_isMoveByInput = true;
-
+        SetResetMode();
 
     }
     public override void OnRoundEnd()
     {
+        StopAllCoroutines();
         SetTransformToRoundStart();
+        SetResetMode();
 
         m_isMoveByInput = false;
         m_Rigidbody.linearVelocity = Vector3.zero;

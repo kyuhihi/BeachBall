@@ -558,13 +558,10 @@ public class TurtlePlayerMovement : BasePlayerMovement
             go = null;
         }
     }
-    private void RestoreGravity(bool value)
-    {
-        var rb  = GetComponent<Rigidbody>();
-        if (rb) rb.useGravity = value;
-    }
+
     public override void OnRoundStart()
     {
+        Debug.Log("Turtle OnRoundStart");
         // 코루틴/트리거/상태 초기화
         StopAllCoroutines();
 
@@ -576,6 +573,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
         isShellThrowCannonActive = false;
         isUltimateSkillActiving = false;
         HurtTurtleUltimateSkillStun = false;
+        SetResetMode();
 
         if (m_Animator != null)
         {
@@ -591,8 +589,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
         // 입 방향 초기화
         if (mouthTransform) mouthTransform.localRotation = Quaternion.Euler(180f, 90f, 0f);
 
-        // 중력 복구
-        RestoreGravity(true);
+  
         var selfRb = GetComponent<Rigidbody>();
         if (selfRb) selfRb.useGravity = true;
 
@@ -612,6 +609,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
 
     public override void OnRoundEnd()
     {
+        Debug.Log("Turtle OnRoundEnd");
         // 더 이상 입력/코루틴 진행 금지
         m_isMoveByInput = false;
         StopAllCoroutines();
@@ -659,8 +657,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
         // 입 방향 리셋
         if (mouthTransform) mouthTransform.localRotation = Quaternion.Euler(180f, 90f, 0f);
 
-        // 전 플레이어 중력 복구(궁극기에서 끈 경우 대비)
-        RestoreGravity(true);
+        SetResetMode();
     }
 
     private void DestroyAndClearFishList(List<GameObject> list)

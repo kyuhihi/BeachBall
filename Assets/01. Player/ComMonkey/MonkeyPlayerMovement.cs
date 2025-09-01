@@ -298,7 +298,7 @@ public class MonkeyPlayerMovement : BasePlayerMovement
         GetComponent<CapsuleCollider>().enabled = true;
         m_Rigidbody.isKinematic = false;
         m_Rigidbody.linearVelocity = Vector3.zero;
-
+        SetResetMode();
         m_Movement = Vector2.zero;
     }
     public override void OnRoundEnd()
@@ -315,6 +315,7 @@ public class MonkeyPlayerMovement : BasePlayerMovement
         m_Movement = Vector2.zero;
 
         isGrounded = false;
+        SetResetMode();
 
         GetComponent<CapsuleCollider>().enabled = false;
         m_eLocomotionState = IdleWalkRunEnum.Idle;
