@@ -47,15 +47,21 @@ public class Ball : MonoBehaviour, IResetAbleListener
         if (lastWinner == IPlayerInfo.CourtPosition.COURT_LEFT)
             TargetPosition.z = Mathf.Abs(TargetPosition.z);
         transform.position = TargetPosition;
-        m_SphereCollider.enabled = true;
 
+        m_SphereCollider.enabled = true;
         m_Rigidbody.isKinematic = false;
+        m_Rigidbody.maxLinearVelocity = 20f;
+        m_Rigidbody.linearVelocity = Vector3.zero;
+        m_Rigidbody.angularVelocity = Vector3.zero;
+
 
         _Stop = false;
     }
 
     public void OnRoundEnd()
     {
+        m_Rigidbody.maxLinearVelocity = 20f;
+
         _Stop = true;
         IPlayerInfo.CourtPosition lastWinner = GameManager.GetInstance().GetLastWinner();
         Vector3 TargetPosition = InitialRightPosition;
@@ -229,10 +235,4 @@ public class Ball : MonoBehaviour, IResetAbleListener
             m_HitParticle.Play();
         }
     }
-
-
-
-
-
-
 }

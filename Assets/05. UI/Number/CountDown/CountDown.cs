@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// Mesh 기반 카운트다운 표시기.
@@ -84,25 +85,34 @@ public class Countdown : MonoBehaviour, IPauseable, IResetAbleListener
 
     void Update()
     {
-        // deltaTime 계산 (pause 또는 editor일 경우 0)
         float dt = _paused ? 0f :
             (Application.isPlaying ? (useUnscaledTime ? Time.unscaledDeltaTime : Time.deltaTime) : 0f);
+
+        // Tab: 강제 한 단계 감소
+        if (Keyboard.current.tabKey.wasPressedThisFrame)
+        {
+            StepDown(true);          // 강제 호출 플래그
+            stepTimer = 0f;          // 음수로 떨어지지 않게 0으로 리셋
+            meltAmount = 0f;
+            ApplyGlobalMelt(meltAmount);
+            // return 제거 → 다음 프레임부터 정상적으로 다시 누적
+        }
 
         if (running && stepSeconds > 0f)
         {
             stepTimer += dt;
             float cycle = Mathf.Clamp01(stepTimer / stepSeconds);
-            meltAmount = cycle;                   // cycle 값(0~1)을 머터리얼에 전달
+            meltAmount = cycle;
 
-            if (cycle >= 1f)                      // stepSeconds 경과 시
+            if (cycle >= 1f)
             {
-                stepTimer -= stepSeconds;         // 타이머 초기화
-                StepDown();                       // 값 감소
-                meltAmount = 0f;                  // meltAmount 초기화
+                StepDown(false);     // 자연 진행 호출
+                stepTimer = 0f;      // 여기서 명확히 0으로 리셋
+                meltAmount = 0f;
             }
         }
 
-        ApplyGlobalMelt(meltAmount);              // 모든 자릿수에 meltAmount 적용
+        ApplyGlobalMelt(meltAmount);
     }
 
     // ---------- Public API ----------
@@ -142,21 +152,28 @@ public class Countdown : MonoBehaviour, IPauseable, IResetAbleListener
 
     // ---------- 내부 로직 ----------
     /// <summary>값을 1 감소시키고 endValue 도달 시 처리</summary>
-    void StepDown()
+    void StepDown(bool forced)
     {
+        // 기존: stepTimer -= stepSeconds;  << 제거 (음수화 원인)
+
         currentValue--;
         if (currentValue < endValue)
         {
-            if (loop) currentValue = startValue;  // 반복 모드면 다시 시작 값으로
+            if (loop)
+            {
+                currentValue = startValue;
+            }
             else
             {
                 running = false;
                 currentValue = endValue;
-                GameManager.GetInstance().FadeStart(ScreenWipeDriver.FadeDirection.In);//라운드 종료.
-            } // 아니면 멈춤
+                GameManager.GetInstance()
+                    .FadeStart(ScreenWipeDriver.FadeDirection.In);
+            }
         }
 
         UpdateDigits(currentValue);
+        // meltAmount는 호출처에서 0으로 재설정
     }
 
     /// <summary>값을 각 슬롯에 숫자 Mesh로 반영</summary>
