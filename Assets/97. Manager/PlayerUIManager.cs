@@ -241,8 +241,11 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
         if (uIType == IUIInfo.UIType.UltimateBar &&
         GameManager.GetInstance().wasPlayedUltimateSkill())
         {//여기에추가해라.
-            m_SystemText.SetText(KoreanTextDB.Get(KoreanTextDB.Key.Ultimate_AlreadyUse));
-            return false;
+            if (CanUseSkill(uIType, courtPosition))
+            {
+                m_SystemText.SetText(KoreanTextDB.Get(KoreanTextDB.Key.Ultimate_AlreadyUse));
+                return false;
+            }
         }
         if (!CanUseSkill(uIType, courtPosition)) return false;
 
@@ -282,7 +285,7 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
         if (courtPosition == IPlayerInfo.CourtPosition.COURT_RIGHT)
             iLRIndex = 1;
 
-        score = PlayerScoreCounts[iLRIndex].GetValueInt;
+        score = RoundScoreCounts[iLRIndex].GetValueInt;
     }
     public void RoundEndUpScore()
     {

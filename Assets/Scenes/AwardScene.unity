@@ -86949,7 +86949,7 @@ PrefabInstance:
     - target: {fileID: 7010001239189978192, guid: 746a8683592bb144385003d6b4128147, type: 3}
       propertyPath: m_TailGameObject
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 5692225577640281322}
     - target: {fileID: 7010001239189978192, guid: 746a8683592bb144385003d6b4128147, type: 3}
       propertyPath: m_DefenceEffector
       value: 
@@ -86959,6 +86959,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 746a8683592bb144385003d6b4128147, type: 3}
+--- !u!1 &5692225577640281322 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6832061656001974762, guid: 746a8683592bb144385003d6b4128147, type: 3}
+  m_PrefabInstance: {fileID: 5692225577640281321}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &6801817913832557137
 PrefabInstance:
   m_ObjectHideFlags: 0
