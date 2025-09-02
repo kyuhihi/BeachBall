@@ -249,6 +249,7 @@ public class Ball : MonoBehaviour, IResetAbleListener
         {
             if (otherGO != null && otherGO.CompareTag(PlayerTag))
             {
+                AudioManager.Instance?.PlayHit(Camera.main.transform.position, 1f);
                 CameraShakingManager.Instance.DoShake(0.1f, 1f);
                 HitStopManager.Instance.DoHitStop(0.1f, 0.1f);
                 IPlayerInfo.CourtPosition courtPos = otherGO.GetComponent<IPlayerInfo>().m_CourtPosition;
