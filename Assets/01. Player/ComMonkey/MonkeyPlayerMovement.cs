@@ -289,10 +289,15 @@ public class MonkeyPlayerMovement : BasePlayerMovement
         m_Rigidbody.linearVelocity = Vector3.zero;
         m_Rigidbody.angularVelocity = Vector3.zero;
         m_isMoveByInput = false;
+
+        muteFootSfx = true;
+        footstepTimer = 0f;
     }
     public override void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
         m_isCutScene = false;
+        muteFootSfx = false;
+        footstepTimer = 0f;
         if (!base.IsStunned)
         {
             m_isMoveByInput = true;

@@ -157,6 +157,8 @@ public class FoxPlayerMovement : BasePlayerMovement
     public override void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
         m_isMoveByInput = false;
+        muteFootSfx = true;
+        footstepTimer = 0f;
 
         if (playerType == m_PlayerType && courtPosition == m_CourtPosition)
             m_UltimateFlashGameObject.SetActive(true);
@@ -165,6 +167,9 @@ public class FoxPlayerMovement : BasePlayerMovement
     public override void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
         if (!this || gameObject == null || !isActiveAndEnabled) return;
+
+        muteFootSfx = false;
+        footstepTimer = 0f;
 
         if (playerType == m_PlayerType && courtPosition == m_CourtPosition)
             m_UltimateFlashGameObject.SetActive(false);

@@ -96,10 +96,11 @@ public class TurtlePlayerMovement : BasePlayerMovement
     private bool isUltimateSkillActiving = false;
     private float waterCannonTurnSpeed = 180f; // 초당 회전 각도
     private float waterCannonAngleThreshold = 5f; // 몇 도 이내면 "완료"로 간주
-
     private bool _autoThrownOnInterrupt = false;
+    private bool _cancelledWaterCannonOnInterrupt = false; // 스턴 시 물대포 취소 1회 처리
 
-
+    private Coroutine _coEnableMoveAfterParticle;
+    private Coroutine _coRestoreMouthRotation;
 
     protected override void Start()
     {
@@ -210,8 +211,8 @@ public class TurtlePlayerMovement : BasePlayerMovement
             if (isShellThrowCannonActive || isWaterCannonActive || isWaterCannonRotating || isUltimateSkillActiving)
                 return;
             isShellThrowCannonActive = true;
-            // Debug.Log("Turtle: 등껍질 돌진!");
             _autoThrownOnInterrupt = false;
+            // Debug.Log("Turtle: 등껍질 돌진!");
             MoveByInput = false;
 
             // 등껍질 미리 생성해서 손에 들고 있게
@@ -524,6 +525,9 @@ public class TurtlePlayerMovement : BasePlayerMovement
     public override void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
         MoveByInput = false;
+        muteFootSfx = true;
+        footstepTimer = 0f;
+
         if (courtPosition != m_CourtPosition)
         {
             return;
@@ -534,6 +538,10 @@ public class TurtlePlayerMovement : BasePlayerMovement
     public override void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
         if (!this || gameObject == null || !isActiveAndEnabled) return;
+
+
+        muteFootSfx = false;
+        footstepTimer = 0f;
 
         if (HurtTurtleUltimateSkillStun)
         {
@@ -600,6 +608,15 @@ public class TurtlePlayerMovement : BasePlayerMovement
             go = null;
         }
     }
+    
+    private void SafeStopCoroutine(ref Coroutine co)
+    {
+        if (co != null)
+        {
+            StopCoroutine(co);
+            co = null;
+        }
+    }
 
     public override void OnRoundStart()
     {
@@ -616,6 +633,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
         isUltimateSkillActiving = false;
         HurtTurtleUltimateSkillStun = false;
         _autoThrownOnInterrupt = false;
+        _cancelledWaterCannonOnInterrupt = false;
         SetResetMode();
 
         if (m_Animator != null)
@@ -632,7 +650,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
         // 입 방향 초기화
         if (mouthTransform) mouthTransform.localRotation = Quaternion.Euler(180f, 90f, 0f);
 
-  
+
         var selfRb = GetComponent<Rigidbody>();
         if (selfRb) selfRb.useGravity = true;
 
@@ -673,6 +691,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
         isShellThrowCannonActive = false;
         isUltimateSkillActiving = false;
         _autoThrownOnInterrupt = false;
+        _cancelledWaterCannonOnInterrupt = false;
 
         // 물리 정지
         m_Rigidbody.linearVelocity = Vector3.zero;
@@ -740,6 +759,14 @@ public class TurtlePlayerMovement : BasePlayerMovement
             _autoThrownOnInterrupt = true;
             ThrowShellAtOpponent(); // 애니메이션 이벤트 없이 강제 실행
         }
+        // 스턴 시 물대포(회전/발사) 즉시 취소
+        if (isStunned && (isWaterCannonActive || isWaterCannonRotating) && !_cancelledWaterCannonOnInterrupt)
+        {
+            _cancelledWaterCannonOnInterrupt = true;
+            CancelWaterCannonImmediate();
+        }
+        if (!isStunned) _cancelledWaterCannonOnInterrupt = false;
+
 
         // 1. 물대포 회전 중: 몸통/머리 서서히 Ball 쪽으로 회전
         if (isWaterCannonRotating && ballObj != null && mouthTransform != null)
@@ -816,6 +843,39 @@ public class TurtlePlayerMovement : BasePlayerMovement
                 }
             }
         }
+        
+    }
+
+    // 스턴 등 인터럽트 시 물대포 상태를 깨끗하게 정리
+    private void CancelWaterCannonImmediate()
+    {
+        isWaterCannonRotating = false;
+        isWaterCannonActive = false;
+
+        if (m_Animator != null)
+        {
+            m_Animator.ResetTrigger("WaterCannon");
+            m_Animator.SetBool("WaterCannonActive", false);
+        }
+
+        // 파티클 강제 정리
+        if (waterCannonParticleInstance != null)
+        {
+            Destroy(waterCannonParticleInstance.gameObject);
+            waterCannonParticleInstance = null;
+        }
+        if (waterCannonByEffectParticleInstance != null)
+        {
+            Destroy(waterCannonByEffectParticleInstance.gameObject);
+            waterCannonByEffectParticleInstance = null;
+        }
+
+        SafeStopCoroutine(ref _coEnableMoveAfterParticle);
+        SafeStopCoroutine(ref _coRestoreMouthRotation);
+
+        // 입 방향 리셋
+        if (mouthTransform) mouthTransform.localRotation = Quaternion.Euler(180f, 90f, 0f);
+
     }
 
     public void ThrowShellAtOpponent()
@@ -897,8 +957,8 @@ public class TurtlePlayerMovement : BasePlayerMovement
                 waterCannonByEffectParticleInstance.Play();
             }
 
-            StartCoroutine(EnableMoveAfterParticle(waterCannonParticleInstance.main.duration));
-            StartCoroutine(RestoreMouthRotationAfterDelay(waterCannonParticleInstance.main.duration));
+            _coEnableMoveAfterParticle = StartCoroutine(EnableMoveAfterParticle(waterCannonParticleInstance.main.duration));
+            _coRestoreMouthRotation = StartCoroutine(RestoreMouthRotationAfterDelay(waterCannonParticleInstance.main.duration));
         }
     }
 

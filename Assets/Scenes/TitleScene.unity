@@ -6972,6 +6972,7 @@ MonoBehaviour:
   autoBgmBySceneName: 1
   ingameBgmScenes:
   - ComScene
+  - BattleScene
   stopBgmInOtherScenes: 1
 --- !u!4 &439138063
 Transform:
@@ -12878,7 +12879,7 @@ PrefabInstance:
       objectReference: {fileID: 443477483}
     - target: {fileID: 8526536210030557695, guid: 2e2a62d57845dd94f95b11a298018c58, type: 3}
       propertyPath: scene1vs1
-      value: ComSceneTest1vs1
+      value: BattleScene
       objectReference: {fileID: 0}
     - target: {fileID: 8526536210030557695, guid: 2e2a62d57845dd94f95b11a298018c58, type: 3}
       propertyPath: characterId
@@ -16080,7 +16081,7 @@ PrefabInstance:
       objectReference: {fileID: 118419485}
     - target: {fileID: 8411091182242037134, guid: a87a740b29fb4bb4bb432273b332fd75, type: 3}
       propertyPath: scene1vs1
-      value: ComSceneTest1vs1
+      value: BattleScene
       objectReference: {fileID: 0}
     - target: {fileID: 8411091182242037134, guid: a87a740b29fb4bb4bb432273b332fd75, type: 3}
       propertyPath: characterId
@@ -20823,7 +20824,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 3692269544981774570, guid: dddcd7d62ce0693469f48c482f84323e, type: 3}
       propertyPath: VSPlayerSceneNames.Array.size
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 3692269544981774570, guid: dddcd7d62ce0693469f48c482f84323e, type: 3}
       propertyPath: VSComputerSceneNames.Array.size
@@ -20840,6 +20841,10 @@ PrefabInstance:
     - target: {fileID: 3692269544981774570, guid: dddcd7d62ce0693469f48c482f84323e, type: 3}
       propertyPath: 'VSPlayerSceneNames.Array.data[2]'
       value: Cho_Scene
+      objectReference: {fileID: 0}
+    - target: {fileID: 3692269544981774570, guid: dddcd7d62ce0693469f48c482f84323e, type: 3}
+      propertyPath: 'VSPlayerSceneNames.Array.data[3]'
+      value: BattleScene
       objectReference: {fileID: 0}
     - target: {fileID: 3692269544981774570, guid: dddcd7d62ce0693469f48c482f84323e, type: 3}
       propertyPath: 'VSComputerSceneNames.Array.data[0]'
@@ -20929,7 +20934,7 @@ PrefabInstance:
       objectReference: {fileID: 1158781069}
     - target: {fileID: 3084555260344398940, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: scene1vs1
-      value: ComScene
+      value: BattleScene
       objectReference: {fileID: 0}
     - target: {fileID: 3084555260344398940, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: scene1vsCPU
@@ -20949,7 +20954,7 @@ PrefabInstance:
       objectReference: {fileID: 61473441}
     - target: {fileID: 3959290207836044548, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: scene1vs1
-      value: ComScene
+      value: BattleScene
       objectReference: {fileID: 0}
     - target: {fileID: 3959290207836044548, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: scene1vsCPU
@@ -21021,7 +21026,7 @@ PrefabInstance:
       objectReference: {fileID: 1257386753}
     - target: {fileID: 8308226184048919081, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: scene1vs1
-      value: ComScene
+      value: BattleScene
       objectReference: {fileID: 0}
     - target: {fileID: 8308226184048919081, guid: 9e637adf4537b4f46bfe29435c6a1c17, type: 3}
       propertyPath: scene1vsCPU

@@ -134,6 +134,9 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
 
     protected bool m_isTitleScene = false;
 
+    // 컷신 등에서 발소리/이펙트 차단용
+    protected bool muteFootSfx = false;
+
     protected Vector3 m_StartPosition = Vector3.zero;
     protected Vector3 m_StartRotationEuler = Vector3.zero;
     public virtual void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition) { }
@@ -270,6 +273,8 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
 
     protected void SpawnFootstepEffect(bool isLeft)
     {
+        if (muteFootSfx) return;
+
         if (footstepCloudPrefab == null) return;
 
         Transform foot = isLeft ? leftFootTransform : rightFootTransform;
@@ -1036,6 +1041,10 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         m_Animator.SetBool("IsSwimming", false);
         m_Animator.ResetTrigger("Stunned");
         HurtTurtleUltimateSkillStun = false;
+        muteFootSfx = true;
+        footstepTimer = 0f;
+        swimfootstepTimer = 0f;
+        
         RestoreGravity(true);
     }
 

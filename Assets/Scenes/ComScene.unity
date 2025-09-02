@@ -2654,6 +2654,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &464536326
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 464536327}
+  m_Layer: 0
+  m_Name: BubbleMouse
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &464536327
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 464536326}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.282, y: -0.205, z: 0.347}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 543541378}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &471095423
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3199,6 +3230,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: Fox
       objectReference: {fileID: 0}
+    - target: {fileID: 2368182073865933111, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: bubbleMousePrefab
+      value: 
+      objectReference: {fileID: 480769592149668674, guid: 796c6ae9d72911b459dbde0c78e0257b, type: 3}
+    - target: {fileID: 2368182073865933111, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: bubbleMouseTransform
+      value: 
+      objectReference: {fileID: 464536327}
+    - target: {fileID: 2368182073865933111, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: swimFootstepCloudPrefab
+      value: 
+      objectReference: {fileID: 480769592149668674, guid: 5212b4152bb61584ea313b8cdb6c123b, type: 3}
     - target: {fileID: 4118572001638248854, guid: 10906cb2729ff9742babf771c559e901, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.21042
@@ -3277,12 +3320,20 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 6653633411325034486, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 464536327}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 10906cb2729ff9742babf771c559e901, type: 3}
 --- !u!4 &543541377 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4118572001638248854, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+  m_PrefabInstance: {fileID: 543541376}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &543541378 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6653633411325034486, guid: 10906cb2729ff9742babf771c559e901, type: 3}
   m_PrefabInstance: {fileID: 543541376}
   m_PrefabAsset: {fileID: 0}
 --- !u!95 &564168451 stripped
@@ -3926,6 +3977,7 @@ GameObject:
   m_Component:
   - component: {fileID: 675835348}
   - component: {fileID: 675835347}
+  - component: {fileID: 675835349}
   m_Layer: 5
   m_Name: FootSoundSlider
   m_TagString: Untagged
@@ -4006,6 +4058,18 @@ RectTransform:
   m_AnchoredPosition: {x: 374.99994, y: -22}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &675835349
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 675835346}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 1
 --- !u!1 &691915561
 GameObject:
   m_ObjectHideFlags: 0
@@ -4166,6 +4230,7 @@ GameObject:
   m_Component:
   - component: {fileID: 697511077}
   - component: {fileID: 697511076}
+  - component: {fileID: 697511078}
   m_Layer: 5
   m_Name: HitBallSoundSlider
   m_TagString: Untagged
@@ -4246,6 +4311,18 @@ RectTransform:
   m_AnchoredPosition: {x: 391.66663, y: -20}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &697511078
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 697511075}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 1
 --- !u!1 &700615152
 GameObject:
   m_ObjectHideFlags: 0
@@ -5194,6 +5271,7 @@ GameObject:
   m_Component:
   - component: {fileID: 820481153}
   - component: {fileID: 820481152}
+  - component: {fileID: 820481154}
   m_Layer: 5
   m_Name: InGameBgmSlider
   m_TagString: Untagged
@@ -5274,6 +5352,18 @@ RectTransform:
   m_AnchoredPosition: {x: 391.66663, y: -24.666656}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &820481154
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 820481151}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 1
 --- !u!1001 &823682193
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6731,6 +6821,7 @@ GameObject:
   m_Component:
   - component: {fileID: 897437882}
   - component: {fileID: 897437881}
+  - component: {fileID: 897437883}
   m_Layer: 5
   m_Name: FinshSoundSlider
   m_TagString: Untagged
@@ -6811,6 +6902,18 @@ RectTransform:
   m_AnchoredPosition: {x: 374.99994, y: -24}
   m_SizeDelta: {x: 160, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!225 &897437883
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 897437880}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 1
 --- !u!4 &898011530 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 324802a6b33da0142853f08a1afc70f0, type: 3}
@@ -16369,7 +16472,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1575155449}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.00000014901158, y: 1, z: 0.000000487122, w: -0.000000040825316}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.282, y: -0.205, z: 0.347}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
