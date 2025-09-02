@@ -44,7 +44,7 @@ public class GameManager : MonoBehaviour, IResetAbleListener
     public IPlayerInfo.CourtPosition GetLastUltimateCourtPosition() => m_eLastUltimateCourtPosition;
     private IPlayerInfo.PlayerType m_eLastUltimatePlayerType = IPlayerInfo.PlayerType.End;
     //==============================CutSceneSetting==============================
-    private const int FinalScore = 3;
+    private const int FinalScore = 1;
     List<GameObject> _players = new List<GameObject>();
     public IPlayerInfo.CourtPosition GetLastWinner() { return PlayerUIManager.GetInstance().GetLastWinner(); }
 
@@ -135,6 +135,7 @@ public class GameManager : MonoBehaviour, IResetAbleListener
         if (!bGameSet)
             return false;
 
+Debug.Log("GameEnd");
         foreach (var player in players)
         {
             var playerMovement = player.GetComponent<BasePlayerMovement>();
