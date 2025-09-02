@@ -4,12 +4,13 @@ using System.Collections;
 using TMPro;
 using UnityEngine.SocialPlatforms.Impl;
 
-public class ScreenWipeDriver : MonoBehaviour
+public class AwardScreenDriver : MonoBehaviour
 {
     private Material m_FadeMaterial;
     private readonly string FadeHoleMaterialParameterName = "_HoleSize";
 
     private float transitionDuration = 3.0f;
+
     private Coroutine transitionCoroutine;
     public enum FadeDirection
     {
@@ -17,9 +18,7 @@ public class ScreenWipeDriver : MonoBehaviour
         Out
     }
 
-    private ScoreCounterUI m_LScoreText;
-    private ScoreCounterUI m_RScoreText;
-    private GameObject m_DivideText;
+
 
     public void OnEnable()
     {
@@ -29,38 +28,10 @@ public class ScreenWipeDriver : MonoBehaviour
             if (img != null)
             {
                 m_FadeMaterial = img.material;
-                m_FadeMaterial.SetFloat(FadeHoleMaterialParameterName, 2.1f);
+                m_FadeMaterial.SetFloat(FadeHoleMaterialParameterName, 0.0f);
+                OnRoundStartFade();
             }
         }
-        if (m_LScoreText == null)
-        {
-            ScanLRScoreTexts();
-        }
-    }
-    // 자식 중 이름이 "L", "R" 인 TextMeshProUGUI 찾아 세팅
-    private void ScanLRScoreTexts()
-    {
-        Transform[] children = GetComponentsInChildren<Transform>(true);
-        foreach (var t in children)
-        {
-            if (t.name[0] == 'L')
-            {
-                m_LScoreText = t.GetComponent<ScoreCounterUI>();
-            }
-            else if (t.name[0] == 'R')
-            {
-                m_RScoreText = t.GetComponent<ScoreCounterUI>();
-            }
-            else if (t.name.Contains("Divide"))
-            {
-                m_DivideText = t.gameObject;
-            }
-
-            if (m_LScoreText != null && m_RScoreText != null) break;
-        }
-        m_RScoreText.gameObject.SetActive(false);
-        m_LScoreText.gameObject.SetActive(false);
-        m_DivideText.SetActive(false);
 
     }
     public void OnDisable()
@@ -78,7 +49,7 @@ public class ScreenWipeDriver : MonoBehaviour
     public void OnRoundEndFade()
     {
         m_FadeMaterial.SetFloat(FadeHoleMaterialParameterName, 2.1f);
-        StartHoleTransition(0.0f, FadeDirection.In);
+        StartHoleTransition(0.0f, FadeDirection.In); 
     }
 
     private void StartHoleTransition(float target, FadeDirection direction)
@@ -110,36 +81,14 @@ public class ScreenWipeDriver : MonoBehaviour
         {
             case FadeDirection.In:
                 {
-                    GameManager.GetInstance().RoundEnd();
-
-                    m_DivideText.SetActive(true);
-                    m_LScoreText.gameObject.SetActive(true);
-                    m_RScoreText.gameObject.SetActive(true);
-                    IPlayerInfo.CourtPosition eLastWinner = GameManager.GetInstance().GetLastWinner();
-                    switch (eLastWinner)
-                    {
-                        case IPlayerInfo.CourtPosition.COURT_LEFT:
-                            m_LScoreText.DecreaseValueInt(-1);
-                            break;
-                        case IPlayerInfo.CourtPosition.COURT_RIGHT:
-                            m_RScoreText.DecreaseValueInt(-1);
-                            break;
-                    }
-
                     yield return new WaitForSeconds(3.0f);
-                    if (GameManager.GetInstance().GameEndCheck())
-                        break;
-                    GameManager.GetInstance().FadeStart(ScreenWipeDriver.FadeDirection.Out);
+                    //여기서 다시 title로 옮겨?
                     break;
                 }
             case FadeDirection.Out:
-                m_DivideText.SetActive(false);
-                m_LScoreText.gameObject.SetActive(false);
-                m_RScoreText.gameObject.SetActive(false);
+               
                 GameManager.GetInstance().RoundStart();
                 break;
         }
     }
-    
-
 }

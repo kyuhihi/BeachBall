@@ -28,7 +28,7 @@ public class GameSceneManager : MonoBehaviour
     private GameObject _leftChosen, _rightChosen;
     private string _leftSlot, _rightSlot;
 
-
+   
 
     private void Awake()
     {
@@ -43,15 +43,15 @@ public class GameSceneManager : MonoBehaviour
         }
 
         // 1) 슬롯/ID 결정
-        _leftSlot  = (gs.gameMode == "1vs1") ? "P1"  : "CPU";
-        _rightSlot = (gs.gameMode == "1vs1") ? "P2"  : "CPU";
-        string leftId  = gs.GetCharacterForSlot(_leftSlot);
+        _leftSlot = (gs.gameMode == "1vs1") ? "P1" : "CPU";
+        _rightSlot = (gs.gameMode == "1vs1") ? "P2" : "CPU";
+        string leftId = gs.GetCharacterForSlot(_leftSlot);
         string rightId = gs.GetCharacterForSlot(_rightSlot);
         bool spawnRight = (gs.gameMode == "1vs1") || cpuModeSpawnRight;
         bool strict = (gs.gameMode == "1vs1");
 
         // 2) 캐릭터 선택
-        _leftChosen  = SelectCharacterByIdAndSlot(leftRoot,  leftId,  _leftSlot,  strict);
+        _leftChosen = SelectCharacterByIdAndSlot(leftRoot, leftId, _leftSlot, strict);
         _rightChosen = spawnRight ? SelectCharacterByIdAndSlot(rightRoot, rightId, _rightSlot, strict) : null;
 
         // 3) PlayerInput 바인딩(액션 복제/맵 선택/활성)
@@ -74,7 +74,7 @@ public class GameSceneManager : MonoBehaviour
         if (spawnRight) TryApplySavedOverridesForSlot(_rightSlot, GetActionsOf(_rightChosen));
 
         // 5) 즉시 활성 + 액션 재활성 + 맵 스위치
-        if (_leftChosen)  _leftChosen.SetActive(true);
+        if (_leftChosen) _leftChosen.SetActive(true);
         if (spawnRight && _rightChosen) _rightChosen.SetActive(true);
 
         ReenableActions(_leftChosen);

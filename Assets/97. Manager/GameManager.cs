@@ -6,6 +6,7 @@ using NUnit.Framework.Constraints;
 using UnityEngine.InputSystem;
 using UnityEngine.Playables;
 using TMPro;
+using UnityEngine.SceneManagement;
 // using UnityEngine.Experimental.GlobalIllumination;
 
 public class GameManager : MonoBehaviour, IResetAbleListener
@@ -43,6 +44,7 @@ public class GameManager : MonoBehaviour, IResetAbleListener
     public IPlayerInfo.CourtPosition GetLastUltimateCourtPosition() => m_eLastUltimateCourtPosition;
     private IPlayerInfo.PlayerType m_eLastUltimatePlayerType = IPlayerInfo.PlayerType.End;
     //==============================CutSceneSetting==============================
+    private const int FinalScore = 3;
     List<GameObject> _players = new List<GameObject>();
     public IPlayerInfo.CourtPosition GetLastWinner() { return PlayerUIManager.GetInstance().GetLastWinner(); }
 
@@ -105,7 +107,56 @@ public class GameManager : MonoBehaviour, IResetAbleListener
     }
     public void Awake()
     {
-        SetInstance(this);      
+        SetInstance(this);
+    }
+    public bool GameEndCheck()
+    {
+        IPlayerInfo.PlayerType Winner = IPlayerInfo.PlayerType.End;
+        IPlayerInfo.PlayerType Loser = IPlayerInfo.PlayerType.End;
+        PlayerUIManager UIMgrInstance = PlayerUIManager.GetInstance();
+        if (UIMgrInstance == null)
+            return false;
+
+        UIMgrInstance.GetCurrentScore(IPlayerInfo.CourtPosition.COURT_LEFT, out int LeftScore);
+        UIMgrInstance.GetCurrentScore(IPlayerInfo.CourtPosition.COURT_RIGHT, out int RightScore);
+        List<GameObject> players = UIMgrInstance.GetPlayers();
+        bool bGameSet = false;
+        bool bRightWinner = false;
+        if (LeftScore >= FinalScore)
+        {
+            bGameSet = true;
+            bRightWinner = false;
+        }
+        else if (RightScore >= FinalScore)
+        {
+            bGameSet = true;
+            bRightWinner = true;
+        }
+        if (!bGameSet)
+            return false;
+
+        foreach (var player in players)
+        {
+            var playerMovement = player.GetComponent<BasePlayerMovement>();
+            if (!bRightWinner)
+            {
+                if (playerMovement.m_CourtPosition == IPlayerInfo.CourtPosition.COURT_LEFT)
+                    Winner = playerMovement.m_PlayerType;
+                else
+                    Loser = playerMovement.m_PlayerType;
+            }
+            else
+            {
+                if (playerMovement.m_CourtPosition == IPlayerInfo.CourtPosition.COURT_RIGHT)
+                    Winner = playerMovement.m_PlayerType;
+                else
+                    Loser = playerMovement.m_PlayerType;
+            }
+            GameSettings.Instance.SetWinnerLoser(Winner, Loser);
+            SceneManager.LoadScene("AwardScene");
+        }
+        return true;
+
     }
     public void Start()
     {
@@ -198,7 +249,7 @@ public class GameManager : MonoBehaviour, IResetAbleListener
         float xFixedPos;
         xClamped = IsClamped(position.x, -MapOutXDistance, MapOutXDistance, out xFixedPos);
     }
-    
+
     private void ConfinePlayersPosition()
     {
         if (_players.Count <= 1 || _players == null)
@@ -269,7 +320,7 @@ public class GameManager : MonoBehaviour, IResetAbleListener
     {
         GameObject[] Cams = GameObject.FindGameObjectsWithTag("MainCamera");
         foreach (var cam in Cams)
-        { 
+        {
             if (cam.name == "GameCam")
             {
                 m_GameVirtualCam = cam.GetComponent<CinemachineVirtualCamera>();
@@ -459,7 +510,7 @@ public class GameManager : MonoBehaviour, IResetAbleListener
         RestoreCinemachineIgnoreTimeScale();
     }
 
-    
+
     // 타임라인 일시정지(업데이트 모드가 Unscaled이어도 강제 정지)
     private void PausePlayableDirectors()
     {
