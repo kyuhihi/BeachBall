@@ -43,10 +43,10 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
     [SerializeField] private UIInfoBase[] RoundScoreCounts = new UIInfoBase[2];//L R
     private ScreenWipeDriver m_ScreenWipeDriver;
     private Countdown m_SecondCountdown;
+    private SystemText m_SystemText;
 
     void Awake()
     {
-        Debug.Log("PlayerUIManager Awake");
         SetInstance(this);
 
         SetUpCanvas(); // Cutscene 이벤트가 Start 전에 올 수도 있으니 미리 세팅
@@ -82,17 +82,21 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
 
     public void Start()
     {
-        Debug.Log("PlayerUIManager Start");
         if (!m_WorldUICanvas) SetUpCanvas();
         SetUpPlayers();
+        if (m_SystemText)
+            m_SystemText.SetText(KoreanTextDB.Get(KoreanTextDB.Key.Match_Start)); // 추가
+
     }
 
     private void SetUpCanvas()
     {
         if (m_WorldUICanvas) return;
         m_ScreenWipeDriver = FindFirstObjectByType<ScreenWipeDriver>();
+        m_SystemText = FindFirstObjectByType<SystemText>();
         m_SecondCountdown = FindFirstObjectByType<Countdown>();
         var canvases = FindObjectsByType<Canvas>(FindObjectsSortMode.None);
+        
         for (int i = 0; i < canvases.Length; i++)
         {
             if (canvases[i].name == CanvasObjName)
@@ -219,8 +223,6 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
                 return PlayerDashBars[iLRIndex].CanUseAbility;
             case IUIInfo.UIType.UltimateBar:
                 {
-                    
-
                     return PlayerUltimateBars[iLRIndex].CanUseAbility;
                 }
             case IUIInfo.UIType.ScoreCount:
@@ -228,10 +230,22 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
                 return false;
         }
     }
+    public void SetSystemText(KoreanTextDB.Key key)
+    {
+        if (m_SystemText)
+        {
+            m_SystemText.SetText(KoreanTextDB.Get(key));
+        }
+    }
 
     public bool UseAbility(IUIInfo.UIType uIType, IPlayerInfo.CourtPosition courtPosition)
     {
-        if (uIType == IUIInfo.UIType.UltimateBar && GameManager.GetInstance().wasPlayedUltimateSkill()) return false;
+        if (uIType == IUIInfo.UIType.UltimateBar &&
+        GameManager.GetInstance().wasPlayedUltimateSkill())
+        {//여기에추가해라.
+            m_SystemText.SetText(KoreanTextDB.Get(KoreanTextDB.Key.Ultimate_AlreadyUse));
+            return false;
+        }
         if (!CanUseSkill(uIType, courtPosition)) return false;
 
         int iLRIndex = 0;
@@ -273,15 +287,18 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
         {
             m_eLastWinner = IPlayerInfo.CourtPosition.COURT_LEFT;
             RoundScoreCounts[0].DecreaseValueInt(-1);
+            if (m_SystemText) m_SystemText.SetText(KoreanTextDB.Get(KoreanTextDB.Key.Win_Left)); // 추가
         }
         else if (iLeftScore < iRightScore)
         {
             m_eLastWinner = IPlayerInfo.CourtPosition.COURT_RIGHT;
             RoundScoreCounts[1].DecreaseValueInt(-1);
+            if (m_SystemText) m_SystemText.SetText(KoreanTextDB.Get(KoreanTextDB.Key.Win_Right)); // 추가
         }
         else
         {
             m_eLastWinner = IPlayerInfo.CourtPosition.COURT_END;
+            if (iLeftScore != 0 || iRightScore != 0) m_SystemText.SetText(KoreanTextDB.Get(KoreanTextDB.Key.Win_Draw)); // 추가
         }
     }
     

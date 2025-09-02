@@ -40,6 +40,7 @@ public class MonkeyPlayerMovement : BasePlayerMovement
     private GameObject BananaParent;
     const string BananaPrefabPath = "Banana";
     private GameObject BananaPrefab;
+    private bool m_isCutScene = false;
 
     protected override void Start()
     {
@@ -283,10 +284,15 @@ public class MonkeyPlayerMovement : BasePlayerMovement
     }
     public override void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
+        m_isCutScene = true;
+        m_Movement = Vector2.zero;
+        m_Rigidbody.linearVelocity = Vector3.zero;
+        m_Rigidbody.angularVelocity = Vector3.zero;
         m_isMoveByInput = false;
     }
     public override void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
+        m_isCutScene = false;
         if (!base.IsStunned)
         {
             m_isMoveByInput = true;
@@ -332,7 +338,7 @@ public class MonkeyPlayerMovement : BasePlayerMovement
 
     public void ThrowBanana(Transform OtherPlayer)
     {
-        if(base.IsStunned || !m_isMoveByInput) return;
+        if(base.IsStunned || !m_isMoveByInput|| m_isCutScene) return;
         if (OtherPlayer == null || !m_isMoveByInput) return;
         PlayerUIManager UIMgrInstance = PlayerUIManager.GetInstance();
         if (UIMgrInstance.GetCurrentSecond() > 5 && UIMgrInstance.UseAbility(IUIInfo.UIType.UltimateBar, m_CourtPosition))
@@ -375,7 +381,7 @@ public class MonkeyPlayerMovement : BasePlayerMovement
 
     public void AIJump(bool allowDouble = true)
     {
-        if (base.IsStunned || !m_isMoveByInput) return;
+        if (base.IsStunned || !m_isMoveByInput || m_isCutScene) return;
         if (m_eLocomotionState == IdleWalkRunEnum.Swim) return;
 
         // 1단 점프

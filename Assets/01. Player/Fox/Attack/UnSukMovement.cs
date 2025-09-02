@@ -120,9 +120,14 @@ public class UnSukMovement : MonoBehaviour, IResetAbleListener
         {
             if (other.gameObject.name != "Ground")
                 return false;
-        } 
+        }
+        if (other.tag == "Player")
+        {
+            
+        }
 
-        return true;
+
+            return true;
     }
     public void OnDestroy()
     {

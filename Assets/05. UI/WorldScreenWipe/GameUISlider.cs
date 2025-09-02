@@ -40,13 +40,19 @@ public class GameUISlider : MonoBehaviour, IResetAbleListener
         RemoveResetCall();
     }
 
+    public void Awake()
+    {
+        _rect = GetComponent<RectTransform>();
+        _rect.anchoredPosition = new Vector2(_rect.anchoredPosition.x, HidePivotY);
+        TargetPivotY = HidePivotY;
+    }
+
     // Update is called once per frame
     void Update()
     {
         if (m_PlayerUIManager == null || _rect == null)
         {
             m_PlayerUIManager = PlayerUIManager.GetInstance();
-            _rect = GetComponent<RectTransform>();
         }
         int currentSecond = m_PlayerUIManager.GetCurrentSecond();
         if (lastNumber == 1 && currentSecond == 0)

@@ -642,7 +642,6 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
 
     protected virtual void FixedUpdate()
     {
-
         float horizontal = m_InputVector.x;
         float vertical = m_InputVector.y;
 

@@ -73,10 +73,8 @@ public class GameSettings : MonoBehaviour
         ClassifySimple(scene.name);   // 추가: 단순 판별
         LoadKeyBindings();
     }
-
     private void ClassifySimple(string sceneName)
     {
-
         if (!string.IsNullOrEmpty(sceneName))
         {
             if (string.Equals(titleSceneName, sceneName, StringComparison.OrdinalIgnoreCase))

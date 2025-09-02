@@ -42,8 +42,6 @@ public class ScreenWipeDriver : MonoBehaviour
     private void ScanLRScoreTexts()
     {
         Transform[] children = GetComponentsInChildren<Transform>(true);
-
-
         foreach (var t in children)
         {
             if (t.name[0] == 'L')

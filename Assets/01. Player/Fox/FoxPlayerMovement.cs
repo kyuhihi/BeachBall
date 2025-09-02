@@ -182,7 +182,8 @@ public class FoxPlayerMovement : BasePlayerMovement
     {
         StopAllCoroutines();
         m_isMoveByInput = true;
-        SetResetMode();
+        SetResetMode(); SetTransformToRoundStart();
+
 
     }
     public override void OnRoundEnd()

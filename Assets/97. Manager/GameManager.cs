@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using NUnit.Framework.Constraints;
 using UnityEngine.InputSystem;
 using UnityEngine.Playables;
+using TMPro;
 // using UnityEngine.Experimental.GlobalIllumination;
 
 public class GameManager : MonoBehaviour, IResetAbleListener
@@ -21,7 +22,7 @@ public class GameManager : MonoBehaviour, IResetAbleListener
     public GameState CurrentGameState => m_eCurrentGameState;
     private CinemachineVirtualCamera m_GameVirtualCam;
     private CinemachineVirtualCamera m_CutSceneVirtualCam;
-    public GameObject GetCutSceneCamera() => m_CutSceneVirtualCam.gameObject;
+    public GameObject GetCutSceneCamera() => m_CutSceneVirtualCam?.gameObject;
     private const int OnVirtualCameraPriority = 50;
     private const int OffVirtualCameraPriority = 10;
     private const float MapOutZDistance = 11.2f;
@@ -63,6 +64,7 @@ public class GameManager : MonoBehaviour, IResetAbleListener
     [Header("Pause 예외(이 루트 하위의 PlayerInput은 Pause 시에도 유지)")]
     [SerializeField] private List<GameObject> pauseExemptRoots = new List<GameObject>();
 
+    private bool _ReservedFadeOutStart = false;
 
     public enum GameState
     {
@@ -101,11 +103,14 @@ public class GameManager : MonoBehaviour, IResetAbleListener
     {
         RemoveResetCall();
     }
+    public void Awake()
+    {
+        SetInstance(this);      
+    }
     public void Start()
     {
-        SetInstance(this);
         InitializeCamera();
-        if(m_DirectionalLight == null)
+        if (m_DirectionalLight == null)
         {
             var lights = FindObjectsByType<Light>(sortMode: FindObjectsSortMode.None);
             foreach (var light in lights)
@@ -119,13 +124,31 @@ public class GameManager : MonoBehaviour, IResetAbleListener
         }
         LoadScriptableObjects();
     }
+    public void ReserveFadeOutStart()
+    {
+        if (_ReservedFadeOutStart) return;
+        RoundEnd();
+
+        PlayerUIManager.GetInstance().FadeStart(ScreenWipeDriver.FadeDirection.Out);
+        _ReservedFadeOutStart = true;
+    }
+
+    public void Update()
+    {
+        ReserveFadeOutStart();
+    }
     public void LateUpdate()
     {
         ConfinePlayersPosition();
     }
     public void FadeStart(ScreenWipeDriver.FadeDirection direction)
     {//CountDown->FadeStartCall->PlayerUIManager.FadeStart->WipeScreenFadeStart
-        PlayerUIManager.GetInstance().FadeStart(direction);
+        PlayerUIManager playerMgr = PlayerUIManager.GetInstance();
+        playerMgr.FadeStart(direction);
+        if (direction == ScreenWipeDriver.FadeDirection.Out)
+            playerMgr.SetSystemText(KoreanTextDB.Key.Match_Start);
+        else
+            playerMgr.SetSystemText(KoreanTextDB.Key.Match_End);
     }
 
 
@@ -213,7 +236,7 @@ public class GameManager : MonoBehaviour, IResetAbleListener
             bool yClamped = IsClamped(player.transform.position.y, float.MinValue, MapOutYDistance + 0.3f, out yFixedPos);
 
             if (yClamped)
-                player.transform.position = new Vector3(player.transform.position.x, 0.0f, player.transform.position.z);
+                player.transform.position = new Vector3(player.transform.position.x, yFixedPos - 0.3f, player.transform.position.z);
 
             float xFixedPos;
             bool xClamped = IsClamped(player.transform.position.x, -5.1f, 5.1f, out xFixedPos);
@@ -246,8 +269,7 @@ public class GameManager : MonoBehaviour, IResetAbleListener
     {
         GameObject[] Cams = GameObject.FindGameObjectsWithTag("MainCamera");
         foreach (var cam in Cams)
-        {
-            Debug.Log(cam.name);
+        { 
             if (cam.name == "GameCam")
             {
                 m_GameVirtualCam = cam.GetComponent<CinemachineVirtualCamera>();
@@ -273,7 +295,6 @@ public class GameManager : MonoBehaviour, IResetAbleListener
         m_CutSceneVirtualCam.Priority = OnVirtualCameraPriority;
         Signals.Cutscene.RaiseStart(m_eLastUltimatePlayerType, m_eLastUltimateCourtPosition);
     }
-
     public void EndCutScene()
     {
         m_eCurrentGameState = GameState.GAME;
@@ -298,10 +319,12 @@ public class GameManager : MonoBehaviour, IResetAbleListener
         m_eLastUltimatePlayerType = ePlayerType;
         if (eCourtPosition == IPlayerInfo.CourtPosition.COURT_LEFT)
         {
+            PlayerUIManager.GetInstance().SetSystemText(KoreanTextDB.Key.Ultimate_Ready_Left);
             m_CutsceneCameraRoot.transform.localScale = new Vector3(-1f, 1f, 1f);
         }
         else
         {
+            PlayerUIManager.GetInstance().SetSystemText(KoreanTextDB.Key.Ultimate_Ready_Right);
             m_CutsceneCameraRoot.transform.localScale = new Vector3(1f, 1f, 1f);
         }
         switch (ePlayerType)
@@ -354,14 +377,11 @@ public class GameManager : MonoBehaviour, IResetAbleListener
 
         _lightColorCo = null;
     }
-
-
     public void RegisterPauseExemptRoot(GameObject go)
     {
         if (go != null && !pauseExemptRoots.Contains(go))
             pauseExemptRoots.Add(go);
     }
-
     private bool IsUnderExemptRoot(Component c)
     {
         if (c == null) return false;
@@ -373,7 +393,6 @@ public class GameManager : MonoBehaviour, IResetAbleListener
         }
         return false;
     }
-
     private void TrySetPlayersInputEnabled(bool enable)
     {
         // 씬 내 모든 PlayerInput을 대상으로 하되, 예외 루트 하위는 건드리지 않음
@@ -385,11 +404,11 @@ public class GameManager : MonoBehaviour, IResetAbleListener
             pi.enabled = enable;
         }
     }
-
     public void Pause()
     {
         if (IsPaused) return;
         IsPaused = true;
+        PlayerUIManager.GetInstance().SetSystemText(KoreanTextDB.Key.Pause);
 
         // 시간/오디오
         _prevTimeScale = Time.timeScale;
@@ -420,6 +439,7 @@ public class GameManager : MonoBehaviour, IResetAbleListener
     {
         if (!IsPaused) return;
         IsPaused = false;
+        PlayerUIManager.GetInstance().SetSystemText(KoreanTextDB.Key.Resume);
 
         // 시간/오디오
         Time.timeScale = _prevTimeScale <= 0f ? 1f : _prevTimeScale;

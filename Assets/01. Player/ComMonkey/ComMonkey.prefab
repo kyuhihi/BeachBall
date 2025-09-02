@@ -980,6 +980,7 @@ MonoBehaviour:
   stretchPrefab: {fileID: 4364968357397060375, guid: 3c131120e017a774297988d7d7a2e3a6, type: 3}
   stretchCount: 30
   stretchSpacing: 0.3
+  LinearVelocity: {x: 0, y: 0, z: 0}
   stretchCurve:
     serializedVersion: 2
     m_Curve:
@@ -1097,6 +1098,14 @@ PlayableDirector:
   - key: {fileID: 6452241596172897819, guid: e2b28bb35077d6948bdf4c1e735c96f0, type: 2}
     value: {fileID: 0}
   - key: {fileID: 7687423450569060741, guid: e2b28bb35077d6948bdf4c1e735c96f0, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -4550503453275895429, guid: e2b28bb35077d6948bdf4c1e735c96f0, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: -5513856501137200287, guid: e2b28bb35077d6948bdf4c1e735c96f0, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: 6288999503104132454, guid: e2b28bb35077d6948bdf4c1e735c96f0, type: 2}
+    value: {fileID: 0}
+  - key: {fileID: 7746075635839308720, guid: e2b28bb35077d6948bdf4c1e735c96f0, type: 2}
     value: {fileID: 0}
   m_ExposedReferences:
     m_References: []

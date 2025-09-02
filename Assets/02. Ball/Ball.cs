@@ -195,6 +195,15 @@ public class Ball : MonoBehaviour, IResetAbleListener
 
         if (yClamped)
         {
+            if (transform.position.y < -5f)
+            {
+                IPlayerInfo.CourtPosition lastWinner = GameManager.GetInstance().GetLastWinner();
+                Vector3 TargetPosition = InitialRightPosition;
+                if (lastWinner == IPlayerInfo.CourtPosition.COURT_LEFT)
+                    TargetPosition.z = Mathf.Abs(TargetPosition.z);
+                transform.position = TargetPosition;
+                PlayerUIManager.GetInstance().SetSystemText(KoreanTextDB.Key.System_Error);
+            }
             float fSignValue = -Mathf.Sign(transform.position.y);
             m_Rigidbody.AddForce(new Vector3(0f, fSignValue * 0.5f, 0f), ForceMode.Impulse);
         }

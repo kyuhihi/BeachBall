@@ -648,6 +648,8 @@ public class TurtlePlayerMovement : BasePlayerMovement
 
     public override void OnRoundEnd()
     {
+        SetTransformToRoundStart();
+
         Debug.Log("Turtle OnRoundEnd");
         // 더 이상 입력/코루틴 진행 금지
         m_isMoveByInput = false;
