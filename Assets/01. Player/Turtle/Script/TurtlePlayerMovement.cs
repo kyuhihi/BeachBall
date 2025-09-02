@@ -178,11 +178,15 @@ public class TurtlePlayerMovement : BasePlayerMovement
 
             string groupName = track.parent != null ? track.parent.name : "";
 
-             if (groupName == "Camera" && track is AnimationTrack)
+            if (groupName == "Camera" && track is AnimationTrack)
             {
                 GameObject cutSceneCamera = GameManager.GetInstance().GetCutSceneCamera();
-                if (cutSceneCamera != null)
-                    m_PlayableDirector.SetGenericBinding(track, cutSceneCamera.GetComponent<Animator>());
+                if (cutSceneCamera == null)
+                    GameManager.GetInstance().Start();
+                cutSceneCamera = GameManager.GetInstance().GetCutSceneCamera();
+                m_PlayableDirector.SetGenericBinding(track, cutSceneCamera.GetComponent<Animator>());
+                
+                
             }
             else if (track is UnityEngine.Timeline.SignalTrack)
             {

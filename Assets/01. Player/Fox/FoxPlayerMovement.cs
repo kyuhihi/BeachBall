@@ -62,9 +62,11 @@ public class FoxPlayerMovement : BasePlayerMovement
 
             if (groupName == "Camera" && track is AnimationTrack)
             {
-                GameObject cutSceneCamera = GameManager.GetInstance().GetCutSceneCamera();
-                if (cutSceneCamera != null)
-                    m_PlayableDirector.SetGenericBinding(track, cutSceneCamera.GetComponent<Animator>());
+              GameObject cutSceneCamera = GameManager.GetInstance().GetCutSceneCamera();
+                if (cutSceneCamera == null)
+                    GameManager.GetInstance().Start();
+                cutSceneCamera = GameManager.GetInstance().GetCutSceneCamera();
+                m_PlayableDirector.SetGenericBinding(track, cutSceneCamera.GetComponent<Animator>());
             }
             else if (track is UnityEngine.Timeline.SignalTrack)
             {

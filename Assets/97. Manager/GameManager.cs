@@ -103,16 +103,18 @@ public class GameManager : MonoBehaviour, IResetAbleListener
     }
     public void Start()
     {
-        Debug.Log("GameManager Start");
         SetInstance(this);
         InitializeCamera();
-        var lights = FindObjectsByType<Light>(sortMode: FindObjectsSortMode.None);
-        foreach (var light in lights)
+        if(m_DirectionalLight == null)
         {
-            if (light.type == LightType.Directional)
+            var lights = FindObjectsByType<Light>(sortMode: FindObjectsSortMode.None);
+            foreach (var light in lights)
             {
-                m_DirectionalLight = light;
-                break;
+                if (light.type == LightType.Directional)
+                {
+                    m_DirectionalLight = light;
+                    break;
+                }
             }
         }
         LoadScriptableObjects();
@@ -245,6 +247,7 @@ public class GameManager : MonoBehaviour, IResetAbleListener
         GameObject[] Cams = GameObject.FindGameObjectsWithTag("MainCamera");
         foreach (var cam in Cams)
         {
+            Debug.Log(cam.name);
             if (cam.name == "GameCam")
             {
                 m_GameVirtualCam = cam.GetComponent<CinemachineVirtualCamera>();
