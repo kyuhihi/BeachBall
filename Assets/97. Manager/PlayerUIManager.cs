@@ -187,7 +187,6 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
             }
             //=====================================================================================
         }
-        //CheckUltimateBarEffectTiming();
 
     }
 
@@ -197,7 +196,6 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
     {
         if (!m_WorldUICanvas) return;
         _mbBuffer.Clear();
-        // GetComponentsInChildren<T>(true)는 배열 할당 → 임시로 MonoBehaviour 전부 수집 후 캐스팅
         var comps = m_WorldUICanvas.GetComponentsInChildren<MonoBehaviour>(true);
         for (int i = 0; i < comps.Length; i++)
         {
@@ -325,8 +323,6 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
 
         PlayerUltimateBars[iLRIndex].DecreaseValueFloat(-fAmount);
     }
-
-   
 
     public void SetPlayerInfoInUI(IPlayerInfo playerInfo)
     {

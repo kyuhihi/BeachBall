@@ -133,7 +133,7 @@ public class Ball : MonoBehaviour, IResetAbleListener
         if (_currentSceneType == GameSettings.SceneType.None)
             _currentSceneType = GameSettings.Instance.GetSceneType();
 
-        if (_currentSceneType == GameSettings.SceneType.Title)
+        if (_currentSceneType == GameSettings.SceneType.Title || _currentSceneType == GameSettings.SceneType.Award)
         {
             return;
         }
@@ -179,7 +179,9 @@ public class Ball : MonoBehaviour, IResetAbleListener
         m_Rigidbody.linearVelocity = Linearvelocity;
 
         SetLandSpotParticlePosition();
-        if (_currentSceneType != GameSettings.SceneType.Title && _currentSceneType != GameSettings.SceneType.None)
+        if (_currentSceneType != GameSettings.SceneType.Title &&
+        _currentSceneType != GameSettings.SceneType.None &&
+        _currentSceneType != GameSettings.SceneType.Award)
         {
             GameManager.GetInstance().CheckObjectPosition(transform.position, out bool xClamped, out bool yClamped, out bool zClamped);
             ConfineBall(xClamped, yClamped, zClamped);
@@ -241,7 +243,9 @@ public class Ball : MonoBehaviour, IResetAbleListener
         IPlayerInfo.CourtPosition HitcourtPos = contactPoint.z < 0.0f ?
                         IPlayerInfo.CourtPosition.COURT_RIGHT : IPlayerInfo.CourtPosition.COURT_LEFT;
 
-        if (_currentSceneType != GameSettings.SceneType.Title && _currentSceneType != GameSettings.SceneType.None)
+        if (_currentSceneType != GameSettings.SceneType.Title
+        && _currentSceneType != GameSettings.SceneType.None
+                && _currentSceneType != GameSettings.SceneType.Award)
         {
             if (otherGO != null && otherGO.CompareTag(PlayerTag))
             {

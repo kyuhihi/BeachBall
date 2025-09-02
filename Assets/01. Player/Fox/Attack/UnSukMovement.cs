@@ -123,7 +123,21 @@ public class UnSukMovement : MonoBehaviour, IResetAbleListener
         }
         if (other.tag == "Player")
         {
-            
+            if (other.GetComponent<IPlayerInfo>().m_CourtPosition == m_OwnerCourtPosition)
+                return false;
+            else
+            {
+                Vector3 lookAtDir = Vector3.Normalize(transform.position - other.gameObject.transform.position);
+                lookAtDir.y = 0f;
+                other.gameObject.transform.rotation = Quaternion.LookRotation(lookAtDir);
+                other.gameObject.GetComponent<BasePlayerMovement>().Stun(2.0f);
+
+                Rigidbody playerRb = other.gameObject.GetComponent<Rigidbody>();
+                if (playerRb != null)
+                {
+                    playerRb.AddForce(-lookAtDir * 10f, ForceMode.Impulse);
+                }
+            }
         }
 
 

@@ -51,7 +51,9 @@ public class GameSettings : MonoBehaviour
     [SerializeField] private string[] VSPlayerSceneNames = {  };
 
     private const string titleSceneName = "TitleScene";
-    public enum SceneType{ Title, VSComputer, VSPlayer, None }
+    private const string AwardSceneName = "AwardScene";
+
+    public enum SceneType { Title, VSComputer, VSPlayer, Award, None }
     private SceneType _currentSceneType = SceneType.None;
     public SceneType GetSceneType() {return _currentSceneType;}
 
@@ -98,6 +100,11 @@ public class GameSettings : MonoBehaviour
                     _currentSceneType = SceneType.VSPlayer;
                     return;
                 }
+            }
+            if (string.Equals(AwardSceneName, sceneName, StringComparison.OrdinalIgnoreCase))
+            {
+                _currentSceneType = SceneType.Award;
+                return;
             }
 
         }

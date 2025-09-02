@@ -113,10 +113,6 @@ public class SystemText : MonoBehaviour
 
     void Update()
     {
-        // (1) 입력 먼저 처리 → Idle 상태여도 재시작 가능
-        if (Keyboard.current != null && Keyboard.current.vKey.wasPressedThisFrame)
-            SetText("Test"); // 테스트 트리거
-
         // 팝 비활성 시 종료
         if (!enablePopFloat) return;
 
