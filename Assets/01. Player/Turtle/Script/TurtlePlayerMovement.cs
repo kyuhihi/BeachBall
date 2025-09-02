@@ -97,6 +97,8 @@ public class TurtlePlayerMovement : BasePlayerMovement
     private float waterCannonTurnSpeed = 180f; // 초당 회전 각도
     private float waterCannonAngleThreshold = 5f; // 몇 도 이내면 "완료"로 간주
 
+    private bool _autoThrownOnInterrupt = false;
+
 
 
     protected override void Start()
@@ -209,6 +211,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
                 return;
             isShellThrowCannonActive = true;
             // Debug.Log("Turtle: 등껍질 돌진!");
+            _autoThrownOnInterrupt = false;
             MoveByInput = false;
 
             // 등껍질 미리 생성해서 손에 들고 있게
@@ -612,6 +615,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
         isShellThrowCannonActive = false;
         isUltimateSkillActiving = false;
         HurtTurtleUltimateSkillStun = false;
+        _autoThrownOnInterrupt = false;
         SetResetMode();
 
         if (m_Animator != null)
@@ -666,6 +670,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
         isWaterCannonRotating = false;
         isShellThrowCannonActive = false;
         isUltimateSkillActiving = false;
+        _autoThrownOnInterrupt = false;
 
         // 물리 정지
         m_Rigidbody.linearVelocity = Vector3.zero;
@@ -726,6 +731,13 @@ public class TurtlePlayerMovement : BasePlayerMovement
         }
 
         GameObject ballObj = GameObject.FindWithTag(ballTag);
+
+        // 스턴으로 애니메이션 이벤트가 끊겨도 즉시 던지기
+        if (isShellThrowCannonActive && heldShell != null && isStunned && !_autoThrownOnInterrupt)
+        {
+            _autoThrownOnInterrupt = true;
+            ThrowShellAtOpponent(); // 애니메이션 이벤트 없이 강제 실행
+        }
 
         // 1. 물대포 회전 중: 몸통/머리 서서히 Ball 쪽으로 회전
         if (isWaterCannonRotating && ballObj != null && mouthTransform != null)

@@ -277,7 +277,8 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
 
         ParticleSystem effect = Instantiate(footstepCloudPrefab, foot.position, Quaternion.identity);
 
- 
+        AudioManager.Instance?.PlayFootstep(foot.position, swim: false);
+
         Destroy(effect.gameObject, 1f); // 1초 후 자동 삭제
     }
 
