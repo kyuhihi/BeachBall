@@ -103,6 +103,7 @@ public class GameManager : MonoBehaviour, IResetAbleListener
     }
     public void Start()
     {
+        Debug.Log("GameManager Start");
         SetInstance(this);
         InitializeCamera();
         var lights = FindObjectsByType<Light>(sortMode: FindObjectsSortMode.None);

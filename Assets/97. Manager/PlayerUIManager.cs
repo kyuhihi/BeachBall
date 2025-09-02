@@ -46,6 +46,7 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
 
     void Awake()
     {
+        Debug.Log("PlayerUIManager Awake");
         SetInstance(this);
 
         SetUpCanvas(); // Cutscene 이벤트가 Start 전에 올 수도 있으니 미리 세팅
@@ -81,6 +82,7 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
 
     public void Start()
     {
+        Debug.Log("PlayerUIManager Start");
         if (!m_WorldUICanvas) SetUpCanvas();
         SetUpPlayers();
     }

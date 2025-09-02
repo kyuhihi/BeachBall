@@ -21,9 +21,8 @@ public class SoundSettings : MonoBehaviour
     [SerializeField] private string pFoot      = "vol_foot";
     [SerializeField] private string pFinish    = "vol_finish";
 
-    private const float MinDb = -80f; // 음소거 수준
+    private const float MinDb = -60f; // 권장: -60f (혹은 -80f)
     private const float MaxDb = 0f;   // 기준 레벨
-
     private void Awake()
     {
         Bind(titleBgmSlider,  pTitleBgm);
@@ -97,19 +96,19 @@ public class SoundSettings : MonoBehaviour
         PlayerPrefs.SetFloat(key, Mathf.Clamp01(v01));
         PlayerPrefs.Save();
     }
-
     private void SetMixer01(string param, float v01)
     {
         if (!mixer) return;
-        float db = (v01 <= 0.0001f) ? MinDb : Mathf.Lerp(MinDb, MaxDb, Mathf.Log10(Mathf.Lerp(0.0001f, 1f, v01)) / Mathf.Log10(1f));
+        // 0은 -무한대로 가므로 아주 작은 값으로 보정 후 dB 변환
+        float v = Mathf.Clamp(v01, 0.0001f, 1f);
+        float db = Mathf.Log10(v) * 20f; // 1→0dB, 0.5→-6dB, 0.1→-20dB
+        db = Mathf.Clamp(db, MinDb, MaxDb);
         mixer.SetFloat(param, db);
     }
 
     private static float DbTo01(float db)
     {
-        // dB → 선형(0..1)
         if (db <= MinDb + 0.01f) return 0f;
-        float lin = Mathf.Pow(10f, db / 20f);
-        return Mathf.Clamp01(lin);
+        return Mathf.Clamp01(Mathf.Pow(10f, db / 20f));
     }
 }

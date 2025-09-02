@@ -49,7 +49,7 @@ public class KeySettingPanel : MonoBehaviour
 
     public Color player1Color = Color.blue;
     public Color player2Color = new Color(1f, 0.5f, 0f);
-    public Color cpuColor = Color.black;
+    public Color cpuColor = Color.green;
     public Color normalColor = Color.white;
 
     public Transform keyParentP1;
