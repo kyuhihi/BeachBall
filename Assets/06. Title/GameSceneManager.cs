@@ -14,14 +14,6 @@ public class GameSceneManager : MonoBehaviour
     public Transform leftRoot;
     public Transform rightRoot;
 
-    [Header("Loading UI")]
-    [SerializeField] private LoadingOverlay loadingOverlay;
-    [SerializeField] private GameObject[] enableAfterInit;
-
-    [Header("Init Locks (초기화 동안 잠금)")]
-    [SerializeField] private bool lockTimeAndPhysics = true;
-    [SerializeField] private bool disableAllPlayerInputs = true;
-    [SerializeField] private bool disableEventSystems = true;
 
     [Tooltip("1vsCPU 모드에서 오른쪽을 스폰할지 여부(끄면 왼쪽만 스폰)")]
     [SerializeField] private bool cpuModeSpawnRight = false;
@@ -30,226 +22,73 @@ public class GameSceneManager : MonoBehaviour
     [SerializeField] private bool debugLog = false;
 
     private readonly List<PlayerInput> _disabledInputs = new();
-    private readonly List<EventSystem> _disabledEventSystems = new();
-
     private readonly List<PlayerInput> _forcedEnableInputs = new();
     private readonly Dictionary<PlayerInput, string> _targetMapByInput = new();
 
-    private float _prevTimeScale = 1f;
-    private SimulationMode _prevSimulationMode = SimulationMode.FixedUpdate;
-    private bool _lockedTime = false;
+    private GameObject _leftChosen, _rightChosen;
+    private string _leftSlot, _rightSlot;
+
+
 
     private void Awake()
     {
-        // 새 씬 진입: 씬 로딩 플래그 리셋(이제 TitleButtonMesh가 파괴되었어도 static은 유지됨)
         TitleButtonMesh.ResetSceneLoadingFlag();
-
-
         IsInitialized = false;
 
-        // 0) 로딩 오버레이는 바로 보이게(타임락 전에)
-        ShowOverlayImmediate();
-
-        // 1) 이후에 켤 것들 비활성
-        if (enableAfterInit != null)
-            foreach (var go in enableAfterInit) if (go) go.SetActive(false);
-
-        // 2) 시간/물리/오디오 잠금
-        if (lockTimeAndPhysics)
-        {
-            _prevTimeScale = Time.timeScale;
-            _prevSimulationMode = Physics.simulationMode;
-
-            Time.timeScale = 0f;
-            Physics.simulationMode = SimulationMode.Script; // 물리 일시정지
-            AudioListener.pause = true;
-            _lockedTime = true;
-        }
-
-        // 3) EventSystem/PlayerInput 비활성
-        var roots = SceneManager.GetActiveScene().GetRootGameObjects();
-
-        if (disableEventSystems)
-        {
-            for (int i = 0; i < roots.Length; i++)
-            {
-                var evs = roots[i].GetComponentsInChildren<EventSystem>(true);
-                foreach (var es in evs)
-                {
-                    if (es != null && es.enabled)
-                    {
-                        es.enabled = false;
-                        _disabledEventSystems.Add(es);
-                    }
-                }
-            }
-        }
-
-        if (disableAllPlayerInputs)
-        {
-            for (int i = 0; i < roots.Length; i++)
-            {
-                var inputs = roots[i].GetComponentsInChildren<PlayerInput>(true);
-                foreach (var pi in inputs)
-                {
-                    if (pi != null && pi.enabled)
-                    {
-                        pi.enabled = false;
-                        _disabledInputs.Add(pi);
-                    }
-                }
-            }
-        }
-
-        // 4) 캐릭터는 Start 전에 전부 꺼서 Movement.Start 선실행 방지
-        DeactivateAllChildren(leftRoot);
-        DeactivateAllChildren(rightRoot);
-    }
-
-    private System.Collections.IEnumerator Start()
-    {
-        // 씬 오브젝트 초기화 보장
-        yield return null;
-
         var gs = GameSettings.Instance;
-        bool canProceed = (gs != null && leftRoot != null && rightRoot != null);
-
-        GameObject leftChosen = null, rightChosen = null;
-
-        if (!canProceed)
+        if (gs == null || leftRoot == null || rightRoot == null)
         {
-            Debug.LogWarning("GameSceneManager: 초기 조건 부족(GameSettings/leftRoot/rightRoot).");
-        }
-        else
-        {
-            // 슬롯/ID 결정
-            string leftSlot, rightSlot;
-            if (gs.gameMode == "1vs1")
-            {
-                leftSlot = "P1";
-                rightSlot = "P2";
-            }
-            else
-            {
-                leftSlot = "CPU";
-                rightSlot = "CPU";
-            }
-
-            string leftId = gs.GetCharacterForSlot(leftSlot);
-            string rightId = gs.GetCharacterForSlot(rightSlot);
-
-
-            bool spawnRight = (gs.gameMode == "1vs1") || cpuModeSpawnRight;
-
-            // 선택 로직: 1vs1은 strict=true, 1vsCPU는 strict=false(id만 맞아도 선택)
-            bool strict = (gs.gameMode == "1vs1");
-            leftChosen = SelectCharacterByIdAndSlot(leftRoot, leftId, leftSlot, strict);
-            rightChosen = spawnRight ? SelectCharacterByIdAndSlot(rightRoot, rightId, rightSlot, strict) : null;
-
-            if (debugLog)
-                Debug.Log($"[GSM] mode={gs.gameMode}, leftSlot={leftSlot}, rightSlot={rightSlot}, leftId={leftId}, rightId={rightId}, spawnRight={spawnRight}");
-
-            // 슬롯 기록 + 바인딩
-            if (leftChosen != null)
-            {
-                var reg = leftChosen.GetComponentInChildren<PlayerInputRegistrar>(true);
-                if (reg != null) reg.slot = leftSlot;
-                BindPlayerInputToSlot(leftChosen, leftSlot, gs);
-            }
-            if (spawnRight && rightChosen != null)
-            {
-                var reg = rightChosen.GetComponentInChildren<PlayerInputRegistrar>(true);
-                if (reg != null) reg.slot = rightSlot;
-                BindPlayerInputToSlot(rightChosen, rightSlot, gs);
-            }
-
-            // 저장된 리바인딩 적용(프로젝트/로컬 JSON)
-            gs.LoadKeyBindings();
-            TryApplySavedOverridesForSlot(leftSlot, GetActionsOf(leftChosen));
-            if (spawnRight) TryApplySavedOverridesForSlot(rightSlot, GetActionsOf(rightChosen));
-
-            // 안정화 프레임
-            yield return null;
-
-            // 선택된 캐릭터만 활성
-            if (leftChosen) leftChosen.SetActive(true);
-            if (spawnRight && rightChosen) rightChosen.SetActive(true);
-
-            // 액션 재활성 + 최종 오버라이드 재적용
-            ReenableActions(leftChosen);
-            if (spawnRight) ReenableActions(rightChosen);
-            TryApplySavedOverridesForSlot(leftSlot, GetActionsOf(leftChosen));
-            if (spawnRight) TryApplySavedOverridesForSlot(rightSlot, GetActionsOf(rightChosen));
-
-            if (debugLog)
-            {
-                DumpInputState(leftSlot, leftChosen);
-                if (spawnRight) DumpInputState(rightSlot, rightChosen);
-            }
+            Debug.LogWarning("[GSM] 초기 조건 부족(GameSettings/leftRoot/rightRoot).");
+            return;
         }
 
-        // 완료
+        // 1) 슬롯/ID 결정
+        _leftSlot  = (gs.gameMode == "1vs1") ? "P1"  : "CPU";
+        _rightSlot = (gs.gameMode == "1vs1") ? "P2"  : "CPU";
+        string leftId  = gs.GetCharacterForSlot(_leftSlot);
+        string rightId = gs.GetCharacterForSlot(_rightSlot);
+        bool spawnRight = (gs.gameMode == "1vs1") || cpuModeSpawnRight;
+        bool strict = (gs.gameMode == "1vs1");
+
+        // 2) 캐릭터 선택
+        _leftChosen  = SelectCharacterByIdAndSlot(leftRoot,  leftId,  _leftSlot,  strict);
+        _rightChosen = spawnRight ? SelectCharacterByIdAndSlot(rightRoot, rightId, _rightSlot, strict) : null;
+
+        // 3) PlayerInput 바인딩(액션 복제/맵 선택/활성)
+        if (_leftChosen)
+        {
+            var reg = _leftChosen.GetComponentInChildren<PlayerInputRegistrar>(true);
+            if (reg) reg.slot = _leftSlot;
+            BindPlayerInputToSlot(_leftChosen, _leftSlot, gs);
+        }
+        if (spawnRight && _rightChosen)
+        {
+            var reg = _rightChosen.GetComponentInChildren<PlayerInputRegistrar>(true);
+            if (reg) reg.slot = _rightSlot;
+            BindPlayerInputToSlot(_rightChosen, _rightSlot, gs);
+        }
+
+        // 4) 저장된 리바인딩 적용
+        gs.LoadKeyBindings();
+        TryApplySavedOverridesForSlot(_leftSlot, GetActionsOf(_leftChosen));
+        if (spawnRight) TryApplySavedOverridesForSlot(_rightSlot, GetActionsOf(_rightChosen));
+
+        // 5) 즉시 활성 + 액션 재활성 + 맵 스위치
+        if (_leftChosen)  _leftChosen.SetActive(true);
+        if (spawnRight && _rightChosen) _rightChosen.SetActive(true);
+
+        ReenableActions(_leftChosen);
+        if (spawnRight) ReenableActions(_rightChosen);
+
+        // 현재 맵을 확실히 스위치(바인딩에서 정한 맵으로)
+        var lpi = _leftChosen ? _leftChosen.GetComponentInChildren<PlayerInput>(true) : null;
+        var rpi = _rightChosen ? _rightChosen.GetComponentInChildren<PlayerInput>(true) : null;
+        if (lpi && !string.IsNullOrEmpty(lpi.defaultActionMap)) lpi.SwitchCurrentActionMap(lpi.defaultActionMap);
+        if (rpi && !string.IsNullOrEmpty(rpi.defaultActionMap)) rpi.SwitchCurrentActionMap(rpi.defaultActionMap);
+
         IsInitialized = true;
-
-        if (loadingOverlay != null)
-            yield return loadingOverlay.FadeOut(2f);
-
-        // 잠금 해제
-        foreach (var es in _disabledEventSystems) if (es) es.enabled = true;
-        _disabledEventSystems.Clear();
-
-        foreach (var pi in _disabledInputs) if (pi) pi.enabled = true;
-        _disabledInputs.Clear();
-
-        foreach (var pi in _forcedEnableInputs)
-        {
-            if (!pi) continue;
-            if (!pi.enabled) pi.enabled = true;
-
-            if (_targetMapByInput.TryGetValue(pi, out var mapName) && !string.IsNullOrEmpty(mapName))
-            {
-                var map = pi.actions?.FindActionMap(mapName, throwIfNotFound: false);
-                if (map != null) pi.SwitchCurrentActionMap(mapName);
-            }
-        }
-        _forcedEnableInputs.Clear();
-        _targetMapByInput.Clear();
-
-        if (_lockedTime)
-        {
-            Time.timeScale = _prevTimeScale;
-            Physics.simulationMode = _prevSimulationMode;
-            AudioListener.pause = false;
-            _lockedTime = false;
-        }
-
-        if (enableAfterInit != null)
-            foreach (var go in enableAfterInit) if (go) go.SetActive(true);
-            
-        // 초기화 완료 후, UI에 플레이어 정보 보정 등록(매니저/UI가 이제 켜진 뒤)
-        var ui = PlayerUIManager.GetInstance();
-        if (ui != null)
-        {
-            var players = GameObject.FindGameObjectsWithTag("Player");
-            for (int i = 0; i < players.Length; i++)
-            {
-                var info = players[i].GetComponent<IPlayerInfo>();
-                if (info != null) ui.SetPlayerInfoInUI(info);
-            }
-        }
     }
 
-    // ---- Helpers ----
-
-    private void ShowOverlayImmediate()
-    {
-        if (!loadingOverlay) return;
-        var go = loadingOverlay.gameObject;
-        go.SetActive(true);
-        // 즉시 보이도록 CanvasGroup 보강
-        var cg = go.GetComponentInChildren<CanvasGroup>(true);
-        if (cg != null) cg.alpha = 1f;
-    }
 
     private static InputActionAsset GetActionsOf(GameObject go)
     {
@@ -258,12 +97,6 @@ public class GameSceneManager : MonoBehaviour
         return pi ? pi.actions : null;
     }
 
-    private void DeactivateAllChildren(Transform root)
-    {
-        if (!root) return;
-        for (int i = 0; i < root.childCount; i++)
-            root.GetChild(i).gameObject.SetActive(false);
-    }
     private GameObject SelectCharacterByIdAndSlot(Transform root, string targetId, string targetSlot, bool strict)
     {
         if (root == null || root.childCount == 0) return null;
@@ -294,11 +127,25 @@ public class GameSceneManager : MonoBehaviour
             if (firstActive == null && child.activeSelf) firstActive = child;
         }
 
-        // 엄격: 둘 다 일치하지 않으면 null 반환(확실한 검증)
-        if (strict) return exact;
+        GameObject result;
+        if (strict)
+            result = exact;
+        else
+            result = exact ?? idOnly ?? firstActive ?? firstChild;
 
-        // 비엄격 폴백
-        return exact ?? idOnly ?? firstActive ?? firstChild;
+        // 선택된 것만 활성화, 나머지 비활성화(결과가 있을 때만)
+        if (result != null)
+        {
+            for (int i = 0; i < root.childCount; i++)
+            {
+                var child = root.GetChild(i).gameObject;
+                bool active = (child == result);
+                if (child.activeSelf != active) child.SetActive(active);
+            }
+            if (debugLog) Debug.Log($"[GSM] Activated '{result.name}' and deactivated others under '{root.name}'");
+        }
+
+        return result;
     }
 
     // PlayerInput.actions 복제 + 슬롯별 등록 + 맵 자동 선택 + 즉시 PlayerInput 활성
@@ -401,13 +248,4 @@ public class GameSceneManager : MonoBehaviour
         return asset.actionMaps.Count > 0 ? asset.actionMaps[0].name : null;
     }
 
-    private void DumpInputState(string slot, GameObject go)
-    {
-        if (!debugLog || !go) return;
-        var pi = go.GetComponentInChildren<PlayerInput>(true);
-        if (pi == null || pi.actions == null) { Debug.Log($"[GSM] {slot}: PlayerInput 없음"); return; }
-        var currentMap = pi.currentActionMap != null ? pi.currentActionMap.name : "(null)";
-        var defaultMap = string.IsNullOrEmpty(pi.defaultActionMap) ? "(null)" : pi.defaultActionMap;
-        Debug.Log($"[GSM] {slot}: enabled={pi.enabled}, defaultMap={defaultMap}, currentMap={currentMap}, maps={pi.actions.actionMaps.Count}");
-    }
 }

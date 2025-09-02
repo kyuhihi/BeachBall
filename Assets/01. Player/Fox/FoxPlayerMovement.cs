@@ -23,8 +23,8 @@ public class FoxPlayerMovement : BasePlayerMovement
         var active = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
         if (active != "TitleScene")
         {
-            // PlayerUIManager.GetInstance().SetPlayerInfoInUI(this);
-            StartCoroutine(Co_RegisterPlayerInfoWhenReady());
+            PlayerUIManager.GetInstance().SetPlayerInfoInUI(this);
+            // StartCoroutine(Co_RegisterPlayerInfoWhenReady());
         }
         else
         {
