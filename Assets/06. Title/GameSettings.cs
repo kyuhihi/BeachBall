@@ -56,6 +56,17 @@ public class GameSettings : MonoBehaviour
     public enum SceneType { Title, VSComputer, VSPlayer, Award, None }
     private SceneType _currentSceneType = SceneType.None;
     public SceneType GetSceneType() {return _currentSceneType;}
+    private IPlayerInfo.PlayerType _Winner = IPlayerInfo.PlayerType.End;
+    private IPlayerInfo.PlayerType _Loser = IPlayerInfo.PlayerType.End;
+    public void SetWinnerLoser(IPlayerInfo.PlayerType winner, IPlayerInfo.PlayerType loser)
+    {
+        _Winner = winner;
+        _Loser = loser;
+    }
+    public (IPlayerInfo.PlayerType winner, IPlayerInfo.PlayerType loser) GetWinnerLoser()
+    {
+        return (_Winner, _Loser);
+    }
 
     void Awake()
     {

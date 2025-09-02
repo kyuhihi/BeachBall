@@ -276,6 +276,14 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
     {
         return m_SecondCountdown.GetRestSecond();
     }
+    public void GetCurrentScore(IPlayerInfo.CourtPosition courtPosition, out int score)
+    {
+        int iLRIndex = 0;
+        if (courtPosition == IPlayerInfo.CourtPosition.COURT_RIGHT)
+            iLRIndex = 1;
+
+        score = PlayerScoreCounts[iLRIndex].GetValueInt;
+    }
     public void RoundEndUpScore()
     {
         int iLeftScore = PlayerScoreCounts[0].GetValueInt;
