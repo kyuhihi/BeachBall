@@ -14,6 +14,8 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioMixerGroup hitGroup;
     [SerializeField] private AudioMixerGroup finishGroup;
 
+
+
     [Header("Clips")]
     [SerializeField] private AudioClip titleBgmClip;
     [SerializeField] private AudioClip ingameBgmClip;
@@ -21,6 +23,8 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip[] swimFootClips;
     [SerializeField] private AudioClip[] hitClips;
     [SerializeField] private AudioClip finishClip;
+
+    [SerializeField] private AudioClip winnerClip;
 
     [Header("SFX 3D Settings")]
     [SerializeField] private float sfxSpatialBlend = 1f; // 3D
@@ -130,6 +134,12 @@ public class AudioManager : MonoBehaviour
     {
         if (finishClip == null) return;
         PlayOneShotAt(position, finishClip, finishGroup, volume);
+    }
+
+    public void PlayWinner(Vector3 position, float volume = 1f)
+    {
+        if (winnerClip == null) return;
+        PlayOneShotAt(position, winnerClip, finishGroup, volume);
     }
 
     private static AudioClip Pick(AudioClip[] arr)

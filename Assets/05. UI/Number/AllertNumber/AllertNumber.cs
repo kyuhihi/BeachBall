@@ -4,11 +4,11 @@ using UnityEngine.InputSystem;
 
 public class AllertNumber : MonoBehaviour, IResetAbleListener
 {
-    [Header("¿ÜºÎ ÂüÁ¶")]
+    [Header("ï¿½Üºï¿½ ï¿½ï¿½ï¿½ï¿½")]
     private PlayerUIManager m_PlayerUIManager;
     private TextMeshProUGUI m_TextMeshPro;
 
-    [Header("Ä«¿îÆ®´Ù¿î ¼³Á¤")]
+    [Header("Ä«ï¿½ï¿½Æ®ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½ï¿½")]
     [SerializeField] private int triggerStartSecond = 5;
     [SerializeField] private float perSecondAnimDuration = 1f;
     [SerializeField] private float baseFontSize = 200f;
@@ -16,26 +16,26 @@ public class AllertNumber : MonoBehaviour, IResetAbleListener
     [SerializeField] private AnimationCurve alphaCurve = AnimationCurve.Linear(0, 1, 1, 0);
     [SerializeField] private AnimationCurve sizeCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
-    [Header("GameSet ¿¬Ãâ (´Ü¼ø ³«ÇÏ + ¿Ï·á ÈÄ ÆäÀÌµå)")]
+    [Header("GameSet ï¿½ï¿½ï¿½ï¿½ (ï¿½Ü¼ï¿½ ï¿½ï¿½ï¿½ï¿½ + ï¿½Ï·ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Ìµï¿½)")]
     [SerializeField] private string gameSetText = "Finish!!";
     [SerializeField] private Color gameSetColor = new Color(0.2f, 0.85f, 0.95f);
     [SerializeField] private float gameSetDropHeight = 350f;
-    [SerializeField] private AnimationCurve dropEase = AnimationCurve.EaseInOut(0, 0, 1, 1); // ÇÊ¿ä ½Ã Ä¿ºê Á¶Á¤
-    private float gameSetDropDuration = 0.5f;          // ºü¸£°Ô ³»·Á¿Àµµ·Ï (±âÁ¸ 0.6f ¡æ 0.3f)
+    [SerializeField] private AnimationCurve dropEase = AnimationCurve.EaseInOut(0, 0, 1, 1); // ï¿½Ê¿ï¿½ ï¿½ï¿½ Ä¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+    private float gameSetDropDuration = 0.5f;          // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ 0.6f ï¿½ï¿½ 0.3f)
     private float gameSetFadeDuration = 1.0f;
 
     private RectTransform _rect;
     private Vector2 _originalAnchoredPos;
 
-    // »óÅÂ (¹Ù¿î½º/È¦µå Á¦°Å)
+    // ï¿½ï¿½ï¿½ï¿½ (ï¿½Ù¿î½º/È¦ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
     private enum State { Idle, Counting, GameSetDrop, GameSetFade }
     private State _state = State.Idle;
 
-    // Ä«¿îÆ®´Ù¿î °ü·Ã
+    // Ä«ï¿½ï¿½Æ®ï¿½Ù¿ï¿½ ï¿½ï¿½ï¿½ï¿½
     private int _lastShownSecond = int.MinValue;
     private float _currentNumberStartTime;
 
-    // GameSet °ü·Ã
+    // GameSet ï¿½ï¿½ï¿½ï¿½
     private float _gameSetStartTime;
     private float _gameSetFadeStartTime;
     private Vector2 _gameSetStartPos;
@@ -43,9 +43,9 @@ public class AllertNumber : MonoBehaviour, IResetAbleListener
 
     private int _currentSecond;
     private bool _active = true;
-    private bool _gameSetStarted = false; // Ãß°¡: GameSet ÇÑ ¹ø ½ÇÇà ÈÄ ÀçÄ«¿îÆ® ¹æÁö
+    private bool _gameSetStarted = false; // ï¿½ß°ï¿½: GameSet ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½Ä«ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
 
-  private bool manualGameSetTrigger = false; // LÅ°·Î Áï½Ã GameSet
+  private bool manualGameSetTrigger = false; // LÅ°ï¿½ï¿½ ï¿½ï¿½ï¿½ GameSet
 
     private void Awake()
     {
@@ -71,7 +71,7 @@ public class AllertNumber : MonoBehaviour, IResetAbleListener
     {
         if (!_active) return;
 
-        // µð¹ö±× Æ®¸®°Å
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ Æ®ï¿½ï¿½ï¿½ï¿½
         if (manualGameSetTrigger && Keyboard.current.lKey.wasPressedThisFrame)
         {
             if (!_gameSetStarted && _state != State.GameSetDrop && _state != State.GameSetFade)
@@ -89,7 +89,7 @@ public class AllertNumber : MonoBehaviour, IResetAbleListener
         switch (_state)
         {
             case State.Idle:
-                if (!_gameSetStarted) // GameSet ½ÃÀÛ ÈÄ¿¡´Â ´Ù½Ã Ä«¿îÆÃ ÁøÀÔÇÏÁö ¾ÊÀ½
+                if (!_gameSetStarted) // GameSet ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¿ï¿½ï¿½ï¿½ ï¿½Ù½ï¿½ Ä«ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
                     TryEnterCounting();
                 break;
             case State.Counting:
@@ -106,7 +106,7 @@ public class AllertNumber : MonoBehaviour, IResetAbleListener
 
     private void TryEnterCounting()
     {
-        if (_gameSetStarted) return;              // º¸È£
+        if (_gameSetStarted) return;              // ï¿½ï¿½È£
         if (_currentSecond <= triggerStartSecond && _currentSecond >= 0)
         {
             _state = State.Counting;
@@ -158,13 +158,15 @@ public class AllertNumber : MonoBehaviour, IResetAbleListener
 
     private void StartGameSet()
     {
-        _gameSetStarted = true; // ÇÃ·¡±× ¼³Á¤
+        _gameSetStarted = true; // ï¿½Ã·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
         _state = State.GameSetDrop;
         m_TextMeshPro.text = gameSetText;
         m_TextMeshPro.color = gameSetColor;
         m_TextMeshPro.fontSize = targetFontSize;
         _rect.localRotation = Quaternion.identity;
+
+        AudioManager.Instance.PlayFinish(Camera.main.transform.position, 1f);
 
         _gameSetStartPos = _originalAnchoredPos + Vector2.up * gameSetDropHeight;
         _gameSetEndPos = _originalAnchoredPos;
@@ -174,12 +176,12 @@ public class AllertNumber : MonoBehaviour, IResetAbleListener
 
     private void UpdateGameSetDrop()
     {
-        Color c = m_TextMeshPro.color; // ³«ÇÏ Áß¿¡´Â ¿ÏÀü ºÒÅõ¸í À¯Áö
+        Color c = m_TextMeshPro.color; // ï¿½ï¿½ï¿½ï¿½ ï¿½ß¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         c.a = 1f;
         m_TextMeshPro.color = c;
         float t = Mathf.Clamp01((Time.time - _gameSetStartTime) / gameSetDropDuration);
 
-        // Ä¿ºê Àû¿ë (ºü¸¥ ÇÏ°­ ¡æ ºÎµå·¯¿î Á¤Áö)
+        // Ä¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½Ï°ï¿½ ï¿½ï¿½ ï¿½Îµå·¯ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
         float eased = dropEase.Evaluate(t);
         _rect.anchoredPosition = Vector2.LerpUnclamped(_gameSetStartPos, _gameSetEndPos, eased);
 
@@ -187,7 +189,7 @@ public class AllertNumber : MonoBehaviour, IResetAbleListener
         {
             _rect.anchoredPosition = _gameSetEndPos;
             _state = State.GameSetFade;
-            _gameSetFadeStartTime = Time.time; // µµÂø ÈÄ ¹Ù·Î ¾ËÆÄ °¨¼è ½ÃÀÛ
+            _gameSetFadeStartTime = Time.time; // ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ù·ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         }
     }
 
@@ -200,7 +202,7 @@ public class AllertNumber : MonoBehaviour, IResetAbleListener
 
         if (t >= 1f)
         {
-            // GameSet Á¾·á ÈÄ¿¡µµ _gameSetStarted À¯Áö ¡æ 0 ÀçÇ¥½Ã ¹æÁö
+            // GameSet ï¿½ï¿½ï¿½ï¿½ ï¿½Ä¿ï¿½ï¿½ï¿½ _gameSetStarted ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ 0 ï¿½ï¿½Ç¥ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             m_TextMeshPro.text = "";
             _state = State.Idle;
         }
@@ -208,13 +210,13 @@ public class AllertNumber : MonoBehaviour, IResetAbleListener
 
     public void ResetCountdownVisual()
     {
-        // »óÅÂ ÃÊ±âÈ­
+        // ï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­
         _state = State.Idle;
         _lastShownSecond = int.MinValue;
         _gameSetStartTime = 0f;
         _gameSetFadeStartTime = 0f;
 
-        // ÅØ½ºÆ® ¹× ºñÁÖ¾ó ÃÊ±âÈ­
+        // ï¿½Ø½ï¿½Æ® ï¿½ï¿½ ï¿½ï¿½ï¿½Ö¾ï¿½ ï¿½Ê±ï¿½È­
         m_TextMeshPro.text = "";
         m_TextMeshPro.color = Color.black;
         m_TextMeshPro.fontSize = baseFontSize;
@@ -241,7 +243,7 @@ public class AllertNumber : MonoBehaviour, IResetAbleListener
     public void OnRoundStart()
     {
         _active = true;
-        _gameSetStarted = false; // »õ ¶ó¿îµå¿¡¼­ ´Ù½Ã Ä«¿îÆ® Çã¿ë
+        _gameSetStarted = false; // ï¿½ï¿½ ï¿½ï¿½ï¿½å¿¡ï¿½ï¿½ ï¿½Ù½ï¿½ Ä«ï¿½ï¿½Æ® ï¿½ï¿½ï¿½
         ResetCountdownVisual();
     }
 
@@ -249,6 +251,6 @@ public class AllertNumber : MonoBehaviour, IResetAbleListener
     {
         _active = false;
         ResetCountdownVisual();
-        // GameSet À¯Áö ¿©ºÎ¿¡ µû¶ó ¿©±â´Â _gameSetStarted ÃÊ±âÈ­ ¾È ÇÔ (Á¾·á ÈÄ Àç½ÃÀÛ ½Ã OnRoundStart¿¡¼­ ÃÊ±âÈ­)
+        // GameSet ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î¿ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ _gameSetStarted ï¿½Ê±ï¿½È­ ï¿½ï¿½ ï¿½ï¿½ (ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ OnRoundStartï¿½ï¿½ï¿½ï¿½ ï¿½Ê±ï¿½È­)
     }
 }

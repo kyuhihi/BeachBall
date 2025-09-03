@@ -10,6 +10,7 @@ public class ReturnTitleButtonUI : MonoBehaviour
 
     void Start()
     {
+        AudioManager.Instance.PlayWinner(Camera.main.transform.position, 1f);
         StartCoroutine(DelayActivation());
     }
 
