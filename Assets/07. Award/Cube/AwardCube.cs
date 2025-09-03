@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AwardCube : MonoBehaviour
@@ -32,7 +33,7 @@ public class AwardCube : MonoBehaviour
         if (!bSetPlayer)
         {
             var players = GameObject.FindGameObjectsWithTag("Player");
-            
+
             var (winner, loser) = GameSettings.Instance.GetWinnerLoser();
             IPlayerInfo.PlayerType MyType = IPlayerInfo.PlayerType.End;
             switch (m_AwardType)
@@ -64,7 +65,24 @@ public class AwardCube : MonoBehaviour
             }
 
             bSetPlayer = true;
+            CheckCheerPlayer();
         }
     }
+    private void CheckCheerPlayer()
+    {
+        var players = GameObject.FindGameObjectsWithTag("Player");
 
+        List<GameObject> NonSelectedOne = new List<GameObject>();
+        foreach (var player in players)
+        {
+            if (player.GetComponent<AwardAnimSelector>().GetSelected())
+                continue;
+            else
+                NonSelectedOne.Add(player);
+        }
+        if (NonSelectedOne.Count == 1)
+        {
+            NonSelectedOne[0].GetComponent<AwardAnimSelector>().SetWinLoseCheer(AwardType.None);
+        }
+    }
 }
