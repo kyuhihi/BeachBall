@@ -93,7 +93,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
 
     private bool isWaterCannonActive = false;
     private bool isWaterCannonRotating = false;
-    private bool isUltimateSkillActiving = false;
+    
     private float waterCannonTurnSpeed = 180f; // 초당 회전 각도
     private float waterCannonAngleThreshold = 5f; // 몇 도 이내면 "완료"로 간주
     private bool _autoThrownOnInterrupt = false;
@@ -649,7 +649,7 @@ public class TurtlePlayerMovement : BasePlayerMovement
         isWaterCannonActive = false;
         isWaterCannonRotating = false;
         isShellThrowCannonActive = false;
-        isUltimateSkillActiving = false;
+
         HurtTurtleUltimateSkillStun = false;
         _autoThrownOnInterrupt = false;
         _cancelledWaterCannonOnInterrupt = false;

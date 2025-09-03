@@ -2805,8 +2805,8 @@ MonoBehaviour:
   onlyCenterActive: 1
   autoPlayOnStart: 1
   loop: 1
-  nextKey: 275
-  prevKey: 276
+  minHoldClamp: 0.05
+  debugLog: 0
 --- !u!1 &2040555949
 GameObject:
   m_ObjectHideFlags: 0
@@ -2837,8 +2837,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   progressBar: {fileID: 500885291}
-  minShowTime: 2
-  visualFillSpeed: 0.5
+  minShowTime: 6
+  visualFillSpeed: 0.3
   introWarmupSeconds: 0.3
   bootstrapTarget: 0.1
   maxVisualStepPerFrame: 0.08

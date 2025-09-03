@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class LoadingSceneController : MonoBehaviour
 {
     [SerializeField] private Slider progressBar; // 선택(없어도 동작)
-    [SerializeField] private float minShowTime = 2f;           // 최소 표출 시간
+    [SerializeField] private float minShowTime = 5f;           // 최소 표출 시간
     [SerializeField] private float visualFillSpeed = 0.5f;     // 1초당 시각 증가량(0~1)
     [SerializeField] private float introWarmupSeconds = 0.3f;  // 시작 워밍업 연출 시간
     [SerializeField] private float bootstrapTarget = 0.1f;     // 초반 최소 채움 목표(0~1)

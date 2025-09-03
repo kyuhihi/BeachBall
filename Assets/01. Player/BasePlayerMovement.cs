@@ -19,6 +19,8 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     protected float baseWalkSpeed = 7f;
     protected float swimMaxSpeed = 0f;
 
+    protected bool isUltimateSkillActiving = false;
+
     // public float runSpeed = 5f;
     [SerializeField] protected float dashSpeed = 100f; // 대시 속도
     [SerializeField] protected string ballTag = "Ball"; // 볼 태그명
@@ -1076,6 +1078,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         footstepTimer = 0f;
         swimfootstepTimer = 0f;
         m_Rigidbody.isKinematic = false;
+        isUltimateSkillActiving = false;
         
         RestoreGravity(true);
     }

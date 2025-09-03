@@ -95,7 +95,7 @@ public class FoxPlayerMovement : BasePlayerMovement
             return;
         }
 
-        if (!m_isMoveByInput || m_eLocomotionState == IdleWalkRunEnum.Swim)
+        if (!m_isMoveByInput || m_eLocomotionState == IdleWalkRunEnum.Swim || isUltimateSkillActiving)
         {
             return;
         }
@@ -128,7 +128,7 @@ public class FoxPlayerMovement : BasePlayerMovement
             return;
         }
 
-        if (!m_isMoveByInput && value.isPressed || m_eLocomotionState == IdleWalkRunEnum.Swim)
+        if (!m_isMoveByInput && value.isPressed || m_eLocomotionState == IdleWalkRunEnum.Swim || isUltimateSkillActiving)
         {
             return;
         }
@@ -175,6 +175,8 @@ public class FoxPlayerMovement : BasePlayerMovement
 
         if (playerType == m_PlayerType && courtPosition == m_CourtPosition)
             m_UltimateFlashGameObject.SetActive(true);
+        
+        isUltimateSkillActiving = true;
 
     }
     public override void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
@@ -195,6 +197,7 @@ public class FoxPlayerMovement : BasePlayerMovement
         {
             m_isMoveByInput = true;
         }
+        isUltimateSkillActiving = false;
     }//이거 오버라이딩해야함.
     public override void OnRoundStart()
     {
