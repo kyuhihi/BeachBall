@@ -1017,6 +1017,41 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         StartCoroutine(StunCoroutine(duration));
     }
 
+    // 이때는 거북이 등껍질 연속못던지게 하기
+    public void UltimateStun(float duration)
+    {
+        // 기절 처리(이동 불가, 애니메이션 등)
+        // 예시:
+        m_Animator.SetTrigger("Stunned");
+        MoveByInput = false;
+        isStunned = true;
+
+        // 대시 중이면 즉시 종료
+        if (isDashingToBall)
+            EndDashCall();
+
+        // 점프/더블점프 상태 해제
+        m_IsJumping = false;
+        m_IsDoubleJumping = false;
+
+        // 발소리 타이머 리셋
+        footstepTimer = 0f;
+        swimfootstepTimer = 0f;
+
+        // 이동 입력 초기화
+        m_InputVector = Vector2.zero;
+
+        // 애니메이터 상태 초기화
+        if (m_Animator != null)
+        {
+            m_Animator.SetBool("Jump", false);
+            m_Animator.SetBool("DoubleJump", false);
+            m_Animator.SetBool("IsDashing", false);
+            m_Animator.SetBool("IsGrounded", isGrounded);
+        }
+        StartCoroutine(StunCoroutine(duration));
+    }
+
     private IEnumerator StunCoroutine(float duration)
     {
         // 기절 애니메이션 등 추가 가능

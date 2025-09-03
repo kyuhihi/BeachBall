@@ -29,7 +29,7 @@ public class UnSukMovement : MonoBehaviour, IResetAbleListener
 
     private void OnApplicationQuit() => s_IsQuitting = true;
 
-    // ÇÊ¿ä ½Ã È£Ãâ: ÀÌÆåÆ® »ý¼º ÈÄ ÀÚÆø
+    // ï¿½Ê¿ï¿½ ï¿½ï¿½ È£ï¿½ï¿½: ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
     public void ExplodeAndDestroy()
     {
         if (_exploded) return;
@@ -90,7 +90,6 @@ public class UnSukMovement : MonoBehaviour, IResetAbleListener
                 {
                     playerRb.AddForce(-lookAtDir * 10f, ForceMode.Impulse);
                 }
-                other.gameObject.GetComponent<BasePlayerMovement>().Stun(2f);
                 ExplodeAndDestroy();
             }
             else
@@ -108,7 +107,7 @@ public class UnSukMovement : MonoBehaviour, IResetAbleListener
         }
         else
         {
-            ExplodeAndDestroy(); // Destroy Àü¿¡ ÀÌÆåÆ® »ý¼º
+            ExplodeAndDestroy(); // Destroy ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½
         }
     }
     private bool CheckTimingCollision(Collider other)
@@ -130,7 +129,7 @@ public class UnSukMovement : MonoBehaviour, IResetAbleListener
                 Vector3 lookAtDir = Vector3.Normalize(transform.position - other.gameObject.transform.position);
                 lookAtDir.y = 0f;
                 other.gameObject.transform.rotation = Quaternion.LookRotation(lookAtDir);
-                other.gameObject.GetComponent<BasePlayerMovement>().Stun(2.0f);
+                other.gameObject.GetComponent<BasePlayerMovement>().UltimateStun(2.0f);
 
                 Rigidbody playerRb = other.gameObject.GetComponent<Rigidbody>();
                 if (playerRb != null)
@@ -146,13 +145,13 @@ public class UnSukMovement : MonoBehaviour, IResetAbleListener
     public void OnDestroy()
     {
         RemoveResetCall();
-        // ¾À ¾ð·Îµå/¾Û Á¾·á/¿¡µðÅÍ Á¤Áö µî¿¡¼­´Â »ý¼ºÇÏÁö ¾ÊÀ½
+        // ï¿½ï¿½ ï¿½ï¿½Îµï¿½/ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½î¿¡ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (!Application.isPlaying) return;
         if (s_IsQuitting) return;
         if (!gameObject.scene.isLoaded) return;
-        if (_exploded) return; // ÀÌ¹Ì Ã³¸®µÊ
+        if (_exploded) return; // ï¿½Ì¹ï¿½ Ã³ï¿½ï¿½ï¿½ï¿½
 
-        // ¿¹¿ÜÀûÀ¸·Î Destroy °æ·Î¿¡¼­ ¸ø ¸¸µé¾úÀ» ¶§¸¸ »ý¼º
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Destroy ï¿½ï¿½Î¿ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (m_ExplosionEffect)
             Instantiate(m_ExplosionEffect, transform.position, Quaternion.identity);
 
