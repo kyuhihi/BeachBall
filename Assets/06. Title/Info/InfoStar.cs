@@ -19,6 +19,6 @@ public class InfoStar : MonoBehaviour
         color.a = 0.5f + 0.5f * Mathf.Sin(Time.time);
         _image.color = color;
 
-        _rectTransform.rotation = Quaternion.Euler(0, 0, _rectTransform.rotation.eulerAngles.z + Time.deltaTime * 10f);
+        _rectTransform.rotation = Quaternion.Euler(0, 0, _rectTransform.rotation.eulerAngles.z + Time.deltaTime * 180f);
     }
 }

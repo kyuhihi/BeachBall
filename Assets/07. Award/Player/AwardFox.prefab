@@ -1694,7 +1694,7 @@ MonoBehaviour:
   tailState: 0
   yawSpeedDegPerSec: 1440
   DefenceRoationX: 45
-  m_TailGameObject: {fileID: 0}
+  m_TailGameObject: {fileID: 6832061656001974762}
   m_DefenceEffector: {fileID: 0}
   stateBlendTime: 0.15
   stateBlendEase:

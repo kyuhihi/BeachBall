@@ -47,15 +47,15 @@ public class GameSettings : MonoBehaviour
     }
 
     [Header("Scene Name Lists (단순 판별용)")]
-    [SerializeField] private string[] VSComputerSceneNames = {  };//Enable Multiple Names;
-    [SerializeField] private string[] VSPlayerSceneNames = {  };
+    [SerializeField] private string[] VSComputerSceneNames = { };//Enable Multiple Names;
+    [SerializeField] private string[] VSPlayerSceneNames = { };
 
     private const string titleSceneName = "TitleScene";
     private const string AwardSceneName = "AwardScene";
 
     public enum SceneType { Title, VSComputer, VSPlayer, Award, None }
     private SceneType _currentSceneType = SceneType.None;
-    public SceneType GetSceneType() {return _currentSceneType;}
+    public SceneType GetSceneType() { return _currentSceneType; }
     private IPlayerInfo.PlayerType _Winner = IPlayerInfo.PlayerType.End;
     private IPlayerInfo.PlayerType _Loser = IPlayerInfo.PlayerType.End;
     public void SetWinnerLoser(IPlayerInfo.PlayerType winner, IPlayerInfo.PlayerType loser)
@@ -67,6 +67,7 @@ public class GameSettings : MonoBehaviour
     {
         return (_Winner, _Loser);
     }
+
 
     void Awake()
     {

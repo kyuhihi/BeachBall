@@ -3,7 +3,9 @@ using UnityEngine;
 public class AwardAnimSelector : MonoBehaviour
 {
     bool bSelected = false;
+    public bool GetSelected() { return bSelected; }
     private WinLoseCheer m_eWinLoseCheer = WinLoseCheer.Cheer;
+    public WinLoseCheer GetWinLoseCheer() { return m_eWinLoseCheer; }
     public void SetWinLoseCheer(AwardCube.AwardType e)
     {
         switch (e)
