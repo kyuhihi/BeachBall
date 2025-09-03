@@ -8,30 +8,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/TitleScene.unity
     guid: 76fa4762f6c763f4f9488db27f5aa00f
-  - enabled: 0
-    path: Assets/Scenes/SampleScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
     path: Assets/Scenes/TitleScene.unity
     guid: 76fa4762f6c763f4f9488db27f5aa00f
-  - enabled: 0
-    path: Assets/Scenes/1vsCPU.unity
-    guid: 302485c4d63c25049bb373be5d27fc3a
-  - enabled: 1
-    path: Assets/Scenes/Cho_Scene.unity
-    guid: 887844df1bc34b0488526d835f3412cc
-  - enabled: 1
-    path: Assets/Scenes/Kyu_Scene.unity
-    guid: 793a61e28a7f5cb499866a216fa403f8
-  - enabled: 0
-    path: Assets/Scenes/1vs1.unity
-    guid: 71fdb6b9c349c594ca0c4ec7ae357962
-  - enabled: 0
-    path: Assets/Scenes/ComSceneTest.unity
-    guid: b3a906e736a77024c91683a1f2c7ad66
-  - enabled: 0
-    path: Assets/Scenes/ComSceneTest1vs1.unity
-    guid: 62a0cbe0b4f076240877c70ff22ab0dd
   - enabled: 1
     path: Assets/Scenes/ComScene.unity
     guid: e546739d9db8691489e8cd22a0fcb672
