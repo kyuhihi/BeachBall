@@ -155,6 +155,35 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
     }
     protected void SetTransformToRoundStart() { gameObject.transform.position = m_StartPosition; gameObject.transform.rotation = Quaternion.Euler(m_StartRotationEuler); }
 
+    protected virtual void OnInterrupted()
+    {
+        // 대시 중이면 즉시 종료
+        if (isDashingToBall)
+            EndDashCall();
+
+        // 점프/더블점프 상태 해제
+        m_IsJumping = false;
+        m_IsDoubleJumping = false;
+
+        // 발소리 타이머 리셋
+        footstepTimer = 0f;
+        swimfootstepTimer = 0f;
+
+        // 이동 입력 초기화
+        m_InputVector = Vector2.zero;
+
+        // 애니메이터 상태 초기화
+        if (m_Animator != null)
+        {
+            m_Animator.SetBool("Jump", false);
+            m_Animator.SetBool("DoubleJump", false);
+            m_Animator.SetBool("IsDashing", false);
+            m_Animator.SetBool("IsGrounded", isGrounded);
+        }
+
+        // 필요하면 추가적으로 공통 이펙트/코루틴 정리
+    }
+
 
     // protected System.Collections.IEnumerator Co_RegisterPlayerInfoWhenReady()
     // {
@@ -982,6 +1011,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         m_Animator.SetTrigger("Stunned");
         MoveByInput = false;
         isStunned = true;
+        OnInterrupted();
         StartCoroutine(StunCoroutine(duration));
     }
 
@@ -1017,6 +1047,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
 
         m_eLocomotionState = IdleWalkRunEnum.Swim;
         walkSpeed = walkSpeed * speedMultiplier;
+        m_Rigidbody.isKinematic = true;
         m_Animator.SetBool("IsSwimming", true);
         m_Animator.SetTrigger("Swimming");
         // 애니메이션 등 추가
@@ -1044,6 +1075,7 @@ public class BasePlayerMovement : MonoBehaviour , IPlayerInfo, ICutSceneListener
         muteFootSfx = true;
         footstepTimer = 0f;
         swimfootstepTimer = 0f;
+        m_Rigidbody.isKinematic = false;
         
         RestoreGravity(true);
     }

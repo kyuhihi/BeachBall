@@ -102,6 +102,17 @@ public class TurtlePlayerMovement : BasePlayerMovement
     private Coroutine _coEnableMoveAfterParticle;
     private Coroutine _coRestoreMouthRotation;
 
+    protected override void OnInterrupted()
+    {
+        base.OnInterrupted();
+        CancelWaterCannonImmediate();
+        if (heldShell != null)
+            ThrowShellAtOpponent();
+        isShellThrowCannonActive = false;
+        SafeDestroyGO(ref heldShell);
+    }
+
+
     protected override void Start()
     {
         base.Start();

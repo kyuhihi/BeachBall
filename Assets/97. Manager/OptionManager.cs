@@ -20,21 +20,9 @@ public class OptionManager : MonoBehaviour
     [SerializeField]
     private GameObject eventSystemRoot;
 
-    // 로딩 오버레이 종료 후 ESC 허용까지의 지연(초)
-    // [SerializeField] private float escDelayAfterLoadingHide = 2f;
-    // private float _escAllowedAtUnscaled = 0f; // 이 시간 이후에만 ESC 허용
-
     private CanvasGroup _optionCg;
 
-    // private IEnumerator WaitOverlayAndArmEsc()
-    // {
-    //     // 오버레이가 켜져 있으면 꺼질 때까지 대기
-    //     while (LoadingOverlay != null && LoadingOverlay.activeSelf) yield return null;
 
-    //     // 꺼진 순간부터 2초 뒤에 허용
-    //     _escAllowedAtUnscaled = Time.unscaledTime + escDelayAfterLoadingHide;
-    //     yield break;
-    // }
     void Start()
     {
 
@@ -47,17 +35,6 @@ public class OptionManager : MonoBehaviour
 
         _optionCg = EnsureCanvasGroup(optionPanel);
 
-        // // 처음부터 꺼져 있어도 2초 대기하도록 설정
-        // if (LoadingOverlay == null || !LoadingOverlay.activeSelf)
-        // {
-        //     _escAllowedAtUnscaled = Time.unscaledTime + escDelayAfterLoadingHide;
-        // }
-        // else
-        // {
-        //     // 켜져 있으면 코루틴으로 꺼진 뒤 2초 후 허용
-        //     _escAllowedAtUnscaled = float.PositiveInfinity; // 임시 차단
-        //     StartCoroutine(WaitOverlayAndArmEsc());
-        // }
     }
 
 
@@ -66,8 +43,6 @@ public class OptionManager : MonoBehaviour
 
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
-            // 아직 허용 시점 전이면 무시
-            // if (Time.unscaledTime < _escAllowedAtUnscaled) return;
 
             if (optionPanel != null && optionPanel.activeSelf)
             {

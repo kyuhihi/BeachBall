@@ -18,7 +18,10 @@ public class UltimateMonkeyPlayerMovement : BasePlayerMovement
         TYPE_NORMAL,
         TYPE_SHOW
     }
-
+    protected override void OnInterrupted()
+    {
+        base.OnInterrupted();
+    }
 
     protected override void Start()
     {

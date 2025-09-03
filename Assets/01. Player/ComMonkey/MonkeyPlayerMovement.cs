@@ -42,6 +42,12 @@ public class MonkeyPlayerMovement : BasePlayerMovement
     private GameObject BananaPrefab;
     private bool m_isCutScene = false;
 
+    protected override void OnInterrupted()
+    {
+        
+    }
+
+
     protected override void Start()
     {
         base.Start();

@@ -14,6 +14,12 @@ public class FoxPlayerMovement : BasePlayerMovement
     const string m_UltimateFlashGameObjName = "UltimateMesh";
     private GameObject m_UltimateFlashGameObject;
     private Material m_UltimateFlashMaterial;
+
+    protected override void OnInterrupted()
+    {
+        base.OnInterrupted();
+    }
+    
     protected override void Start()
     {
         base.Start();
