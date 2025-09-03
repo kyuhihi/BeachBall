@@ -18,6 +18,12 @@ public class TMPDynamicBackground : MonoBehaviour
     [SerializeField] private Vector2 minSize = new Vector2(0,0);
     [SerializeField] private Vector2 maxSize = new Vector2(9999,9999);
 
+    [Header("외부 배경 재사용 옵션")]
+    [Tooltip("이미 씬/프리팹에 만들어둔 배경 RectTransform을 직접 넣으면 재생성/검색을 하지 않습니다.")]
+    [SerializeField] private RectTransform externalBackground;
+    [Tooltip("외부 배경이 없을 때 자동으로 새 배경을 만들지 여부")]
+    [SerializeField] private bool autoCreateIfMissing = true;
+
     private TextMeshProUGUI _tmp;
     private RectTransform   _textRect;
     private RectTransform   _bgRect;
@@ -38,8 +44,18 @@ public class TMPDynamicBackground : MonoBehaviour
     {
         _tmp = GetComponent<TextMeshProUGUI>();
         _textRect = _tmp.rectTransform;
+
+        // 외부 배경 우선 적용
+        if (externalBackground != null)
+        {
+            _bgRect = externalBackground;
+            _bgImage = _bgRect.GetComponent<Image>();
+            if (_bgImage == null) _bgImage = _bgRect.gameObject.AddComponent<Image>();
+            ApplyBgVisual();
+        }
+
         CacheTransformState();
-        EnsureBackground();
+        EnsureBackground();  // externalBackground 있으면 내부에서 바로 return
         MarkDirty();
     }
 
@@ -87,9 +103,19 @@ public class TMPDynamicBackground : MonoBehaviour
 
     void EnsureBackground()
     {
-        if (_bgRect != null) return;
+        // 이미 참조 존재하면 재생성/검색 안 함
+        if (_bgRect != null)
+        {
+            ApplyBgVisual();
+            return;
+        }
 
-        Transform existing = transform.parent.Find(name + "_BG");
+        // 외부 배경이 없고, 자동 생성도 끈 경우: 아무 작업 하지 않음
+        if (!autoCreateIfMissing)
+            return;
+
+        // (기존) 부모 밑에서 legacy 이름 검색
+        Transform existing = transform.parent ? transform.parent.Find(name + "_BG") : null;
         if (existing != null)
         {
             _bgRect = existing as RectTransform;
@@ -97,25 +123,31 @@ public class TMPDynamicBackground : MonoBehaviour
         }
         else
         {
+            // 새 생성
             var go = new GameObject(name + "_BG", typeof(RectTransform), typeof(Image));
             _bgRect = go.GetComponent<RectTransform>();
             _bgRect.SetParent(transform.parent, false);
-            _bgImage = go.GetComponent<Image>();
             _bgRect.localScale = Vector3.one;
+            _bgImage = go.GetComponent<Image>();
         }
 
-        _bgRect.SetAsFirstSibling(); // 항상 텍스트 뒤
+        _bgRect.SetAsFirstSibling(); // 텍스트 뒤
+        CopyAnchors(_textRect, _bgRect);
+        ApplyBgVisual();
+    }
+
+    void ApplyBgVisual()
+    {
+        if (_bgImage == null) return;
         _bgImage.sprite = roundRectSprite;
         _bgImage.type = (roundRectSprite != null) ? Image.Type.Sliced : Image.Type.Simple;
         _bgImage.color = backgroundColor;
         _bgImage.raycastTarget = false;
-
-        // 텍스트와 동일한 pivot/anchor 유지
-        CopyAnchors(_textRect, _bgRect);
     }
 
     void CopyAnchors(RectTransform src, RectTransform dst)
     {
+        if (src == null || dst == null) return;
         dst.anchorMin = src.anchorMin;
         dst.anchorMax = src.anchorMax;
         dst.pivot     = src.pivot;
@@ -126,32 +158,25 @@ public class TMPDynamicBackground : MonoBehaviour
 
     void Update()
     {
-        if (!Application.isPlaying && !updateEveryFrameInEditor && !_dirty) 
+        if (!Application.isPlaying && !updateEveryFrameInEditor && !_dirty)
         {
-            // 그래도 Transform 변화는 체크
-            if (TransformStateChanged()) { MarkDirty(); }
-            else return;
+            if (TransformStateChanged()) MarkDirty(); else return;
         }
         if (_tmp == null) return;
 
-        // Transform 변화 감지 → 앵커/피벗 재동기
         if (TransformStateChanged())
         {
-            CopyAnchors(_textRect, _bgRect);
+            if (_bgRect) CopyAnchors(_textRect, _bgRect);
             MarkDirty();
             CacheTransformState();
         }
 
-        // 알파 매칭
         if (matchTextAlpha && _bgImage != null)
         {
             var c = _bgImage.color;
             float targetA = _tmp.color.a * backgroundColor.a;
             if (!Mathf.Approximately(c.a, targetA))
-            {
-                c = new Color(backgroundColor.r, backgroundColor.g, backgroundColor.b, targetA);
-                _bgImage.color = c;
-            }
+                _bgImage.color = new Color(backgroundColor.r, backgroundColor.g, backgroundColor.b, targetA);
         }
 
         if (_dirty || TextChanged() || PreferredChanged())
@@ -195,27 +220,16 @@ public class TMPDynamicBackground : MonoBehaviour
     void RefreshSize()
     {
         EnsureBackground();
+        if (_bgRect == null) return; // 외부 배경 없고 autoCreateIfMissing = false 인 경우
 
-        // TMP가 AutoSize / Wrap 등 반영 후 preferred 계산
         Vector2 pref = new Vector2(_tmp.preferredWidth, _tmp.preferredHeight);
-        if (pref.x <= 0f || pref.y <= 0f)
-        {
-            // 글자 없으면 최소 패딩만
-            pref = Vector2.zero;
-        }
+        if (pref.x <= 0f || pref.y <= 0f) pref = Vector2.zero;
 
-        Vector2 target = pref;
-        target += new Vector2(padding.x * 2f, padding.y * 2f);
-
-        // Min/Max clamp
+        Vector2 target = pref + new Vector2(padding.x * 2f, padding.y * 2f);
         target.x = Mathf.Clamp(target.x, minSize.x, maxSize.x);
         target.y = Mathf.Clamp(target.y, minSize.y, maxSize.y);
 
-        // Pivot 기준 sizeDelta 적용
         _bgRect.sizeDelta = target;
-
-        // 위치 동기
-        _bgRect.anchoredPosition = _textRect.anchoredPosition;
         CopyAnchors(_textRect, _bgRect);
     }
 
@@ -223,12 +237,13 @@ public class TMPDynamicBackground : MonoBehaviour
     // 에디터에서 변경 감지 (인스펙터 값 수정 시)
     void OnValidate()
     {
-        if (_bgImage != null)
+        if (_bgRect == null && externalBackground != null)
         {
-            _bgImage.sprite = roundRectSprite;
-            _bgImage.type = (roundRectSprite != null) ? Image.Type.Sliced : Image.Type.Simple;
-            _bgImage.color = backgroundColor;
+            _bgRect = externalBackground;
+            _bgImage = _bgRect.GetComponent<Image>();
+            if (_bgImage == null) _bgImage = _bgRect.gameObject.AddComponent<Image>();
         }
+        ApplyBgVisual();
         MarkDirty();
     }
 #endif
