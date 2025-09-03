@@ -19496,7 +19496,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1407986565
 RectTransform:
   m_ObjectHideFlags: 0
@@ -22056,7 +22056,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1751009478
 RectTransform:
   m_ObjectHideFlags: 0
@@ -24938,7 +24938,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &2050620487
 RectTransform:
   m_ObjectHideFlags: 0
@@ -25920,6 +25920,22 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 209879126973591994, guid: ea6595382df2ec84ebb07c00f75e3691, type: 3}
+      propertyPath: m_Mesh
+      value: 
+      objectReference: {fileID: 1360107307202970949, guid: e7677ebc9f3863142bacda65dec5d993, type: 3}
+    - target: {fileID: 2967571790222787222, guid: ea6595382df2ec84ebb07c00f75e3691, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2967571790222787222, guid: ea6595382df2ec84ebb07c00f75e3691, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 168.84
+      objectReference: {fileID: 0}
+    - target: {fileID: 2967571790222787222, guid: ea6595382df2ec84ebb07c00f75e3691, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 240.86002
+      objectReference: {fileID: 0}
     - target: {fileID: 2967571790222787222, guid: ea6595382df2ec84ebb07c00f75e3691, type: 3}
       propertyPath: m_LocalPosition.x
       value: -8.63
@@ -25960,6 +25976,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2967571790222787222, guid: ea6595382df2ec84ebb07c00f75e3691, type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3568649442649742889, guid: ea6595382df2ec84ebb07c00f75e3691, type: 3}
+      propertyPath: m_Size.x
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 3568649442649742889, guid: ea6595382df2ec84ebb07c00f75e3691, type: 3}
+      propertyPath: m_Size.y
+      value: 0.01
+      objectReference: {fileID: 0}
+    - target: {fileID: 3568649442649742889, guid: ea6595382df2ec84ebb07c00f75e3691, type: 3}
+      propertyPath: m_Size.z
+      value: 0.01
+      objectReference: {fileID: 0}
     - target: {fileID: 4834640780476774212, guid: ea6595382df2ec84ebb07c00f75e3691, type: 3}
       propertyPath: m_Name
       value: QuitGame
@@ -25976,6 +26008,10 @@ PrefabInstance:
       propertyPath: keySettingPanel
       value: 
       objectReference: {fileID: 1374120753}
+    - target: {fileID: 7458401021631371746, guid: ea6595382df2ec84ebb07c00f75e3691, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 7629c60ce64d8e440a2309cb7f5ad7d0, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:
