@@ -94,14 +94,16 @@ public class Banana : MonoBehaviour,IResetAbleListener, ICutSceneListener
 
     public void OnStartCutScene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
-        if(playerType != IPlayerInfo.PlayerType.Monkey)
+        if (this == null || gameObject == null) return; 
+        if (playerType != IPlayerInfo.PlayerType.Monkey)
             gameObject.SetActive(false);
 
     }
 
     public void OnEndCutscene(IPlayerInfo.PlayerType playerType, IPlayerInfo.CourtPosition courtPosition)
     {
-        if(playerType != IPlayerInfo.PlayerType.Monkey)
+        if (this == null || gameObject == null) return;
+        if (playerType != IPlayerInfo.PlayerType.Monkey)
             gameObject.SetActive(false);
 
     }
