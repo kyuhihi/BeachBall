@@ -1042,6 +1042,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lineColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   lineWidth: 0.05
+  sourceMaterial: {fileID: 0}
+  instantiateMaterial: 1
   m_Turn180OnRunTime: {x: 0, y: 180, z: 0}
 --- !u!120 &285205851
 LineRenderer:
@@ -1067,7 +1069,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 6e8ecbc67255235488f7a77b5cf68e00, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -27068,6 +27070,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lineColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   lineWidth: 0.05
+  sourceMaterial: {fileID: 0}
+  instantiateMaterial: 1
   m_Turn180OnRunTime: {x: 0, y: 180, z: 0}
 --- !u!120 &787839926
 LineRenderer:
@@ -27093,7 +27097,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 6e8ecbc67255235488f7a77b5cf68e00, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -37846,6 +37850,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lineColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   lineWidth: 0.05
+  sourceMaterial: {fileID: 0}
+  instantiateMaterial: 1
   m_Turn180OnRunTime: {x: 0, y: 180, z: 0}
 --- !u!120 &954248511
 LineRenderer:
@@ -37871,7 +37877,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 6e8ecbc67255235488f7a77b5cf68e00, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -48384,6 +48390,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lineColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   lineWidth: 0.05
+  sourceMaterial: {fileID: 0}
+  instantiateMaterial: 1
   m_Turn180OnRunTime: {x: 0, y: 180, z: 0}
 --- !u!120 &1335391338
 LineRenderer:
@@ -48409,7 +48417,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 6e8ecbc67255235488f7a77b5cf68e00, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -81324,7 +81332,7 @@ PrefabInstance:
     - target: {fileID: 8524230767976896381, guid: b784da870b94d874eadfdc67f3a40aa8, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2100000, guid: 6e8ecbc67255235488f7a77b5cf68e00, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -87092,6 +87100,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   lineColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   lineWidth: 0.05
+  sourceMaterial: {fileID: 0}
+  instantiateMaterial: 1
   m_Turn180OnRunTime: {x: 180, y: 0, z: 0}
 --- !u!120 &4152492639508148225
 LineRenderer:
@@ -87117,7 +87127,7 @@ LineRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 0}
+  - {fileID: 2100000, guid: 6e8ecbc67255235488f7a77b5cf68e00, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
