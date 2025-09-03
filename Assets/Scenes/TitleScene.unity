@@ -7806,6 +7806,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: Fox
   slot: P1
+  slotP1Prefab: {fileID: 836285232617525937, guid: 04a21b5e8b947924f9b3b15687802bb3, type: 3}
+  slotP2Prefab: {fileID: 7490259355737710757, guid: 3d78ecd103a1a1345b7475ec8bfdb094, type: 3}
+  slotCPUPrefab: {fileID: 3194982188492795484, guid: 2f4ced040a4612b428266b5d980d9145, type: 3}
   slotMode: 1
   slotOverride_legacy: 
 --- !u!1001 &406531543
@@ -14115,6 +14118,18 @@ PrefabInstance:
       propertyPath: slotMode
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 8663752126059391378, guid: ec7ccf72d4347c348b66925825e466df, type: 3}
+      propertyPath: slotP1Prefab
+      value: 
+      objectReference: {fileID: 836285232617525937, guid: 04a21b5e8b947924f9b3b15687802bb3, type: 3}
+    - target: {fileID: 8663752126059391378, guid: ec7ccf72d4347c348b66925825e466df, type: 3}
+      propertyPath: slotP2Prefab
+      value: 
+      objectReference: {fileID: 7490259355737710757, guid: 3d78ecd103a1a1345b7475ec8bfdb094, type: 3}
+    - target: {fileID: 8663752126059391378, guid: ec7ccf72d4347c348b66925825e466df, type: 3}
+      propertyPath: slotCPUPrefab
+      value: 
+      objectReference: {fileID: 3194982188492795484, guid: 2f4ced040a4612b428266b5d980d9145, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

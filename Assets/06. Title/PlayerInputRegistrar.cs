@@ -17,7 +17,16 @@ public class PlayerInputRegistrar : MonoBehaviour
         P2,
         CPU,
 
+        REALCPU
+
     }
+
+    [Header("Slot 오브젝트 프리팹")]
+    public GameObject slotP1Prefab;
+    public GameObject slotP2Prefab;
+    public GameObject slotCPUPrefab;
+
+    private GameObject _slotObjInstance;
 
     [Header("Slot 설정")]
     public SlotMode slotMode = SlotMode.AutoFromPlayerIndex;
@@ -37,15 +46,38 @@ public class PlayerInputRegistrar : MonoBehaviour
     {
         // Start에서 등록: PlayerInputManager가 playerIndex를 지정한 뒤라 안전
         _resolvedSlot = ResolveSlot();
-        if (GameSettings.Instance != null && _playerInput != null && _playerInput.actions != null && !string.IsNullOrEmpty(_resolvedSlot))
+
+        if (_resolvedSlot != "REALCPU")
         {
-            GameSettings.Instance.RegisterActionsForSlot(_resolvedSlot, _playerInput.actions);
-            // 디버그 확인용
-            Debug.Log($"[PlayerInputRegistrar] Registered slot={_resolvedSlot}, asset={_playerInput.actions.name}");
+            if (GameSettings.Instance != null && _playerInput != null && _playerInput.actions != null && !string.IsNullOrEmpty(_resolvedSlot))
+            {
+                GameSettings.Instance.RegisterActionsForSlot(_resolvedSlot, _playerInput.actions);
+                // 디버그 확인용
+                Debug.Log($"[PlayerInputRegistrar] Registered slot={_resolvedSlot}, asset={_playerInput.actions.name}");
+            }
+            else
+            {
+                Debug.LogWarning($"[PlayerInputRegistrar] 등록 실패. slot={_resolvedSlot}, playerInput/actions/GameSettings null 확인");
+            }
         }
-        else
+
+
+        // 슬롯별 텍스처 오브젝트 생성
+        GameObject prefab = null;
+        switch (_resolvedSlot)
         {
-            Debug.LogWarning($"[PlayerInputRegistrar] 등록 실패. slot={_resolvedSlot}, playerInput/actions/GameSettings null 확인");
+            case "P1": prefab = slotP1Prefab; break;
+            case "P2": prefab = slotP2Prefab; break;
+            case "CPU": prefab = slotP1Prefab; break;
+            case "REALCPU": prefab = slotCPUPrefab; break;
+        }
+        if (prefab != null)
+        {
+            _slotObjInstance = Instantiate(prefab, transform);
+            _slotObjInstance.transform.localPosition = new Vector3(0, 2.2f, 0); // 머리 위 위치(조정)
+
+            // 회전을 (90, 0, 90)으로 고정
+            _slotObjInstance.transform.localRotation = Quaternion.Euler(90f, 0f, 90f);
         }
     }
 
@@ -60,6 +92,7 @@ public class PlayerInputRegistrar : MonoBehaviour
             case SlotMode.P1: return "P1";
             case SlotMode.P2: return "P2";
             case SlotMode.CPU: return "CPU";
+            case SlotMode.REALCPU: return "REALCPU";
 
             case SlotMode.AutoFromPlayerIndex:
             default:

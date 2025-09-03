@@ -213,6 +213,14 @@ public class TurtlePlayerMovement : BasePlayerMovement
 
     public override void OnAttackSkill(InputValue value)
     {
+        if(m_isTitleScene)
+        {
+            Debug.Log("타이틀 씬에서는 배구만 하거라");
+            // 타이틀 씬에서는 방어 스킬 사용 불가
+            return;
+        }
+
+
         if (!m_isMoveByInput || m_eLocomotionState == IdleWalkRunEnum.Swim)
         {
             return;

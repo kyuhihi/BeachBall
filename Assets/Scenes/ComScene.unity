@@ -2226,7 +2226,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7838086797910571750, guid: 10906cb2729ff9742babf771c559e901, type: 3}
       propertyPath: side
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8557198426271000808, guid: 10906cb2729ff9742babf771c559e901, type: 3}
       propertyPath: m_Actions
@@ -2248,6 +2248,18 @@ PrefabInstance:
       propertyPath: customSlot
       value: P1
       objectReference: {fileID: 0}
+    - target: {fileID: 8769862920102202462, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: slotP1Prefab
+      value: 
+      objectReference: {fileID: 836285232617525937, guid: 04a21b5e8b947924f9b3b15687802bb3, type: 3}
+    - target: {fileID: 8769862920102202462, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: slotP2Prefab
+      value: 
+      objectReference: {fileID: 7490259355737710757, guid: 3d78ecd103a1a1345b7475ec8bfdb094, type: 3}
+    - target: {fileID: 8769862920102202462, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: slotCPUPrefab
+      value: 
+      objectReference: {fileID: 3194982188492795484, guid: 2f4ced040a4612b428266b5d980d9145, type: 3}
     - target: {fileID: 8818059597635963912, guid: 10906cb2729ff9742babf771c559e901, type: 3}
       propertyPath: m_SceneBindings.Array.data[2].value
       value: 
@@ -3306,6 +3318,18 @@ PrefabInstance:
       propertyPath: customSlot
       value: P1
       objectReference: {fileID: 0}
+    - target: {fileID: 8769862920102202462, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: slotP1Prefab
+      value: 
+      objectReference: {fileID: 836285232617525937, guid: 04a21b5e8b947924f9b3b15687802bb3, type: 3}
+    - target: {fileID: 8769862920102202462, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: slotP2Prefab
+      value: 
+      objectReference: {fileID: 7490259355737710757, guid: 3d78ecd103a1a1345b7475ec8bfdb094, type: 3}
+    - target: {fileID: 8769862920102202462, guid: 10906cb2729ff9742babf771c559e901, type: 3}
+      propertyPath: slotCPUPrefab
+      value: 
+      objectReference: {fileID: 3194982188492795484, guid: 2f4ced040a4612b428266b5d980d9145, type: 3}
     - target: {fileID: 8818059597635963912, guid: 10906cb2729ff9742babf771c559e901, type: 3}
       propertyPath: m_SceneBindings.Array.data[2].value
       value: 
@@ -6624,6 +6648,18 @@ PrefabInstance:
       propertyPath: customSlot
       value: P1
       objectReference: {fileID: 0}
+    - target: {fileID: 8663752126059391378, guid: ec7ccf72d4347c348b66925825e466df, type: 3}
+      propertyPath: slotP1Prefab
+      value: 
+      objectReference: {fileID: 836285232617525937, guid: 04a21b5e8b947924f9b3b15687802bb3, type: 3}
+    - target: {fileID: 8663752126059391378, guid: ec7ccf72d4347c348b66925825e466df, type: 3}
+      propertyPath: slotP2Prefab
+      value: 
+      objectReference: {fileID: 7490259355737710757, guid: 3d78ecd103a1a1345b7475ec8bfdb094, type: 3}
+    - target: {fileID: 8663752126059391378, guid: ec7ccf72d4347c348b66925825e466df, type: 3}
+      propertyPath: slotCPUPrefab
+      value: 
+      objectReference: {fileID: 3194982188492795484, guid: 2f4ced040a4612b428266b5d980d9145, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -17762,6 +17798,18 @@ PrefabInstance:
       propertyPath: customSlot
       value: P1
       objectReference: {fileID: 0}
+    - target: {fileID: 8663752126059391378, guid: ec7ccf72d4347c348b66925825e466df, type: 3}
+      propertyPath: slotP1Prefab
+      value: 
+      objectReference: {fileID: 836285232617525937, guid: 04a21b5e8b947924f9b3b15687802bb3, type: 3}
+    - target: {fileID: 8663752126059391378, guid: ec7ccf72d4347c348b66925825e466df, type: 3}
+      propertyPath: slotP2Prefab
+      value: 
+      objectReference: {fileID: 7490259355737710757, guid: 3d78ecd103a1a1345b7475ec8bfdb094, type: 3}
+    - target: {fileID: 8663752126059391378, guid: ec7ccf72d4347c348b66925825e466df, type: 3}
+      propertyPath: slotCPUPrefab
+      value: 
+      objectReference: {fileID: 3194982188492795484, guid: 2f4ced040a4612b428266b5d980d9145, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -25421,8 +25469,68 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 3305917321529062411, guid: 8696a6bac28ca8e4aba5583524dcde71, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1575155450}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1552901594660123316, guid: 8696a6bac28ca8e4aba5583524dcde71, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 588001281578792209}
+    - targetCorrespondingSourceObject: {fileID: 1552901594660123316, guid: 8696a6bac28ca8e4aba5583524dcde71, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 588001281578792208}
   m_SourcePrefab: {fileID: 100100000, guid: 8696a6bac28ca8e4aba5583524dcde71, type: 3}
+--- !u!1 &588001281578792207 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1552901594660123316, guid: 8696a6bac28ca8e4aba5583524dcde71, type: 3}
+  m_PrefabInstance: {fileID: 588001281578792206}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &588001281578792208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 588001281578792207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 38649a15dd9b0b742a0026ceba9dfd8a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  id: 
+  slot: 
+  slotP1Prefab: {fileID: 836285232617525937, guid: 04a21b5e8b947924f9b3b15687802bb3, type: 3}
+  slotP2Prefab: {fileID: 7490259355737710757, guid: 3d78ecd103a1a1345b7475ec8bfdb094, type: 3}
+  slotCPUPrefab: {fileID: 3194982188492795484, guid: 2f4ced040a4612b428266b5d980d9145, type: 3}
+  slotMode: 4
+  slotOverride_legacy: 
+--- !u!114 &588001281578792209
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 588001281578792207}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Actions: {fileID: 0}
+  m_NotificationBehavior: 0
+  m_UIInputModule: {fileID: 0}
+  m_DeviceLostEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_DeviceRegainedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ControlsChangedEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  m_ActionEvents: []
+  m_NeverAutoSwitchControlSchemes: 0
+  m_DefaultControlScheme: 
+  m_DefaultActionMap: 
+  m_SplitScreenIndex: -1
+  m_Camera: {fileID: 0}
 --- !u!4 &731464409702116559
 Transform:
   m_ObjectHideFlags: 0
