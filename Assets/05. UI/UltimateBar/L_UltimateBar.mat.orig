@@ -39,10 +39,10 @@ Material:
     - _Brightness: 1
     - _ChipFadeSpeed: 5.56
 <<<<<<< HEAD
-    - _ChipHealth: 0
+    - _ChipHealth: 0.4
 =======
-    - _ChipHealth: 0.8000001
->>>>>>> Cho_SoundImport
+    - _ChipHealth: 0.1
+>>>>>>> origin/Kyu_Map
     - _DamageFadeSpeed: 3
     - _EdgeAdd: 6
     - _EdgeAddIntensity: 6
@@ -67,10 +67,10 @@ Material:
     - _HeadSharpness: 3
     - _HeadWidthPx: 0
 <<<<<<< HEAD
-    - _Health: 0
+    - _Health: 0.4
 =======
-    - _Health: 0.8000001
->>>>>>> Cho_SoundImport
+    - _Health: 0.1
+>>>>>>> origin/Kyu_Map
     - _HeightPx: 32
     - _HighlightAdd: 20
     - _HighlightBoost: 3.1
@@ -96,10 +96,10 @@ Material:
     - _OuterBorderPx: 0
     - _OuterBorderSoftPx: 1.25
 <<<<<<< HEAD
-    - _PrevHealth: 0
+    - _PrevHealth: 0.4
 =======
-    - _PrevHealth: 0.8000001
->>>>>>> Cho_SoundImport
+    - _PrevHealth: 0.1
+>>>>>>> origin/Kyu_Map
     - _ResolutionX: 300
     - _ResolutionY: 37.29
     - _RightBottomTrim: 0.08
