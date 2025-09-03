@@ -7805,7 +7805,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   id: Fox
-  slot: 
+  slot: P1
   slotMode: 1
   slotOverride_legacy: 
 --- !u!1001 &406531543
@@ -14106,6 +14106,10 @@ PrefabInstance:
     - target: {fileID: 8663752126059391378, guid: ec7ccf72d4347c348b66925825e466df, type: 3}
       propertyPath: id
       value: Turtle
+      objectReference: {fileID: 0}
+    - target: {fileID: 8663752126059391378, guid: ec7ccf72d4347c348b66925825e466df, type: 3}
+      propertyPath: slot
+      value: P2
       objectReference: {fileID: 0}
     - target: {fileID: 8663752126059391378, guid: ec7ccf72d4347c348b66925825e466df, type: 3}
       propertyPath: slotMode
