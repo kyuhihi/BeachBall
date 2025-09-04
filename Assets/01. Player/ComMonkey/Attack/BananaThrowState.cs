@@ -9,7 +9,7 @@ public class BananaThrowState : StateMachineBehaviour
 
     public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
-        if(monkeyPlayerMovement==null)
+        if (monkeyPlayerMovement == null)
             monkeyPlayerMovement = animator.GetComponentInParent<MonkeyPlayerMovement>();
 
         monkeyPlayerMovement.MoveByInput = false;
@@ -22,6 +22,8 @@ public class BananaThrowState : StateMachineBehaviour
         }
         CanDoBanana.transform.localScale = Vector3.one * 100f;
         CanDoBanana.GetComponent<Rigidbody>().AddForce(animator.transform.forward * ThrowForce + Vector3.up * ThrowDirectionY, ForceMode.Impulse);
+        GameSettings.Instance.AddRightAttackSkillCount();
+
     }
 
 

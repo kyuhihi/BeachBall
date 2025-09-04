@@ -348,7 +348,7 @@ public class MonkeyPlayerMovement : BasePlayerMovement
 
     public void ThrowBanana(Transform OtherPlayer)
     {
-        if(base.IsStunned || !m_isMoveByInput|| m_isCutScene) return;
+        if (base.IsStunned || !m_isMoveByInput || m_isCutScene) return;
         if (OtherPlayer == null || !m_isMoveByInput) return;
         PlayerUIManager UIMgrInstance = PlayerUIManager.GetInstance();
         if (UIMgrInstance.GetCurrentSecond() > 5 && UIMgrInstance.UseAbility(IUIInfo.UIType.UltimateBar, m_CourtPosition))

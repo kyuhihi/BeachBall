@@ -103,6 +103,10 @@ public class FoxPlayerMovement : BasePlayerMovement
         if (value.isPressed)
         {
             m_Animator.SetTrigger("AttackSkill");
+            if(m_CourtPosition == IPlayerInfo.CourtPosition.COURT_LEFT)
+                GameSettings.Instance.AddLeftAttackSkillCount();
+            else
+                GameSettings.Instance.AddRightAttackSkillCount();
         }
     }
 

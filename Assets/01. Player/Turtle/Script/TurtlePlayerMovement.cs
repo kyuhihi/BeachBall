@@ -247,7 +247,13 @@ public class TurtlePlayerMovement : BasePlayerMovement
 
             // 애니메이션 트리거
             if (m_Animator != null)
+            {
                 m_Animator.SetTrigger("ThrowShell");
+                if(m_CourtPosition == IPlayerInfo.CourtPosition.COURT_LEFT)
+                    GameSettings.Instance.AddLeftAttackSkillCount();
+                else
+                    GameSettings.Instance.AddRightAttackSkillCount();
+            }
         }
     }
 

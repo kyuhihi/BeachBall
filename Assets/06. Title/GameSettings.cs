@@ -56,6 +56,7 @@ public class GameSettings : MonoBehaviour
     public enum SceneType { Title, VSComputer, VSPlayer, Award, None }
     private SceneType _currentSceneType = SceneType.None;
     public SceneType GetSceneType() { return _currentSceneType; }
+    //======================================================================
     private IPlayerInfo.PlayerType _Winner = IPlayerInfo.PlayerType.End;
     private IPlayerInfo.PlayerType _Loser = IPlayerInfo.PlayerType.End;
     public void SetWinnerLoser(IPlayerInfo.PlayerType winner, IPlayerInfo.PlayerType loser)
@@ -67,8 +68,28 @@ public class GameSettings : MonoBehaviour
     {
         return (_Winner, _Loser);
     }
+    
+    private GameResult m_GameResult = new GameResult();
+    public int GetLeftScore() { return m_GameResult.GetLeftScore(); }
+    public int GetRightScore() => m_GameResult.GetRightScore();
+    public void SetLeftScore(int score) => m_GameResult.SetLeftScore(score);
+    public void SetRightScore(int score) => m_GameResult.SetRightScore(score);
 
+    public int GetLeftBallHitCount() => m_GameResult.GetLeftBallHitCount();
+    public int GetRightBallHitCount() => m_GameResult.GetRightBallHitCount();
+    public void AddLeftBallHitCount(int count) => m_GameResult.AddLeftBallHitCount(count);
+    public void AddRightBallHitCount(int count) => m_GameResult.AddRightBallHitCount(count);
 
+    public int GetLeftUltimateSkillCount() => m_GameResult.GetLeftUltimateSkillCount();
+    public int GetRightUltimateSkillCount() => m_GameResult.GetRightUltimateSkillCount();
+    public void AddLeftUltimateSkillCount() => m_GameResult.AddLeftUltimateSkillCount();
+    public void AddRightUltimateSkillCount() => m_GameResult.AddRightUltimateSkillCount();
+
+    public int GetLeftAttackSkillCount() => m_GameResult.GetLeftAttackSkillCount();
+    public int GetRightAttackSkillCount() => m_GameResult.GetRightAttackSkillCount();
+    public void AddLeftAttackSkillCount() => m_GameResult.AddLeftAttackSkillCount();
+    public void AddRightAttackSkillCount() => m_GameResult.AddRightAttackSkillCount();
+    //======================================================================
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -94,6 +115,8 @@ public class GameSettings : MonoBehaviour
             if (string.Equals(titleSceneName, sceneName, StringComparison.OrdinalIgnoreCase))
             {
                 _currentSceneType = SceneType.Title;
+                if (m_GameResult != null)
+                    m_GameResult.Reset();
                 return;
             }
 
