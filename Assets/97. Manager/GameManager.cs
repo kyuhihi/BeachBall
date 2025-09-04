@@ -122,6 +122,7 @@ public class GameManager : MonoBehaviour, IResetAbleListener
         List<GameObject> players = UIMgrInstance.GetPlayers();
         bool bGameSet = false;
         bool bRightWinner = false;
+
         if (LeftScore >= FinalScore)
         {
             bGameSet = true;
@@ -134,8 +135,8 @@ public class GameManager : MonoBehaviour, IResetAbleListener
         }
         if (!bGameSet)
             return false;
-
-Debug.Log("GameEnd");
+        GameSettings.Instance.SetLeftScore(LeftScore);
+        GameSettings.Instance.SetRightScore(RightScore);
         foreach (var player in players)
         {
             var playerMovement = player.GetComponent<BasePlayerMovement>();

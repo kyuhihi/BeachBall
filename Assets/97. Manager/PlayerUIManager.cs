@@ -258,9 +258,15 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
             case IUIInfo.UIType.DashBar:
                 PlayerDashBars[iLRIndex].UseAbility();
                 break;
-            case IUIInfo.UIType.UltimateBar:
+            case IUIInfo.UIType.UltimateBar:{
                 PlayerUltimateBars[iLRIndex].UseAbility();
+                if(iLRIndex == 0)
+                    GameSettings.Instance.AddLeftUltimateSkillCount();
+                else
+                    GameSettings.Instance.AddRightUltimateSkillCount();
+
                 break;
+            }
             default:
                 break;
         }
@@ -268,6 +274,8 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
     }
     public void UpScore(IPlayerInfo.CourtPosition courtPosition)//volleyball hit count
     {
+        if (GetCurrentSecond() <= 0) return;
+
         int iLRIndex = 0;
         if (courtPosition != IPlayerInfo.CourtPosition.COURT_RIGHT)
             iLRIndex = 1;
@@ -309,6 +317,8 @@ public class PlayerUIManager : MonoBehaviour, ICutSceneListener
             m_eLastWinner = IPlayerInfo.CourtPosition.COURT_END;
             if (iLeftScore != 0 || iRightScore != 0) m_SystemText.SetText(KoreanTextDB.Get(KoreanTextDB.Key.Win_Draw)); // 추가
         }
+        GameSettings.Instance.AddLeftBallHitCount(iLeftScore);
+        GameSettings.Instance.AddRightBallHitCount(iRightScore);
     }
     
     public IPlayerInfo.CourtPosition GetWinner()

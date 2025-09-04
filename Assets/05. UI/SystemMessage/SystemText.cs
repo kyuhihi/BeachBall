@@ -10,13 +10,13 @@ public class SystemText : MonoBehaviour
     [Header("Pop Float Animation")]
     [SerializeField] private bool enablePopFloat = true;
     private bool useUnscaledTime = true;
-    [SerializeField] private float startY = -100f;
-    [SerializeField] private float peakY  = 300f;
+    private float startY = -100f;
+    private float peakY = 350f;
     [SerializeField] private float riseDuration = 0.4f;
     [SerializeField] private float holdDuration = 1.2f;
     [SerializeField] private float fallDuration = 0.45f;
-    [SerializeField] private AnimationCurve riseCurve = AnimationCurve.EaseInOut(0,0,1,1);
-    [SerializeField] private AnimationCurve fallCurve = AnimationCurve.EaseInOut(0,0,1,1);
+    [SerializeField] private AnimationCurve riseCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
+    [SerializeField] private AnimationCurve fallCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);
 
     [Header("Background Link (Optional)")]
     [SerializeField] private TMPDynamicBackground dynamicBackground; // 같은 오브젝트에 붙어있다면 자동 탐색
@@ -113,6 +113,10 @@ public class SystemText : MonoBehaviour
 
     void Update()
     {
+        if (Keyboard.current.backspaceKey.wasPressedThisFrame)
+        {
+            SetText("Backspace Pressed!", true);
+        }
         // 팝 비활성 시 종료
         if (!enablePopFloat) return;
 
