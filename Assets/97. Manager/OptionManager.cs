@@ -22,7 +22,7 @@ public class OptionManager : MonoBehaviour
 
     private CanvasGroup _optionCg;
 
-
+    private float _optionDelayTimer = 5f; // 5초 딜레이
     void Start()
     {
 
@@ -35,11 +35,17 @@ public class OptionManager : MonoBehaviour
 
         _optionCg = EnsureCanvasGroup(optionPanel);
 
+        _optionDelayTimer = 5f; // 씬 시작 후 5초간 옵션창 비활성
     }
 
 
     void Update()
     {
+        if (_optionDelayTimer > 0f)
+        {
+            _optionDelayTimer -= Time.unscaledDeltaTime;
+            return; // 5초 동안 옵션창 열기 차단
+        }
 
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
