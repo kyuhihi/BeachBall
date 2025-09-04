@@ -103,10 +103,7 @@ public class FoxPlayerMovement : BasePlayerMovement
         if (value.isPressed)
         {
             m_Animator.SetTrigger("AttackSkill");
-            if(m_CourtPosition == IPlayerInfo.CourtPosition.COURT_LEFT)
-                GameSettings.Instance.AddLeftAttackSkillCount();
-            else
-                GameSettings.Instance.AddRightAttackSkillCount();
+
         }
     }
 
@@ -114,6 +111,10 @@ public class FoxPlayerMovement : BasePlayerMovement
     {
         GameObject fireball = m_FireBallContainer.GetPooledFireBall(this.gameObject);
         fireball.GetComponent<FireBall>().ShootFireBall(m_FireBallSpawnPoint, this.gameObject);
+                    if(m_CourtPosition == IPlayerInfo.CourtPosition.COURT_LEFT)
+                GameSettings.Instance.AddLeftAttackSkillCount();
+            else
+                GameSettings.Instance.AddRightAttackSkillCount();
     }
 
     protected override void Update()
